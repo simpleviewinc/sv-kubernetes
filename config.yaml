@@ -1,0 +1,43 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cms-micro-cloudinary-proxy
+spec:
+  type: LoadBalancer
+  selector:
+    app: cms-micro-cloudinary-proxy
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    nodePort: 30080
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    nodePort: 30443
+    targetPort: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms-micro-cloudinary-proxy
+  labels:
+    app: cms-micro-cloudinary-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cms-micro-cloudinary-proxy
+  template:
+    metadata:
+      labels:
+        app: cms-micro-cloudinary-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: gcr.io/empyrean-pixel-200318/github-simpleviewinc-cms-micro-cloudinary-proxy@sha256:ddde3e04bb15018bc905aebbed1fa3f0d5c9fa4637d58c12c45a8b876343929e
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 443

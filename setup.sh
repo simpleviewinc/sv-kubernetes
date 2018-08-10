@@ -3,6 +3,21 @@ if [ `whoami` != "root" ]; then
 	exit 1
 fi
 
+# install xz for upacking node
+yum install xz -y
+
+# install node
+curl -LO https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
+tar -xJf ./node-v8.11.3-linux-x64.tar.xz
+mv ./node-v8.11.3-linux-x64 /usr/local/etc/node
+ln -sfn /usr/local/etc/node/bin/node /usr/bin/node
+ln -sfn /usr/local/etc/node/bin/npm /usr/bin/npm
+rm ./node-v8.11.3-linux-x64.tar.xz
+
+# install google cloud sdk
+cp /sv/google-cloud-sdk.repo /etc/yum.repos.d
+yum install google-cloud-sdk -y
+
 # install kubectl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.11.0/bin/linux/amd64/kubectl
 chmod +x ./kubectl
@@ -33,3 +48,8 @@ cd /sv/
 minikube start --vm-driver=none
 
 mkdir -p /sv/services
+
+ln -sfn /sv/lib/sv.js /usr/bin/sv
+
+# gcloud init
+# gcloud auth configure-docker
