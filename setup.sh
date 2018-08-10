@@ -27,3 +27,9 @@ sysctl -w net.bridge.bridge-nf-call-iptables=1
 
 # disable selinux
 setenforce 0 || true
+
+# start minikube
+cd /sv/
+minikube start --vm-driver=none
+
+mkdir -p /sv/services
