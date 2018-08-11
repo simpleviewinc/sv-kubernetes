@@ -15,21 +15,35 @@ SSH into the box
 sudo bash /sv/setup.sh
 ```
 
-Now minikube should be running and your box is setup to add services. git clone services into the /services/ folder.
+Now minikube/kubernetes should be running and your box is setup to add services.
 
-## Add a service
-```
-sudo kubectl apply -f /sv/services/[serviceFolder]
-```
+## Add an application
 
-## See existing deployments
-```
-sudo kubectl get deployments
-```
+Git clone your application repository into the /sv/applications folder
 
-## Delete a deployment
-If you need restart a deployment you can delete it at re-add it
+## Start an application
+
+The `applicationName` should be the name of the folder in your /applications/ folder.
 
 ```
-sudo kubectl delete deployment [deployment]
+sudo sv start application [applicationName]
 ```
+
+## Stop an application
+
+The `applicationName` should be the name of the folder in your /applications/ folder.
+
+```
+sudo sv stop application [applicationName]
+```
+
+# Useful commands
+
+* See all that's running - `sudo kubectl get all`
+* Delete content - `sudo kubectl delete [type] [name]` (sv stop application does this for you)
+* See minikube logs - `sudo minikube logs`
+* Add a gcloud context for deployment - `sudo gcloud container clusters get-credentials [clusterName]`
+* See current config - `sudo kubectl config`
+* See current context - `sudo kubectl config current-context`
+* Switch to context - `sudo kubectl config use-context [context]`
+* Apply a config (sv start application is preferred) - `sudo kubectl apply -f /path/to/file.yaml`

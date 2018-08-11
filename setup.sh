@@ -47,7 +47,8 @@ setenforce 0 || true
 cd /sv/
 minikube start --vm-driver=none
 
-mkdir -p /sv/services
+mkdir -p /sv/applications
+mkdir -p /sv/containers
 
 ln -sfn /sv/lib/sv.js /usr/bin/sv
 
