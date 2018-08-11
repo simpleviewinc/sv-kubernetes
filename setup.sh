@@ -51,5 +51,10 @@ mkdir -p /sv/services
 
 ln -sfn /sv/lib/sv.js /usr/bin/sv
 
-# gcloud init
-# gcloud auth configure-docker
+# init gcloud
+gcloud init
+gcloud auth configure-docker
+
+# setup kubernetes to utilize our service account credentials
+kubectl create secret docker-registry gcr-json-key --docker-server=gcr.io --docker-username=_json_key --docker-password="$(cat /sv/gce-service-account-auth.json)" --docker-email=oallen@simpleviewinc.com
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "gcr-json-key"}]}'
