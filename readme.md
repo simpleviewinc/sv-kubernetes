@@ -1,4 +1,16 @@
-# installation
+BETA - Pending review or orchestration between CMS/CRM/Baberstock
+
+# Overview
+
+This repository is meant to be a base to install kubernetes and begin running applications on your machine and remote in the Google Cloud Engine (gce). The overall structure of the repo is:
+
+* - /applications/ - Individual repos are checked out which contain yaml files and tools needed to manage individual applications.
+* - /containers/ - Individual repos are checked out, each repo is responsible for a single container.
+* sv - sv command allows us to easily start/stop/deploy applications locally and to the gce.
+
+The goal of this repository is for multiple departments to eventually share the repo and utilize the repo allowing all groups to have the same basic workflow for doing containerized workflows. The complexity of the different applications and departments should be primarily contained within their  repositories in /applications/ and within their containers in /containers/.
+
+# Installation
 
 Clone the repo to your local computer
 
