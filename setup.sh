@@ -47,6 +47,9 @@ setenforce 0 || true
 cd /sv/
 minikube start --vm-driver=none
 
+# install node packages
+npm install
+
 mkdir -p /sv/applications
 mkdir -p /sv/containers
 

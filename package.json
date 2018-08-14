@@ -1,0 +1,6 @@
+{
+	"name": "cms-vagrant-kubernetes",
+	"dependencies": {
+		"chokidar": "*"
+	}
+}
