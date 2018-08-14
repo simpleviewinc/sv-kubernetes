@@ -49,6 +49,19 @@ The `applicationName` should be the name of the folder in your /applications/ fo
 sudo sv stop application [applicationName]
 ```
 
+## Watch a container for changes
+
+The `containerName` is the folder of the container. It will watches this folder for changes and trigger a docker build, tag it, and restarts any pods using it.
+
+Pods using the container need the label `sv-pod` which matches the `containerName`.
+
+This is a development only tool, should not be used in production.
+
+```
+sudo sv watch container [containerName] [name:tag]
+sudo sv watch container cms-test-node node:latest
+```
+
 # Useful commands
 
 * See all that's running - `sudo kubectl get all`
