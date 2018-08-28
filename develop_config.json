@@ -1,0 +1,17 @@
+{
+	"watch" : {
+		"sv-applications" : [
+			{
+				"label" : "cms-kube-microservices"
+			}
+		],
+		"sv-pods" : [
+			{
+				"label" : "cms-micro-cloudinary-proxy",
+				"image" : {
+					"name" : "my-image"
+				}
+			}
+		]
+	}
+}
