@@ -1,4 +1,4 @@
-BETA - Pending review or orchestration between CMS/CRM/Baberstock
+BETA - Pending review and orchestration between CMS/CRM/Baberstock
 
 # Overview
 
@@ -8,7 +8,14 @@ This repository is meant to be a base to install kubernetes and begin running ap
 * - /containers/ - Individual repos are checked out, each repo is responsible for a single container.
 * sv - sv command allows us to easily start/stop/deploy applications locally and to the gce.
 
-The goal of this repository is for multiple departments to eventually share the repo and utilize the repo allowing all groups to have the same basic workflow for doing containerized workflows. The complexity of the different applications and departments should be primarily contained within their  repositories in /applications/ and within their containers in /containers/.
+# Project Goals
+
+* The goal of this repository is for multiple departments to eventually share this repo for their working environment to ensure similar containerized workflows in all departments. The complexity of the different applications and departments should be primarily contained within their  repositories in /applications/ and within their containers in /containers/.
+* Avoid vendor lock-in by utilizing all open sources tools available on any hosting provider. Kubernetes gives us an application deployment framework that can be employed at any hosting provider.
+* Handle deployment, provisioning, and orchestration between all services within an application to avoid engineering of deployment and maintenance processes across departments.
+* Allow applications to be split into smaller containerized pieces. The goal is for this to be an iterative process where one UI may communicate with many microservices. Older code is converted into containerized services in a way so that SaaS users are unaware of the switch out.
+* Allow developers within Simpleview to more easily move from product to product by providing a familiar working environment across departments. The containers will still be fully managed by the individual teams, and the tools those teams used will be determined by those teams.
+* Be the platform where we can build a microservice system based on the concept of making all APIs externalizable similar to the initiatve put in place at Amazon via [this memo](https://apievangelist.com/2012/01/12/the-secret-to-amazons-success-internal-apis/).
 
 # Installation
 
