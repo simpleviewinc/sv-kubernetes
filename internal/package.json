@@ -1,6 +1,6 @@
 {
 	"name": "cms-vagrant-kubernetes",
 	"dependencies": {
-		"chokidar": "*"
+		"read" : "1.0.7"
 	}
 }

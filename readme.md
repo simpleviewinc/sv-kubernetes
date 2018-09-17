@@ -4,7 +4,7 @@ BETA - Pending review and orchestration between CMS/CRM/Baberstock
 
 This repository is meant to be a base to install kubernetes and begin running applications on your machine and remote in the Google Cloud Engine (gce). The overall structure of the repo is:
 
-* - /applications/ - Individual repos are checked out which contain yaml files and tools needed to manage individual applications.
+* - /applications/ - Individual repos are checked out which contain Helm charts and tools needed to manage individual applications.
 * - /containers/ - Individual repos are checked out, each repo is responsible for a single container.
 * sv - sv command allows us to easily start/stop/deploy applications locally and to the gce.
 
@@ -34,48 +34,21 @@ SSH into the box
 sudo bash /sv/setup.sh
 ```
 
-Now minikube/kubernetes should be running and your box is setup to add services.
+Now minikube, kubernetes, docker and helm should be running and your box is setup to add applications and containers.
 
-## Add an application
+# sv command
 
-Git clone your application repository into the /sv/applications folder
-
-## Start an application
-
-The `applicationName` should be the name of the folder in your /applications/ folder.
-
-```
-sudo sv start application [applicationName]
-```
-
-## Stop an application
-
-The `applicationName` should be the name of the folder in your /applications/ folder.
-
-```
-sudo sv stop application [applicationName]
-```
-
-## Watch a container for changes
-
-The `containerName` is the folder of the container. It will watches this folder for changes and trigger a docker build, tag it, and restarts any pods using it.
-
-Pods using the container need the label `sv-pod` which matches the `containerName`.
-
-This is a development only tool, should not be used in production.
-
-```
-sudo sv watch container [containerName] [name:tag]
-sudo sv watch container cms-test-node node:latest
-```
+* [sv build](docs/sv_build.md) - Build a container.
+* [sv restart](docs/sv_restart.md) - Restart a specific container in an application, used for development purposes.
+* [sv start](docs/sv_start.md) - Start an application.
+* [sv stop](docs/sv_stop.md) - Stop an application.
 
 # Useful commands
 
 * See all that's running - `sudo kubectl get all`
-* Delete content - `sudo kubectl delete [type] [name]` (sv stop application does this for you)
+* Get a pods logs - `sudo kubectl logs [podname]`
 * See minikube logs - `sudo minikube logs`
 * Add a gcloud context for deployment - `sudo gcloud container clusters get-credentials [clusterName]`
 * See current config - `sudo kubectl config`
 * See current context - `sudo kubectl config current-context`
 * Switch to context - `sudo kubectl config use-context [context]`
-* Apply a config (sv start application is preferred) - `sudo kubectl apply -f /path/to/file.yaml`

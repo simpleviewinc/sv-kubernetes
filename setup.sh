@@ -3,6 +3,10 @@ if [ `whoami` != "root" ]; then
 	exit 1
 fi
 
+cd /sv/
+
+mkdir -p /opt/sv
+
 # install xz for upacking node
 yum install xz -y
 
@@ -47,11 +51,14 @@ sysctl -w net.bridge.bridge-nf-call-iptables=1
 setenforce 0 || true
 
 # start minikube
-cd /sv/
 minikube start --vm-driver=none
 
-# install node packages
+# install npm packages
+cp /sv/internal/package.json /opt/sv/package.json
+cd /opt/sv/
 npm install
+ln -sfn /opt/sv/node_modules /node_modules
+cd /sv/
 
 mkdir -p /sv/applications
 mkdir -p /sv/containers
@@ -62,10 +69,6 @@ ln -sfn /sv/lib/sv.js /usr/bin/sv
 gcloud init
 gcloud auth configure-docker
 
-# setup kubernetes to utilize our service account credentials
-kubectl create secret docker-registry gcr-json-key --docker-server=gcr.io --docker-username=_json_key --docker-password="$(cat /sv/internal/gce-service-account-auth.json)" --docker-email=oallen@simpleviewinc.com
-kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "gcr-json-key"}]}'
-
 # install helm
 curl -Lo ./helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz
 tar -zxvf ./helm.tar.gz
@@ -73,3 +76,7 @@ rm ./helm.tar.gz
 mv ./linux-amd64/helm /usr/bin/helm
 rm -rf ./linux-amd64
 helm init
+
+# build server config
+sv _buildServerConfig
+sv _buildSvInfo
