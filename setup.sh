@@ -6,6 +6,9 @@ fi
 # install xz for upacking node
 yum install xz -y
 
+# install socat for helm
+yum install socat -y
+
 # install node
 curl -LO https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
 tar -xJf ./node-v8.11.3-linux-x64.tar.xz
@@ -15,7 +18,7 @@ ln -sfn /usr/local/etc/node/bin/npm /usr/bin/npm
 rm ./node-v8.11.3-linux-x64.tar.xz
 
 # install google cloud sdk
-cp /sv/google-cloud-sdk.repo /etc/yum.repos.d
+cp /sv/internal/google-cloud-sdk.repo /etc/yum.repos.d
 yum install google-cloud-sdk -y
 
 # install kubectl
@@ -60,5 +63,13 @@ gcloud init
 gcloud auth configure-docker
 
 # setup kubernetes to utilize our service account credentials
-kubectl create secret docker-registry gcr-json-key --docker-server=gcr.io --docker-username=_json_key --docker-password="$(cat /sv/gce-service-account-auth.json)" --docker-email=oallen@simpleviewinc.com
+kubectl create secret docker-registry gcr-json-key --docker-server=gcr.io --docker-username=_json_key --docker-password="$(cat /sv/internal/gce-service-account-auth.json)" --docker-email=oallen@simpleviewinc.com
 kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "gcr-json-key"}]}'
+
+# install helm
+curl -Lo ./helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz
+tar -zxvf ./helm.tar.gz
+rm ./helm.tar.gz
+mv ./linux-amd64/helm /usr/bin/helm
+rm -rf ./linux-amd64
+helm init
