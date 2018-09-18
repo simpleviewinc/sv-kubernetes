@@ -10,7 +10,9 @@ Start an application from an application located in your /applications/ folder.
 `sv start` is a wrapper for `helm upgrade`, any additional arguments will be passed to `helm upgrade`. Visit [helm upgrade](https://docs.helm.sh/helm/#helm-upgrade) for details.
 
 Example:
-	# start an application
-	sudo sv start test-application
-	# start an application but pass additional Helm arguments to help debug the config
-	sudo sv start test-application --dry-run --debug
+```
+# start an application
+sudo sv start test-application
+# start an application but pass additional Helm arguments to help debug the config
+sudo sv start test-application --dry-run --debug
+```
