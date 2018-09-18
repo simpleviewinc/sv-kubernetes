@@ -37,6 +37,8 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 
 ## sv command
 
+Run `sudo sv` for documentation within the VM.
+
 * [sv build](docs/sv_build.md) - Build a container.
 * [sv restart](docs/sv_restart.md) - Restart a specific container in an application, used for development purposes.
 * [sv start](docs/sv_start.md) - Start an application.
