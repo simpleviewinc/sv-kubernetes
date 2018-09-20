@@ -54,7 +54,7 @@ Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` libra
 
 * Charts.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
 * values.yaml - optional - Variables loaded into your application templates.
-* values_[env].yaml - optional - Variables to load specific to the server environment.
+* values_[env].yaml - optional - Variables to load specific to the environment.
 * /templates/ - required - The folder to store templates for each resource in your application. It is recommended to keep one Kubernetes entity per file for simplicity.
 
 The `.Values.sv` exposes values which can be utilized in application templates.
@@ -63,8 +63,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* ids - An object containing each "image:tag" reference with the Docker image_id. The value is a hash of the exact contents, to verify whether the container has changed.
 		* Recommended use-case is to refer to `checksum: {{ index .Values.sv.ids "image:tag" }}`. In the `annotations` of your deployment.yaml template. This way the container will only restart if the checksum has changed.
 		* If the image name is coming from a variable, you can utilize that by swapping `"image:tag"` for `.Values.my_image_variable`. See example application for reference.
-	* server_config
-		* env - The current server environment. Allows conditional logic in your templates based on environment. See example application for reference.
+	* env - The current server environment. Allows conditional logic in your templates based on environment. See example application for reference.
 
 Best Practices:
 
@@ -73,6 +72,7 @@ Best Practices:
 * In your values_local.yaml specify a variable for each container with it's value being `[image]:local` and reference that in your deployment files.
 * In your deployment files, utilize the checksum described above, to allow `sudo sv restart` to work efficiently.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
+* To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) for an example.
 
 ## Container Structure
 
@@ -84,8 +84,17 @@ Containers are written as standard Docker containers.
 * Seek to minimize the number of layers in your Dockerfile while also maximizing the cache re-use. This means placing the actions which rarely change high in your file, and the actions which frequently change lower in the file.
 * If you are using a local mount, ensure that you are performing a COPY for that content so the Dockerfile works in non-local environments.
 
+## Enable Cloud Build
+
+The recommendation is that Docker images are built and tagged automatically upon a git push to the github repo.
+
+The best practice for naming your images is `gcr.io/$PROJECT_ID/$REPO_NAME:${BRANCH_NAME}-${version}`. This ensures that the tag contains the branch name as well as the semver of your container. This allows containers to be build for dev/test environments as well as ensuring each is properly utilizing a semver.
+
+In order to utilize the system you can copy/paste the `cloudbuild.yaml` and `build.sh` and `version` from the [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container). Into your container. From there Owen can setup the build trigger to automate your container generation.
+
 # Other useful Docker/Kubernetes commands
 
+* See all applications that are running - `sudo helm list`
 * See all that's running - `sudo kubectl get all`
 * Get a pods logs - `sudo kubectl logs [podname]`
 * See minikube logs - `sudo minikube logs`
