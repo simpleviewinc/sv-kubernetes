@@ -1,12 +1,10 @@
-Usage: sudo sv build [container] [tag]
+Usage: sudo sv build [container]
 
 Build a container from a folder located in your /containers/ folder.
 
-Will result in a local docker image being tagged [container]:[tag]
-
-Kubernetes does not support the 'latest' tag locally, so it is disallowed.
+Will result in a local docker image being tagged [container]:local
 
 Example:
 ```
-sudo sv build test-container test
+sudo sv build test-container
 ```

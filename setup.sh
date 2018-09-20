@@ -78,5 +78,4 @@ rm -rf ./linux-amd64
 helm init
 
 # build server config
-sv _buildServerConfig
 sv _buildSvInfo

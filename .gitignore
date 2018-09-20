@@ -1,7 +1,5 @@
 .vagrant
-node_modules/
 applications/
 containers/
 internal/sv.json
 sv-kubernetes.sublime-workspace
-server_config.json
