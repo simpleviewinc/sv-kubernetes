@@ -98,8 +98,15 @@ In order to utilize the system you can copy/paste the `cloudbuild.yaml` and `bui
 * See all that's running - `sudo kubectl get all`
 * Get a pods logs - `sudo kubectl logs [podname]`
 * See minikube logs - `sudo minikube logs`
-* Add a gcloud context for deployment - `sudo gcloud container clusters get-credentials [clusterName]`
 * See current config - `sudo kubectl config`
 * See current context - `sudo kubectl config current-context`
-* Switch to context - `sudo kubectl config use-context [context]`
+
 * Run a container to debug - `sudo docker run -it image:tag`
+
+Connecting to clusters
+
+* List projects - `sudo gcloud projects list`
+* Switch project - `sudo gcloud config set project [project]`
+* Get cluster credentials - `sudo gcloud container clusters get-credentials [clusterName]`
+* Get available contexts - `sudo kubectl config get-contexts`
+* Switch to context - `sudo kubectl config use-context [context]`
