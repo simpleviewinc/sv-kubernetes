@@ -100,7 +100,6 @@ In order to utilize the system you can copy/paste the `cloudbuild.yaml` and `bui
 * See minikube logs - `sudo minikube logs`
 * See current config - `sudo kubectl config`
 * See current context - `sudo kubectl config current-context`
-
 * Run a container to debug - `sudo docker run -it image:tag`
 
 Connecting to clusters
