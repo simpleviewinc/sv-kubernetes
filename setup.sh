@@ -17,6 +17,9 @@ yum install xz -y
 # install socat for helm
 yum install socat -y
 
+# install unzip for terraform
+yum install unzip -y
+
 # install node
 curl -LO https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
 tar -xJf ./node-v8.11.3-linux-x64.tar.xz
