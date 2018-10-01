@@ -80,7 +80,7 @@ Containers are written as standard Docker containers.
 
 [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) - A functioning example container.
 
-* Since we are running the system with Kubernetes the recommendation is that containers have their default command as `CMD ["/bin/bash"]` to allow easily running `docker run -it image:tag` to debug. In the Helm chart you will indicate your normal start-up command.
+* Your docker container should be built in a way so that they ship functional in remote environments, and then for local development directories can be mounted for the CMD/Entrypoint can be changed.
 * Seek to minimize the number of layers in your Dockerfile while also maximizing the cache re-use. This means placing the actions which rarely change high in your file, and the actions which frequently change lower in the file.
 * If you are using a local mount, ensure that you are performing a COPY for that content so the Dockerfile works in non-local environments.
 
