@@ -49,6 +49,7 @@ yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 yum install docker-ce-18.03.0.ce-1.el7.centos.x86_64 -y
 systemctl start docker
+systemctl enable docker
 
 # no idea what this does, needed to get minikube to start
 modprobe br_netfilter
