@@ -59,7 +59,7 @@ sysctl -w net.bridge.bridge-nf-call-iptables=1
 setenforce 0 || true
 
 # start minikube
-minikube start --vm-driver=none
+minikube start --vm-driver=none --extra-config=apiserver.service-node-port-range=80-32767
 
 # install npm packages
 cp /sv/internal/package.json /opt/sv/package.json
