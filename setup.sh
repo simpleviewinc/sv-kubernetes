@@ -85,5 +85,8 @@ mv ./linux-amd64/helm /usr/bin/helm
 rm -rf ./linux-amd64
 helm init
 
+# authorize local kubernetes to pull from remote GCR
+kubectl create -f /sv/internal/gcrPullSecret.yaml
+
 # build server config
 sv _buildSvInfo

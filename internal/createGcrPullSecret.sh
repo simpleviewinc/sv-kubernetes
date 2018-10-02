@@ -1,1 +1,1 @@
-kubectl create secret docker-registry gcr-pull --docker-server="http://gcr.io" --docker-password="$(cat /sv/internal/empyrean-pixel-200318-2a54c123f655.json)" --docker-username="_json_key" --docker-email="gcloud@simpleviewinc.com" --dry-run=true -o=yaml
+kubectl create secret docker-registry gcr-pull --docker-server="http://gcr.io" --docker-password="$(cat /sv/internal/jenkins-gce.json)" --docker-username="_json_key" --docker-email="gcloud@simpleviewinc.com" --dry-run=true -o=yaml > /sv/internal/gcrPullSecret.yaml
