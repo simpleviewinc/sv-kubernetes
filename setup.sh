@@ -3,6 +3,8 @@ if [ `whoami` != "root" ]; then
 	exit 1
 fi
 
+. /sv/errorHandler.sh
+
 cd /sv/
 
 mkdir -p /opt/sv
