@@ -70,6 +70,7 @@ mkdir -p /sv/applications
 mkdir -p /sv/containers
 
 ln -sfn /sv/lib/sv.js /usr/bin/sv
+chmod +x /sv/lib/sv.js
 
 # init gcloud
 gcloud init

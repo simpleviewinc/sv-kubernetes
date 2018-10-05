@@ -1,6 +1,7 @@
 {
 	"name": "cms-vagrant-kubernetes",
 	"dependencies": {
+		"command-line-args" : "5.0.2",
 		"lodash" : "4.17.11",
 		"read" : "1.0.7",
 		"request" : "2.88.0"
