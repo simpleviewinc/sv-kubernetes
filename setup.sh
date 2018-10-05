@@ -7,8 +7,6 @@ cd /sv/
 
 mkdir -p /opt/sv
 
-cp /sv/internal/resolv.conf /etc/resolv.conf
-
 yum install nano -y
 
 # install xz for upacking node
