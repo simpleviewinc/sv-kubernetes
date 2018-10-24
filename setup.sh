@@ -11,6 +11,8 @@ mkdir -p /opt/sv
 
 yum install nano -y
 
+yum install git -y
+
 # install xz for upacking node
 yum install xz -y
 
