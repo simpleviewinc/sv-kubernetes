@@ -1,0 +1,1 @@
+minikube start --vm-driver=none --extra-config=apiserver.service-node-port-range=80-32767
