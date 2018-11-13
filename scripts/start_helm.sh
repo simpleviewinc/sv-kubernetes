@@ -1,1 +1,3 @@
-helm init
+. /sv/scripts/errorHandler.sh
+
+helm init --upgrade

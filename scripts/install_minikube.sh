@@ -1,3 +1,5 @@
+. /sv/scripts/errorHandler.sh
+
 minikube_version=$(minikube version 2> /dev/null || true)
 minikube_version_expected="minikube version: v0.30.0"
 

@@ -1,3 +1,5 @@
+. /sv/scripts/errorHandler.sh
+
 kubectl_version=$(kubectl version --client --short 2> /dev/null || true)
 kubectl_version_expected=$"Client Version: v1.11.0"
 

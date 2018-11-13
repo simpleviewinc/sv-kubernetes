@@ -1,13 +1,12 @@
 . /sv/scripts/errorHandler.sh
 
-apt-get update
-apt-get install -y git curl
+node_version=$(node --version 2> /dev/null || true)
+node_version_expected=v8.11.3
 
-NODE_VERSION=v8.11.3
-
-node=$(node --version 2> /dev/null || true)
-
-if [ $node != "v8.11.3" ]; then
+if [ "$node_version" != "$node_version_expected" ]; then
+	apt-get update
+	apt-get install -y git curl
+	
 	cd /tmp
 	curl -Lo node.tar.xz https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
 	tar -xJf node.tar.xz
