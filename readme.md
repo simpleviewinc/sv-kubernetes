@@ -41,6 +41,7 @@ Run `sudo sv` for documentation within the VM.
 
 * [sv build](docs/sv_build.md) - Build a container.
 * [sv compile](docs/sv_compile.md) - Compile a container and push to GCR.
+* [sv install](docs/sv_install.md) - Install an application.
 * [sv restart](docs/sv_restart.md) - Restart a specific container in an application, used for development purposes.
 * [sv start](docs/sv_start.md) - Start an application.
 * [sv stop](docs/sv_stop.md) - Stop an application.
@@ -86,14 +87,6 @@ Containers are written as standard Docker containers.
 * Seek to minimize the number of layers in your Dockerfile while also maximizing the cache re-use. This means placing the actions which rarely change high in your file, and the actions which frequently change lower in the file.
 * If you are using a local mount, ensure that you are performing a COPY for that content so the Dockerfile works in non-local environments.
 
-## Enable Cloud Build
-
-The recommendation is that Docker images are built and tagged automatically upon a git push to the github repo.
-
-The best practice for naming your images is `gcr.io/$PROJECT_ID/$REPO_NAME:${BRANCH_NAME}-${version}`. This ensures that the tag contains the branch name as well as the semver of your container. This allows containers to be build for dev/test environments as well as ensuring each is properly utilizing a semver.
-
-In order to utilize the system you can copy/paste the `cloudbuild.yaml` and `build.sh` and `version` from the [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container). Into your container. From there Owen can setup the build trigger to automate your container generation.
-
 # Other useful Docker/Kubernetes commands
 
 * See all applications that are running - `sudo helm list`
@@ -103,6 +96,8 @@ In order to utilize the system you can copy/paste the `cloudbuild.yaml` and `bui
 * See current config - `sudo kubectl config`
 * See current context - `sudo kubectl config current-context`
 * Run a container to debug - `sudo docker run -it image:tag`
+* Run a container with a specific command - `sudo docker run -it image:tag /bin/bash`
+* Enter a running container - `sudo kubectl exec -it [podName] /bin/bash`
 
 Connecting to clusters
 
