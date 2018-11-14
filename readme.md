@@ -52,9 +52,17 @@ Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` libra
 
 [sv-kubernetes-example-app](https://github.com/simpleviewinc/sv-kubernetes-example-app) - A functioning example application.
 
+## Naming
+
+Your application will need to have an application repo, and container repos for each container it requires.
+
+* App Repo - `[department]-[name]`, example `sv-kubernetes-example`
+* Container Repo - `[appRepoName]-[containerPurpose]`. So if your app is `crm` then it's containers would be `crm-ui`, `crm-nginx`, `crm-Y`.
+
 ## Application Structure
 
-* Charts.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
+* Chart.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
+	* The `name` in your Chart.yaml should exactly match the name of the repository.
 * values.yaml - optional - Variables loaded into your application templates.
 * values_[env].yaml - optional - Variables to load specific to the environment.
 * settings.yaml - optional - Allows specifying containers which will be installed alongside the application when installed via `sudo sv install`.
@@ -76,6 +84,7 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sudo sv restart` to work efficiently.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) for an example.
+* To make your application easy to install, specify a `settings.yaml` with a `containers` array indicating the containers this application will install.
 
 ## Container Structure
 
