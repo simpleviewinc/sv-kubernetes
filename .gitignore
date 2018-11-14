@@ -1,6 +1,5 @@
 .vagrant
 applications/
 containers/
-test/
 internal/sv.json
 sv-kubernetes.sublime-workspace
