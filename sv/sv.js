@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-var fs = require("fs");
-var child_process = require("child_process");
-var read = require("read");
-var util = require("util");
+const fs = require("fs");
+const child_process = require("child_process");
+const read = require("read");
+const util = require("util");
 const commandLineArgs = require("command-line-args");
+const js_yaml = require("js-yaml");
 
 var scriptName = process.argv[2];
 var argv = process.argv.filter(function(val, i){ return i > 2; });
@@ -90,11 +91,21 @@ scripts.install = function(args) {
 	const path = `/sv/${resultType[type]}/${name}`;
 	
 	if (fs.existsSync(path)) {
-		throw new Error("Something already exists at that path.");
+		console.log(`skipping '${path}', something already exists at the path.`);
+		return;
 	}
 	
 	exec(`git clone https://${github_token}@github.com/simpleviewinc/${name} ${path}`);
 	exec(`cd ${path} && git remote set-url origin git@github.com:simpleviewinc/${name}.git`);
+	
+	if (type === "app" && fs.existsSync(path + "/settings.yaml")) {
+		const settings = js_yaml.safeLoad(fs.readFileSync(path + "/settings.yaml"));
+		if (settings.containers !== undefined) {
+			settings.containers.forEach(function(val, i) {
+				exec(`sv install container ${val}`);
+			});
+		}
+	}
 }
 
 scripts.restart = function(args) {

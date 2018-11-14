@@ -24,8 +24,8 @@ npm prune
 npm install
 ln -sfn /opt/sv/node_modules /node_modules
 
-cp /sv/sv/sv.js /usr/bin/sv
-chmod +x /usr/bin/sv
+chmod +x /sv/sv/sv.js
+ln -sfn /sv/sv/sv.js /usr/bin/sv
 
 mkdir -p /sv/applications
 mkdir -p /sv/containers

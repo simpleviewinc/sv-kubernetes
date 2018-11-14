@@ -56,6 +56,7 @@ Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` libra
 * Charts.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
 * values.yaml - optional - Variables loaded into your application templates.
 * values_[env].yaml - optional - Variables to load specific to the environment.
+* settings.yaml - optional - Allows specifying containers which will be installed alongside the application when installed via `sudo sv install`.
 * /templates/ - required - The folder to store templates for each resource in your application. It is recommended to keep one Kubernetes entity per file for simplicity.
 
 The `.Values.sv` exposes values which can be utilized in application templates.
