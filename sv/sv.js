@@ -98,28 +98,12 @@ scripts.install = function(args) {
 	exec(`git clone https://${github_token}@github.com/simpleviewinc/${name} ${path}`);
 	exec(`cd ${path} && git remote set-url origin git@github.com:simpleviewinc/${name}.git`);
 	
-	if (type === "app" && fs.existsSync(path + "/settings.yaml")) {
-		const settings = js_yaml.safeLoad(fs.readFileSync(path + "/settings.yaml"));
-		if (settings.containers !== undefined) {
-			settings.containers.forEach(function(val, i) {
-				exec(`sv install container ${val}`);
-			});
-		}
+	const settings = loadSettingsYaml(name);
+	if (settings.containers !== undefined) {
+		settings.containers.forEach(function(val, i) {
+			exec(`sv install container ${val}`);
+		});
 	}
-}
-
-scripts.restart = function(args) {
-	var applicationName = args.argv[0];
-	var container = args.argv[1];
-	var env = args.argv[2];
-	
-	validateApp(applicationName);
-	validateContainer(container);
-	validateEnv(env);
-	
-	exec(`sv build ${container}`);
-	exec(`sv _buildSvInfo`);
-	exec(`sv start ${applicationName} ${env}`);
 }
 
 scripts.start = function(args) {
@@ -130,11 +114,30 @@ scripts.start = function(args) {
 	validateApp(applicationName);
 	validateEnv(env);
 	
+	var flags = commandLineArgs([
+		{ name : "build", type : String }
+	], { argv : myArgs, stopAtFirstUnknown : true });
+	
+	// set our args to those flags we don't recognize or an empty array if there are none
+	myArgs = flags._unknown || [];
+	
 	var appFolder = `/sv/applications/${applicationName}`;
 	
 	var envFile = `${appFolder}/values_${env}.yaml`;
 	if (fs.existsSync(envFile)) {
 		myArgs.unshift(`-f ${envFile}`);
+	}
+	
+	if (flags.build !== undefined) {
+		const settings = loadSettingsYaml(applicationName);
+		console.log("settings", settings);
+		if (settings.containers) {
+			settings.containers.forEach(function(val, i) {
+				exec(`sv build ${val}`);
+			});
+			
+			exec(`sv _buildSvInfo`);
+		}
 	}
 	
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
@@ -167,6 +170,17 @@ const validateContainer = function(container) {
 	if (fs.existsSync(folder) === false) {
 		throw new Error(`Invalid container ${container}`);
 	}
+}
+
+const loadSettingsYaml = function(app) {
+	const path = `/sv/applications/${app}/settings.yaml`;
+	console.log(path);
+	if (fs.existsSync(path) === false) {
+		return {};
+	}
+	
+	const settings = js_yaml.safeLoad(fs.readFileSync(path));
+	return settings;
 }
 
 // stores the state of the docker registry in a local file, exposing to to sv start

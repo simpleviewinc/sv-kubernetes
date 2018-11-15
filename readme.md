@@ -1,5 +1,7 @@
 # Overview
 
+[Change Log](changelog.md)
+
 This repository is meant to be a base to install Kubernetes, Helm and begin running applications on your machine and remote in the Google Cloud Engine (gce). The overall structure of the repo is:
 
 * - /applications/ - Individual repos are checked out which contain Helm charts and tools needed to manage individual applications.
