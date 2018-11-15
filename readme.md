@@ -44,7 +44,6 @@ Run `sudo sv` for documentation within the VM.
 * [sv build](docs/sv_build.md) - Build a container.
 * [sv compile](docs/sv_compile.md) - Compile a container and push to GCR.
 * [sv install](docs/sv_install.md) - Install an application.
-* [sv restart](docs/sv_restart.md) - Restart a specific container in an application, used for development purposes.
 * [sv start](docs/sv_start.md) - Start an application.
 * [sv stop](docs/sv_stop.md) - Stop an application.
 
@@ -76,14 +75,13 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* ids - An object containing each "image:tag" reference with the Docker image_id. The value is a hash of the exact contents, to verify whether the container has changed.
 		* Recommended use-case is to refer to `checksum: {{ index .Values.sv.ids "image:tag" }}`. In the `annotations` of your deployment.yaml template. This way the container will only restart if the checksum has changed.
 		* If the image name is coming from a variable, you can utilize that by swapping `"image:tag"` for `.Values.my_image_variable`. See example application for reference.
-	* env - The current server environment. Allows conditional logic in your templates based on environment. See example application for reference.
 
 Best Practices:
 
 * In your template files utilize the `{{ .Release.name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
 * In your values.yaml hard-code the `image:tag` you will be utilizing. This ensures rollback capability.
 * In your values_local.yaml specify a variable for each container with it's value being `[image]:local` and reference that in your deployment files.
-* In your deployment files, utilize the checksum described above, to allow `sudo sv restart` to work efficiently.
+* In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) for an example.
 * To make your application easy to install, specify a `settings.yaml` with a `containers` array indicating the containers this application will install.
