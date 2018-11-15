@@ -149,6 +149,28 @@ scripts.stop = function(args) {
 	exec(`helm delete ${applicationName} --purge`);
 }
 
+scripts.logs = function(args) {
+	var flags = commandLineArgs([
+		// filter to only listen on a specific set of pods
+		{ name : "filter", type : String },
+		// watch the pods to listen as the pods start/stop/restart
+		{ name : "watch", type : String }
+	], { argv : args.argv });
+	
+	if (flags.watch === undefined) {
+		var pods = getCurrentPods(flags.filter);
+		
+		pods.forEach(function(val) {
+			exec(`kubectl logs ${val.name}`);
+		});
+	} else {
+		watchPods(flags.filter);
+		setInterval(function() {
+			watchPods(flags.filter);
+		}, 2000);
+	}
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
@@ -180,6 +202,51 @@ const loadSettingsYaml = function(app) {
 	
 	const settings = js_yaml.safeLoad(fs.readFileSync(path));
 	return settings;
+}
+
+const getCurrentPods = function(filter) {
+	const all = JSON.parse(child_process.execSync(`kubectl get pods -o json`));
+	
+	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
+	var pods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
+	
+	// simplify the return for downstream functions
+	pods = pods.map(val => ({
+		name : val.metadata.name,
+		ip : val.podIP
+	}));
+	
+	// if we have a passed in filter, apply it
+	if (filter) {
+		pods = pods.filter(val => val.name.match(filter));
+	}
+	
+	return pods;
+}
+
+const _watched = [];
+async function watchPods(filter) {
+	var pods = getCurrentPods(filter);
+	var names = pods.map(val => val.name);
+	
+	names.forEach(function(val, i) {
+		if (_watched[val] === undefined) {
+			console.log(`Adding watcher for pod ${val}`);
+			var child = child_process.spawn(`kubectl`, ["logs", val, "-f"], { stdio : "inherit" });
+			child.on("close", function(code) {
+				console.log(`pod closing ${val} ${code}`);
+				delete _watched[val];
+			});
+			
+			_watched[val] = child;
+		}
+	});
+	
+	for(var i in _watched) {
+		if (names.includes(i) === false) {
+			_watched[i].kill();
+		}
+	}
 }
 
 // stores the state of the docker registry in a local file, exposing to to sv start
