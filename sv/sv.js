@@ -130,7 +130,6 @@ scripts.start = function(args) {
 	
 	if (flags.build !== undefined) {
 		const settings = loadSettingsYaml(applicationName);
-		console.log("settings", settings);
 		if (settings.containers) {
 			settings.containers.forEach(function(val, i) {
 				exec(`sv build ${val}`);
