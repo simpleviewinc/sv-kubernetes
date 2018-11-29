@@ -52,7 +52,7 @@ Run `sudo sv` for documentation within the VM.
 
 Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` library wraps the capabilities of Helm and Kubernetes to ensure an easy development environment.
 
-[sv-kubernetes-example-app](https://github.com/simpleviewinc/sv-kubernetes-example-app) - A functioning example application.
+[sv-kubernetes-example](https://github.com/simpleviewinc/sv-kubernetes-example) - A functioning example application.
 
 ## Naming
 
@@ -92,13 +92,13 @@ Best Practices:
 * In your values_local.yaml specify a variable for each container with it's value being `[image]:local` and reference that in your deployment files.
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
-* To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) for an example.
+* To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example](https://github.com/simpleviewinc/sv-kubernetes-example) for an example.
 
 ## Container Structure
 
 Containers are written as standard Docker containers.
 
-[sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) - A functioning example container.
+[sv-kubernetes-example-server](https://github.com/simpleviewinc/sv-kubernetes-example/tree/master/containers/server) - A functioning example container.
 
 * Your docker container should be built in a way so that they ship functional for a remote environments, and then for local development directories can be mounted for the CMD/Entrypoint can be changed.
 	* In practice this means that on local you might mount in a hot folder, but elsewhere the `Dockerfile` will compile the necessary resources.
