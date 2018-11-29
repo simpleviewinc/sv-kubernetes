@@ -93,12 +93,12 @@ scripts.deploy = function(args) {
 }
 
 scripts.install = function(args) {
-	var flags = commandLineArgs([
+	const { name, type } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
 		{ name : "type", type : String, defaultValue : "app" }
 	], { argv : args.argv });
 	
-	if (["app", "container"].includes(flags.type) === false) {
+	if (["app", "container"].includes(type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
 	
