@@ -6,6 +6,8 @@ It will not start the application, you still need to build/start depending on yo
 
 Example:
 ```
-sudo sv install app sv-kubernetes-example-app
-sudo sv install container sv-local-proxy-server
+# install an application
+sudo sv install sv-kubernetes-example-app
+# install a container repo
+sudo sv install sv-local-proxy-server --type=container
 ```

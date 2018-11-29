@@ -4,13 +4,13 @@
 
 This repository is meant to be a base to install Kubernetes, Helm and begin running applications on your machine and remote in the Google Cloud Engine (gce). The overall structure of the repo is:
 
-* - /applications/ - Individual repos are checked out which contain Helm charts and tools needed to manage individual applications.
-* - /containers/ - Individual repos are checked out, each repo is responsible for a single container.
+* /applications/ - Individual repos are checked out which contain Helm charts and tools needed to manage individual applications and containers.
+* /containers/ - Individual repos are checked out, each repo is responsible for a single container.
 * sv - sv command allows us to easily start/stop/deploy applications locally and to the gce.
 
 ## Project Goals
 
-* The goal of this repository is for multiple departments to eventually share this repo for their working environment to ensure similar containerized workflows in all departments. The complexity of the different applications and departments should be primarily contained within their  repositories in /applications/ and within their containers in /containers/.
+* The goal of this repository is for multiple departments to eventually share this repo for their working environment to ensure similar containerized workflows in all departments. The complexity of the different applications and departments should be primarily contained within their repositories in /applications/ and within their containers in /containers/.
 * Avoid vendor lock-in by utilizing all open sources tools available on any hosting provider. Kubernetes gives us an application deployment framework that can be employed at any hosting provider.
 * Handle deployment, provisioning, and orchestration between all services within an application to avoid engineering of deployment and maintenance processes across departments.
 * Allow applications to be split into smaller containerized pieces. The goal is for this to be an iterative process where one UI may communicate with many microservices. Older code is converted into containerized services in a way so that SaaS users are unaware of the switch out.
@@ -56,19 +56,25 @@ Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` libra
 
 ## Naming
 
-Your application will need to have an application repo, and container repos for each container it requires.
+The recommended approach is to utilize a single repo which contains your application and it's containers. In cases where you want to share containers with other applications, the recommendation is to keep those folders out of your application and instead build them separately.
 
 * App Repo - `[department]-[name]`, example `sv-kubernetes-example`
-* Container Repo - `[appRepoName]-[containerPurpose]`. So if your app is `crm` then it's containers would be `crm-ui`, `crm-nginx`, `crm-Y`.
 
-## Application Structure
+## Repo Structure
 
-* Chart.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
+* /chart/ - Helm Chart
+	* Chart.yaml - required - The basic file for the project. See [Helm Charts.yaml](https://docs.helm.sh/developing_charts#the-chart-yaml-file) for documentation.
 	* The `name` in your Chart.yaml should exactly match the name of the repository.
-* values.yaml - optional - Variables loaded into your application templates.
-* values_[env].yaml - optional - Variables to load specific to the environment.
-* settings.yaml - optional - Allows specifying containers which will be installed alongside the application when installed via `sudo sv install`.
-* /templates/ - required - The folder to store templates for each resource in your application. It is recommended to keep one Kubernetes entity per file for simplicity.
+	* values.yaml - optional - Variables loaded into your application templates.
+	* values_[env].yaml - optional - Variables to load specific to the environment.
+	* /templates/ - required - The folder to store templates for each resource in your application. It is recommended to keep one Kubernetes entity per file for simplicity.
+* /containers/
+	* /`[NAME]`/
+		* /lib/ - A folder that will likely be `COPY`'d into your container via the `Dockerfile`
+		* Dockerfile
+* readme.md - Documentation entrypoint for the application.
+
+## Chart Additional Capabilities
 
 The `.Values.sv` exposes values which can be utilized in application templates.
 
@@ -76,6 +82,8 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* ids - An object containing each "image:tag" reference with the Docker image_id. The value is a hash of the exact contents, to verify whether the container has changed.
 		* Recommended use-case is to refer to `checksum: {{ index .Values.sv.ids "image:tag" }}`. In the `annotations` of your deployment.yaml template. This way the container will only restart if the checksum has changed.
 		* If the image name is coming from a variable, you can utilize that by swapping `"image:tag"` for `.Values.my_image_variable`. See example application for reference.
+	* env - The current env dictated by the `sv start` command.
+	* containerPath - The path to the `/containers/` folder within the application. This way you can use relative paths to your containers making `yaml` files more portable between projects.
 
 Best Practices:
 
@@ -85,7 +93,6 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) for an example.
-* To make your application easy to install, specify a `settings.yaml` with a `containers` array indicating the containers this application will install.
 
 ## Container Structure
 
@@ -93,7 +100,8 @@ Containers are written as standard Docker containers.
 
 [sv-kubernetes-example-container](https://github.com/simpleviewinc/sv-kubernetes-example-container) - A functioning example container.
 
-* Your docker container should be built in a way so that they ship functional in remote environments, and then for local development directories can be mounted for the CMD/Entrypoint can be changed.
+* Your docker container should be built in a way so that they ship functional for a remote environments, and then for local development directories can be mounted for the CMD/Entrypoint can be changed.
+	* In practice this means that on local you might mount in a hot folder, but elsewhere the `Dockerfile` will compile the necessary resources.
 * Seek to minimize the number of layers in your Dockerfile while also maximizing the cache re-use. This means placing the actions which rarely change high in your file, and the actions which frequently change lower in the file.
 * If you are using a local mount, ensure that you are performing a COPY for that content so the Dockerfile works in non-local environments.
 

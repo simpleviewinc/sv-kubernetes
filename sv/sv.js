@@ -20,11 +20,29 @@ var exec = function(command) {
 
 // public scripts
 scripts.build = function(args) {
-	var container = args.argv[0];
+	const flags = commandLineArgs([
+		{ name : "name", type : String },
+		{ name : "app", type : String },
+	], { argv : args.argv });
 	
-	validateContainer(container);
+	if (flags.name === undefined) {
+		throw new Error(`Must specify '--name'`);
+	}
 	
-	exec(`cd /sv/containers/${container} && docker build -t ${container}:local .`);
+	let path;
+	let tag;
+	
+	if (flags.app === undefined) {
+		path = `/sv/containers/${flags.name}`;
+		tag = flags.name;
+	} else {
+		path = `/sv/applications/${flags.app}/containers/${flags.name}`;
+		tag = `${flags.app}-${flags.name}`;
+	}
+	
+	validatePath(path);
+	
+	exec(`cd ${path} && docker build -t ${tag}:local .`);
 }
 
 scripts.compile = function(args) {
@@ -75,10 +93,12 @@ scripts.deploy = function(args) {
 }
 
 scripts.install = function(args) {
-	const type = args.argv[0];
-	const name = args.argv[1];
+	var flags = commandLineArgs([
+		{ name : "name", type : String, defaultOption : true },
+		{ name : "type", type : String, defaultValue : "app" }
+	], { argv : args.argv });
 	
-	if (["app", "container"].includes(type) === false) {
+	if (["app", "container"].includes(flags.type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
 	
@@ -97,13 +117,6 @@ scripts.install = function(args) {
 	
 	exec(`git clone https://${github_token}@github.com/simpleviewinc/${name} ${path}`);
 	exec(`cd ${path} && git remote set-url origin git@github.com:simpleviewinc/${name}.git`);
-	
-	const settings = loadSettingsYaml(name);
-	if (settings.containers !== undefined) {
-		settings.containers.forEach(function(val, i) {
-			exec(`sv install container ${val}`);
-		});
-	}
 }
 
 scripts.start = function(args) {
@@ -121,26 +134,26 @@ scripts.start = function(args) {
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
 	
-	var appFolder = `/sv/applications/${applicationName}`;
+	const appFolder = `/sv/applications/${applicationName}`;
+	const chartFolder = `${appFolder}/chart`;
+	const containerFolder = `${appFolder}/containers`;
 	
-	var envFile = `${appFolder}/values_${env}.yaml`;
+	var envFile = `${chartFolder}/values_${env}.yaml`;
 	if (fs.existsSync(envFile)) {
 		myArgs.unshift(`-f ${envFile}`);
 	}
 	
-	if (flags.build !== undefined) {
-		const settings = loadSettingsYaml(applicationName);
-		if (settings.containers) {
-			settings.containers.forEach(function(val, i) {
-				exec(`sv build ${val}`);
-			});
-			
-			exec(`sv _buildSvInfo`);
-		}
+	if (flags.build !== undefined && fs.existsSync(containerFolder)) {
+		const dirs = fs.readdirSync(containerFolder);
+		dirs.forEach(function(val, i) {
+			exec(`sv build --app=${applicationName} --name=${val}`);
+		});
+		
+		exec(`sv _buildSvInfo`);
 	}
 	
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
-	exec(`helm upgrade ${applicationName} ${appFolder}/ --install --set sv.env=${env} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.env=${env} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
 
 scripts.stop = function(args) {
@@ -190,6 +203,12 @@ const validateContainer = function(container) {
 	const folder = `/sv/containers/${container}`;
 	if (fs.existsSync(folder) === false) {
 		throw new Error(`Invalid container ${container}`);
+	}
+}
+
+const validatePath = function(path) {
+	if (fs.existsSync(path) === false) {
+		throw new Error(`Invalid path ${path}`);
 	}
 }
 

@@ -6,5 +6,8 @@ Will result in a local docker image being tagged [container]:local
 
 Example:
 ```
-sudo sv build test-container
+# build the container in /applications/sv-kubernetes-example-app/containers/server/
+sudo sv build --app=sv-kubernetes-example-app --name=server
+# build a stand-alone container repo at /containers/server/
+sudo sv build --name=server
 ```
