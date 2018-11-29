@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 11/28/2018
+
+* Switching from utilizing separate repos for each container and moving to put the container repo within the application folder.
+* Deprecated the `settings.yaml` capability, it is no longer required based on moving the repos.
+
 ## 11/15/2018
 
 * sv-kubernetes system refactored to built on a Ubuntu box instead of Centos.
