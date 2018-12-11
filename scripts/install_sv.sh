@@ -17,6 +17,9 @@ if [ "$node_version" != "$node_version_expected" ]; then
 	ln -sfn /usr/local/etc/node/bin/npm /usr/bin/npm
 fi
 
+apt-get install -y ntp
+timedatectl set-ntp on
+
 mkdir -p /opt/sv
 cp /sv/sv/package.json /opt/sv/package.json
 cd /opt/sv/
