@@ -115,7 +115,7 @@ scripts.install = function(args) {
 		return;
 	}
 	
-	exec(`git clone https://${github_token}@github.com/simpleviewinc/${name} ${path}`);
+	exec(`git clone --recurse-submodules https://${github_token}@github.com/simpleviewinc/${name} ${path}`);
 	exec(`cd ${path} && git remote set-url origin git@github.com:simpleviewinc/${name}.git`);
 }
 
