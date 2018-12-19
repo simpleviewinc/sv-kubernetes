@@ -184,6 +184,18 @@ scripts.logs = function(args) {
 	}
 }
 
+scripts.test = function(args) {
+	var flags = commandLineArgs([
+		{ name : "filter", type : String },
+		{ name : "command", type : String }
+	], { argv : args.argv });
+	
+	var pods = getCurrentPods(flags.filter);
+	pods.forEach(function(val, i) {
+		exec(`kubectl exec -it ${val.name} ${flags.command}`);
+	});
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
