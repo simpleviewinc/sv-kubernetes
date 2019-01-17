@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 1/17/2019
+
+* Changes the way the github authentication works. Previously it was using the token, now it's using the ssh key file to allow submodules to work better.
+
 ## 11/28/2018
 
 * Switching from utilizing separate repos for each container and moving to put the container repo within the application folder.
