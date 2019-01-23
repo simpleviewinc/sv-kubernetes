@@ -47,6 +47,8 @@ Run `sudo sv` for documentation within the VM.
 * [sv logs](docs/sv_logs.md) - Get logging information for a deployment.
 * [sv start](docs/sv_start.md) - Start an application.
 * [sv stop](docs/sv_stop.md) - Stop an application.
+* [sv enterPod](docs/sv_enterPod.md) - Enter a running container.
+* [sv getAll](docs/sv_getAll.md) - See everything running.
 
 # Applications
 

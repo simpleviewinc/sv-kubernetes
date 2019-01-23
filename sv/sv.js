@@ -199,7 +199,11 @@ scripts.enterPod = function(args) {
 	var podName = args.argv[0];
 	var pod = getCurrentPods(podName)[0];
 	console.log("Entering Pod:", pod.name)
-	exec(`sudo kubectl exec -it ${pod.name} /bin/sh`);
+	exec(`kubectl exec -it ${pod.name} /bin/sh`);
+}
+
+scripts.getAll = function(args) {
+	exec(`kubectl get all`);
 }
 
 //// PRIVATE METHODS
