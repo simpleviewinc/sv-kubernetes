@@ -185,13 +185,21 @@ scripts.logs = function(args) {
 
 scripts.test = function(args) {
 	var flags = commandLineArgs([
-		{ name : "filter", type : String },
-		{ name : "command", type : String }
+		{ name : "name", type : String, defaultOption : true }
 	], { argv : args.argv });
 	
-	var pods = getCurrentPods(flags.filter);
+	var names = [];
+	var pods = getCurrentPods(flags.name).filter(val => val.testCommand !== undefined);
+	
 	pods.forEach(function(val, i) {
-		exec(`kubectl exec -it ${val.name} ${flags.command}`);
+		if (names.includes(val.rootName) === true) {
+			// we have already tested this container
+			return;
+		}
+		
+		names.push(val.rootName);
+		
+		exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
 	});
 }
 
@@ -243,6 +251,8 @@ const getCurrentPods = function(filter) {
 	// simplify the return for downstream functions
 	pods = pods.map(val => ({
 		name : val.metadata.name,
+		testCommand : val.metadata.annotations["sv-test-command"],
+		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
 		ip : val.podIP
 	}));
 	
