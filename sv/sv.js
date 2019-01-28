@@ -203,6 +203,13 @@ scripts.test = function(args) {
 	});
 }
 
+scripts.enterPod = function(args) {
+	var podName = args.argv[0];
+	var pod = getCurrentPods(podName)[0];
+	console.log("Entering Pod:", pod.name)
+	exec(`kubectl exec -it ${pod.name} /bin/sh`);
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {

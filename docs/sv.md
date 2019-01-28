@@ -7,6 +7,7 @@ Commands:
 	logs		Getting logging information for a set of pods
 	start		Start an Helm chart
 	stop		Stop a Helm chart
+	enterPod	Enter a running container
 	test		Execute tests within running containers
 
 Run 'sudo sv [command]' for more information on that command
