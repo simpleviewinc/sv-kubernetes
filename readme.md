@@ -37,6 +37,23 @@ sudo bash /sv/setup.sh
 
 Now minikube, kubernetes, docker and helm should be running and your box is setup to add applications and containers.
 
+## Local Development
+
+Often in order to work your project you will want to install and start the following applications.
+
+* `sv-local-proxy` allows you to access resources on your box at `kube.simpleview.io`.
+	* If your application needs an additional nginx entry, please pull request it in to that repo.
+* `sv-graphl` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
+	* If your application needs an additional graphql, please pull request it in to that repo.
+
+```
+sudo sv install sv-local-proxy
+sudo sv start sv-local-proxy local --build
+
+sudo sv install sv-graphql
+sudo sv start sv-graphql local --build
+```
+
 ## sv command
 
 Run `sudo sv` for documentation within the VM.
@@ -86,6 +103,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 		* If the image name is coming from a variable, you can utilize that by swapping `"image:tag"` for `.Values.my_image_variable`. See example application for reference.
 	* env - The current env dictated by the `sv start` command.
 	* containerPath - The path to the `/containers/` folder within the application. This way you can use relative paths to your containers making `yaml` files more portable between projects.
+	* applicationPath - The path to the folder of the application itself.
 
 Best Practices:
 

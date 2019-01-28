@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 1/27/2019
+
+* `sv test` now requires the container to have `metadata.annotations.sv-test-command` to declare the test command.
+
 ## 1/17/2019
 
 * Changes the way the github authentication works. Previously it was using the token, now it's using the ssh key file to allow submodules to work better.
