@@ -6,5 +6,9 @@ If you have more than one contianer per application the specific pod / container
 
 Example:
 ```
+Single container applicaton:
 sudo sv enterPod test-application
+
+Multiple container applicaton:
+sudo sv enterPod test-application-[containerName]
 ```

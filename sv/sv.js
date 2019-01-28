@@ -202,10 +202,6 @@ scripts.enterPod = function(args) {
 	exec(`kubectl exec -it ${pod.name} /bin/sh`);
 }
 
-scripts.getAll = function(args) {
-	exec(`kubectl get all`);
-}
-
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
