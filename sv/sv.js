@@ -151,8 +151,11 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
+	const settings = loadSettingsYaml(applicationName);
+	const tag = settings.version && env === "live" ? settings.version : env;
+	
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
-	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
 
 scripts.stop = function(args) {
