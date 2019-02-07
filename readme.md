@@ -144,3 +144,20 @@ Connecting to clusters
 * Get cluster credentials - `sudo gcloud container clusters get-credentials [clusterName]`
 * Get available contexts - `sudo kubectl config get-contexts`
 * Switch to context - `sudo kubectl config use-context [context]`
+
+## CI/CD Pathway
+
+sv-kubernetes applications are recommended to be setup with CI/CD using the following plan. This plan is handled by circleci and the [sv-deploy-gce](https://github.com/simpleviewinc/sv-deploy-gce) docker container.
+
+* Pull requests trigger unit test execution.
+* Pushes to a branch trigger deployment to kubernetes cluster aligning with the branch.
+	* develop -> dev
+	* qa -> qa
+	* staging -> staging
+	* master -> live
+* In cases where you want to mandate unit test execution prior to deployment, utilize Github's branch protection feature to only allow merging via pull request. This way your pull request to that branch will have the unit tests executed, and then, upon completion and your approval, you merge which will trigger the deployment.
+* Images will be tagged with the branch and the version from the `settings.yaml` file.
+* It is not required for each department to utilize all environmental clusters. Their workflow and what works best for them is up to them.
+* It is recommended that the branches from dev -> qa -> staging -> master are kept "in sync" so that master never has a commit which is not present on dev. This means you'll never want to push or PR directly to master, it should always come from the environment before it.
+* The recommended development flow is PR features/bugs to develop -> merge -> pr develop to qa -> merge -> pr qa to staging -> merge -> pr staging to live.
+* If you have a smaller department or don't need all environments, then simplify the flow to something like PR to (qa, dev, staging) -> merge -> pr to live -> merge. Whatever model you choose, have all tickets utilize the same release pathway.
