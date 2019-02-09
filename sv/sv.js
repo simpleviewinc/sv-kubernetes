@@ -10,7 +10,7 @@ const js_yaml = require("js-yaml");
 var scriptName = process.argv[2];
 var argv = process.argv.filter(function(val, i){ return i > 2; });
 
-const validEnvs = ["local", "dev", "test", "staging", "live"];
+const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
 
 var scripts = {};
 
@@ -152,7 +152,7 @@ scripts.start = function(args) {
 	}
 	
 	const settings = loadSettingsYaml(applicationName);
-	const tag = settings.version && env === "live" ? settings.version : env;
+	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
 	
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
 	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
