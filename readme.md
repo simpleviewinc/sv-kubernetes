@@ -41,14 +41,14 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 
 Often in order to work your project you will want to install and start the following applications.
 
-* `sv-local-proxy` allows you to access resources on your box at `kube.simpleview.io`.
+* `sv-kube-proxy` allows you to access resources on your box at `kube.simpleview.io`.
 	* If your application needs an additional nginx entry, please pull request it in to that repo.
 * `sv-graphl` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
 	* If your application needs an additional graphql, please pull request it in to that repo.
 
 ```
-sudo sv install sv-local-proxy
-sudo sv start sv-local-proxy local --build
+sudo sv install sv-kube-proxy
+sudo sv start sv-kube-proxy local --build
 
 sudo sv install sv-graphql
 sudo sv start sv-graphql local --build

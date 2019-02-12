@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 2/11/2019
+
+* `sv-local-proxy` is now `sv-kube-proxy` since it will be utilized in other environments to handle proxying requests and SSL termination.
+
 ## 1/27/2019
 
 * `sv test` now requires the container to have `metadata.annotations.sv-test-command` to declare the test command.
