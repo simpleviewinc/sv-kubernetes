@@ -145,12 +145,12 @@ Connecting to clusters
 * Get available contexts - `sudo kubectl config get-contexts`
 * Switch to context - `sudo kubectl config use-context [context]`
 
-# CI/CD Pathway
+# CI/CD Philosophy
 
 sv-kubernetes applications are recommended to be setup with CI/CD using the following plan. This plan is handled by circleci and the [sv-deploy-gce](https://github.com/simpleviewinc/sv-deploy-gce) docker container.
 
-* Pull requests trigger unit test execution.
-* Pushes to a branch trigger deployment to kubernetes cluster aligning with the branch.
+* Pull requests trigger unit test execution via deployment to a cluster called test.
+* Pushes to a branch trigger deployment to a kubernetes cluster aligning with the branch.
 	* develop -> dev
 	* qa -> qa
 	* staging -> staging
@@ -161,3 +161,16 @@ sv-kubernetes applications are recommended to be setup with CI/CD using the foll
 * It is recommended that the branches from dev -> qa -> staging -> master are kept "in sync" so that master never has a commit which is not present on dev. This means you'll never want to push or PR directly to master, it should always come from the environment before it.
 * The recommended development flow is PR features/bugs to develop -> merge -> pr develop to qa -> merge -> pr qa to staging -> merge -> pr staging to live.
 * If you have a smaller department or don't need all environments, then simplify the flow to something like PR to (qa, dev, staging) -> merge -> pr to live -> merge. Whatever model you choose, have all tickets utilize the same release pathway.
+
+# Getting it running in the cloud
+
+Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's working. Most of it doesn't have to do with the CI/CD system itself, but rather making sure your application is ready to function in non-live environments.
+
+* While running in non-local environments your mounted folders will not work. The `Dockerfile` in your containers needs to be setup assuming it's `live` configuration. So if you need to run webpack or some other utility to compile code, your Dockerfile should be doing that.
+* Copy the `.circleci` folder from the `sv-kubernetes-example` project into the root of your project.
+* Ensure that you have a `settings.yaml` file in the root of your project. This should have a `version: SEMVER` inside it. This will be utilized in tagging your images in each environment with your current application's version.
+* In your deployments for the container setup, you will likely want `imagePullPolicy: Always` in all non-local environments. See the `sv-kubernetes-example` app for an example.
+* In your deployments for the container setup, you will need to be calculating your `$image` dynamically to include your base image + the dynamically generated tag.
+	* An example of this is `{{ $image := printf "%s:%s" .Values.imageBase .Values.sv.tag }}` . The `{{ .Values.imageBase }}` is an arbitrary variable. It could be anything from your values files. The `.Values.sv.tag` is the dynamically generated tag by the CI/CD system. This ensures the right image is loaded in the right env.
+	* If you need a multi-container example see `sv-auth` as an example.
+* If you are exposing a front-end service with a hostname the recommendation is to go through the `sv-kube-proxy` as it will provide a consistent IP and SSL termination. If you need a cert or a service published, submit a pull request to that repository or contact Owen.
