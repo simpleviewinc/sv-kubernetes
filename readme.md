@@ -91,7 +91,17 @@ The recommended approach is to utilize a single repo which contains your applica
 	* /`[NAME]`/
 		* /lib/ - A folder that will likely be `COPY`'d into your container via the `Dockerfile`
 		* Dockerfile
+* settings.yaml - Needed for specifying the version of your application for container tagging.
 * readme.md - Documentation entrypoint for the application.
+
+### settings.yaml
+
+* version - string - The semver that will be appended to your compiled containers.
+
+example:
+```
+version: 1.0.0
+```
 
 ## Chart Additional Capabilities
 
@@ -136,6 +146,7 @@ Containers are written as standard Docker containers.
 * Run a container to debug - `sudo docker run -it image:tag`
 * Run a container with a specific command - `sudo docker run -it image:tag /bin/bash`
 * Enter a running container - `sudo kubectl exec -it [podName] /bin/bash`
+* Describe pod for debugging pod boot errors - `sudo kubectl describe pod [podName]`
 
 Connecting to clusters
 
@@ -144,6 +155,7 @@ Connecting to clusters
 * Get cluster credentials - `sudo gcloud container clusters get-credentials [clusterName]`
 * Get available contexts - `sudo kubectl config get-contexts`
 * Switch to context - `sudo kubectl config use-context [context]`
+* Delete context - `sudo kubectl config delete-context [context]`
 
 # CI/CD Philosophy
 
@@ -174,3 +186,9 @@ Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's
 	* An example of this is `{{ $image := printf "%s:%s" .Values.imageBase .Values.sv.tag }}` . The `{{ .Values.imageBase }}` is an arbitrary variable. It could be anything from your values files. The `.Values.sv.tag` is the dynamically generated tag by the CI/CD system. This ensures the right image is loaded in the right env.
 	* If you need a multi-container example see `sv-auth` as an example.
 * If you are exposing a front-end service with a hostname the recommendation is to go through the `sv-kube-proxy` as it will provide a consistent IP and SSL termination. If you need a cert or a service published, submit a pull request to that repository or contact Owen.
+* If you need a consistent IP address for routing for `sv-kube-proxy` or `sv-graphql` utilize [internal load balancer](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing)
+	* Add the annotation `cloud.google.com/load-balancer-type: "Internal"`
+	* Use `type: LoadBalancer` and `loadBalancerIP: IP`. The IP address should take your root CIDR and start at 10. So for the sv-shared project the root CIDR is `10.0.0.0/24` so the first static IP would be assigned at `10.0.0.10`. For the `sv-crm` project the root CIDR is `10.1.0.0/24` so the first static IP would be `10.1.0.10`. Increment from there as more IP addresses are added.
+		* sv-shared static ips - `10.0.0.10` and increment.
+		* crm static ips - `10.1.0.10` and increment.
+	* The IP address will be the same for all environments since each environment is on it's own VPC network allowing re-use of IP addresses. This also helps to simplify config.
