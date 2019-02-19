@@ -15,6 +15,9 @@ fi
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
 
+minikube addons disable coredns
+minikube addons enable kube-dns
+
 # authorize local kubernetes to pull from remote GCR
 gcr_pull=$(kubectl get secrets gcr-pull 2> /dev/null || echo "missing")
 if [ "$gcr_pull" == "missing" ]; then
