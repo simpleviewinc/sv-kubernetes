@@ -143,7 +143,8 @@ scripts.start = function(args) {
 	}
 	
 	if (flags.build !== undefined && fs.existsSync(containerFolder)) {
-		const dirs = fs.readdirSync(containerFolder);
+		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
+		const dirs = fs.readdirSync(containerFolder).filter(isDirectory);
 		dirs.forEach(function(val, i) {
 			exec(`sv build --app=${applicationName} --name=${val}`);
 		});
