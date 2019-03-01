@@ -16,12 +16,12 @@ fi
 . /sv/scripts/start_helm.sh
 
 coredns=$(minikube addons list | grep "coredns: disabled" || echo "enabled")
-if [ coredns == "enabled" ]; then
+if [ "$coredns" == "enabled" ]; then
 	minikube addons disable coredns || true
 fi
 
 kubedns=$(minikube addons list | grep "kube-dns: disabled" || echo "enabled")
-if [ kubedns != "enabled" ]; then
+if [ "$kubedns" != "enabled" ]; then
 	minikube addons enable kube-dns
 fi
 
