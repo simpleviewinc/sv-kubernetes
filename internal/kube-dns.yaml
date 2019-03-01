@@ -4,5 +4,7 @@ metadata:
   name: kube-dns
   namespace: kube-system
 data:
+  stubDomains: |
+    { "sv.local" : ["172.16.0.80", "172.16.0.81"], "220office.local" : ["172.16.0.80", "172.16.0.81"] }
   upstreamNameservers: |
-    ["172.16.0.80", "172.16.0.81"]
+    ["8.8.8.8", "8.8.4.4"]
