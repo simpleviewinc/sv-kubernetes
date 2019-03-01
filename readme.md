@@ -31,7 +31,7 @@ vagrant up
 SSH into the box
 
 ```
-# ssh putty session
+# ssh putty session (192.168.50.100)
 sudo bash /sv/setup.sh
 ```
 
