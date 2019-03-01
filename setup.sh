@@ -15,8 +15,15 @@ fi
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
 
-minikube addons disable coredns
-minikube addons enable kube-dns
+coredns=$(minikube addons list | grep "coredns: disabled" || echo "enabled")
+if [ coredns == "enabled" ]; then
+	minikube addons disable coredns || true
+fi
+
+kubedns=$(minikube addons list | grep "kube-dns: disabled" || echo "enabled")
+if [ kubedns != "enabled" ]; then
+	minikube addons enable kube-dns
+fi
 
 # authorize local kubernetes to pull from remote GCR
 gcr_pull=$(kubectl get secrets gcr-pull 2> /dev/null || echo "missing")
