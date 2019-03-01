@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 3/1/2019
+
+* Attempts to fix DNS delay issues by utilizing a kube-dns config map to bypass the VirtualBox dns routing which appears to cause delays.
+
 ## 2/11/2019
 
 * `sv-local-proxy` is now `sv-kube-proxy` since it will be utilized in other environments to handle proxying requests and SSL termination.
