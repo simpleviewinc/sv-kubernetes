@@ -118,6 +118,30 @@ scripts.install = function(args) {
 	exec(`git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${path}`);
 }
 
+scripts.update = function(args) {
+	const { name, type } = commandLineArgs([
+		{ name : "name", type : String, defaultOption : true },
+		{ name : "type", type : String, defaultValue : "app" }
+	], { argv : args.argv });
+
+	if (["app"].includes(type) === false) {
+		throw new Error("Type must be 'app'");
+	}
+
+	const resultType = { app : "applications" };
+	const github_token = fs.readFileSync(`/sv/internal/github_token`).toString();
+	const path = `/sv/${resultType[type]}/${name}`;
+
+	console.log(`Attempting to update ${path}`);
+	if(!fs.existsSync(path)) {
+		console.log(`skipping '${path}', nothing installed at the path.`);
+		return;
+	}
+
+	process.chdir(path);
+	exec(`git pull`);
+}
+
 scripts.start = function(args) {
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
