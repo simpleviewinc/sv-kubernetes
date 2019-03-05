@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 3/5/2019
+
+* Adds dnsmasq to sv-kubernetes to improve performance of building docker containers and dns lookups OUTSIDE the kubernetes env.
+
 ## 3/1/2019
 
 * Attempts to fix DNS delay issues by utilizing a kube-dns config map to bypass the VirtualBox dns routing which appears to cause delays.
