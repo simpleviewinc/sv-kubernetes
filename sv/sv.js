@@ -47,53 +47,6 @@ scripts.build = function(args) {
 	exec(`cd ${path} && docker build -t ${tag}:local .`);
 }
 
-scripts.compile = function(args) {
-	var flags = commandLineArgs([
-		{ name : "container", type : String, defaultOption : true },
-		{ name : "image", type : String, defaultValue : "gcr.io/sv-shared/sv-compile-container:latest" },
-		{ name : "project_id", type : String },
-		{ name : "branch_name", type : String },
-		{ name : "tags", type : String }
-	], { argv : args.argv });
-	
-	validateContainer(flags.container);
-	
-	const requiredArgs = ["container", "image", "project_id", "branch_name"];
-	requiredArgs.forEach(function(val, i) {
-		if (flags[val] === undefined) {
-			throw new Error(`Required argument '${val}' not provided`);
-		}
-	});
-	
-	exec(`rm -rf /tmp/test`);
-	exec(`cp -R /sv/containers/${flags.container} /tmp/test`);
-	exec(`docker run -it -e PROJECT_ID=${flags.project_id} -e REPO_NAME=${flags.container} -e BRANCH_NAME=${flags.branch_name} ${flags.tags ? `-e TAGS=${flags.tags}` : ""} -v /tmp/test:/repo -v /var/run/docker.sock:/var/run/docker.sock ${flags.image}`);
-}
-
-scripts.deploy = function(args) {
-	var flags = commandLineArgs([
-		{ name : "applicationName", type : String, defaultOption : true },
-		{ name : "image", type : String, defaultValue : "gcr.io/sv-shared/sv-deploy-kubernetes:latest" },
-		{ name : "project_id", type : String },
-		{ name : "cluster", type : String },
-		{ name : "env", type : String }
-	], { argv : args.argv });
-	
-	validateApp(flags.applicationName);
-	validateEnv(flags.env);
-	
-	const requiredArgs = ["applicationName", "image", "project_id", "cluster", "env"];
-	requiredArgs.forEach(function(val, i) {
-		if (flags[val] === undefined) {
-			throw new Error(`Required argument '${val}' not provided`);
-		}
-	});
-	
-	exec(`rm -rf /tmp/test`);
-	exec(`cp -R /sv/applications/${flags.applicationName} /tmp/test`);
-	exec(`docker run -it -e PROJECT_ID=${flags.project_id} -e CLUSTER=${flags.cluster} -e ENV=${flags.env} -e APPLICATION=${flags.applicationName} -v /tmp/test:/repo ${flags.image} deploy`);
-}
-
 scripts.install = async function(args) {
 	const { name, type, branch, remote } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
