@@ -6,7 +6,9 @@ const read = require("read");
 const util = require("util");
 const commandLineArgs = require("command-line-args");
 const js_yaml = require("js-yaml");
+const git_state = require("git-state");
 
+const readP = util.promisify(read);
 var scriptName = process.argv[2];
 var argv = process.argv.filter(function(val, i){ return i > 2; });
 
@@ -92,10 +94,12 @@ scripts.deploy = function(args) {
 	exec(`docker run -it -e PROJECT_ID=${flags.project_id} -e CLUSTER=${flags.cluster} -e ENV=${flags.env} -e APPLICATION=${flags.applicationName} -v /tmp/test:/repo ${flags.image} deploy`);
 }
 
-scripts.install = function(args) {
-	const { name, type } = commandLineArgs([
+scripts.install = async function(args) {
+	const { name, type, branch, remote } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
-		{ name : "type", type : String, defaultValue : "app" }
+		{ name : "type", type : String, defaultValue : "app" },
+		{ name : "branch", type : String, defaultValue : "master" },
+		{ name : "remote", type : String, defaultValue : "origin" }
 	], { argv : args.argv });
 	
 	if (["app", "container"].includes(type) === false) {
@@ -110,12 +114,80 @@ scripts.install = function(args) {
 	const github_token = fs.readFileSync(`/sv/internal/github_token`).toString();
 	const path = `/sv/${resultType[type]}/${name}`;
 	
-	if (fs.existsSync(path)) {
-		console.log(`skipping '${path}', something already exists at the path.`);
-		return;
+	if (!fs.existsSync(path)) {
+		// initialize the repo from sv origin master branch
+		exec(`git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${path}`);
 	}
 	
-	exec(`git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${path}`);
+	// execute from a specific path pipes the output via stdio inherit
+	const execPath = function(str) {
+		return exec(`cd ${path} && ${str}`);
+	}
+	
+	// execute from a specific path but return the result to a variable rather than stdio
+	const execPathSilent = function(str) {
+		return child_process.execSync(`cd ${path} && ${str}`).toString().trim();
+	}
+	
+	const desiredRemoteBranch = `remotes/${remote}/${branch}`;
+	const desiredLocalBranch = remote === "origin" ? branch : `${remote}-${branch}`;
+	const localTracking = `${remote}/${branch}`;
+	
+	// if we are referencing another remote, we need to add it to the repository
+	if (remote !== "origin") {
+		try {
+			// check if the remote exists, will throw if it doesn't
+			execPathSilent(`git remote | grep ${remote}$`)
+		} catch(e) {
+			// remote doesn't exist, add it
+			execPath(`git remote add ${remote} git@github.com:${remote}/${name}.git`);
+		}
+	}
+	
+	// pull down the latest code from that remote
+	execPath(`git fetch ${remote}`);
+	
+	// check out local copy to see if we have untracked changes
+	const result = git_state.checkSync(path);
+	for(var i of ["dirty", "untracked"]) {
+		if (result[i] > 0) {
+			console.log(`${path} has uncommitted changes, unable to update, or switch to another branch/remote.`);
+			return;
+		}
+	}
+	
+	const tracking = execPathSilent(`git rev-parse --abbrev-ref --symbolic-full-name @{u}`);
+	
+	if (localTracking !== tracking) {
+		console.log(`Repository ${path} is currently checked out to '${tracking}' this will switch it to '${localTracking}'`);
+		const result = await readP({ prompt : "Press [enter] to continue, or type 'no' to skip: " });
+		if (result !== "no") {
+			try {
+				// check if the branch exists already on this repo
+				execPath(`git branch | grep ${desiredLocalBranch}`);
+			} catch(e) {
+				// branch doesn't exist, add it
+				execPath(`git branch "${desiredLocalBranch}" --track "${desiredRemoteBranch}"`);
+			}
+			
+			execPath(`git checkout "${desiredLocalBranch}"`);
+		}
+	}
+	
+	const localCommit = execPathSilent(`git rev-parse @`);
+	const remoteCommit = execPathSilent(`git rev-parse @{u}`);
+	const baseCommit = execPathSilent(`git merge-base @ @{u}`);
+	
+	// check the status of our remote working copy versus the remote to see if we have changes
+	if (localCommit === remoteCommit) {
+		// no changes
+	} else if (localCommit === baseCommit){
+		console.log(`Repository ${path} can be updated, this will git pull those changes.`);
+		const result = await readP({ prompt : "Press [enter] to continue, or type 'no' to skip: " });
+		if (result !== "no") {
+			execPath(`git pull`);
+		}
+	}
 }
 
 scripts.start = function(args) {

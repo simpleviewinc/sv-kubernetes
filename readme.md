@@ -59,7 +59,6 @@ sudo sv start sv-graphql local --build
 Run `sudo sv` for documentation within the VM.
 
 * [sv build](docs/sv_build.md) - Build a container.
-* [sv compile](docs/sv_compile.md) - Compile a container and push to GCR.
 * [sv install](docs/sv_install.md) - Install an application.
 * [sv logs](docs/sv_logs.md) - Get logging information for a deployment.
 * [sv start](docs/sv_start.md) - Start an application.
