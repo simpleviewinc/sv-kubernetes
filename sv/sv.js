@@ -93,29 +93,36 @@ scripts.deploy = function(args) {
 }
 
 scripts.install = function(args) {
-	const { name, type } = commandLineArgs([
+	const { name, type,branch_name } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
-		{ name : "type", type : String, defaultValue : "app" }
+		{ name : "type", type : String, defaultValue : "app" },
+		{ name : "branch_name", type : String, defaultValue: "" }
 	], { argv : args.argv });
-	
+
 	if (["app", "container"].includes(type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
-	
+
 	const resultType = {
 		app : "applications",
 		container : "containers"
 	}
-	
+
+	let branchArg = ``;
+	if(branch_name.length){
+		branchArg = `-b ${branch_name}`
+	}
+
 	const github_token = fs.readFileSync(`/sv/internal/github_token`).toString();
 	const path = `/sv/${resultType[type]}/${name}`;
-	
+
 	if (fs.existsSync(path)) {
 		console.log(`skipping '${path}', something already exists at the path.`);
 		return;
 	}
-	
-	exec(`git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${path}`);
+	let cmd = `git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${branchArg} ${path}`;
+	console.log(cmd);
+	exec(cmd);
 }
 
 scripts.start = function(args) {
