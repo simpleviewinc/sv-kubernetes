@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 3/13/2019
+
+* Updates the `sv install` command to update a checkout if it already exists as well as support switching to the proper remote/branch.
+
 ## 3/5/2019
 
 * Adds dnsmasq to sv-kubernetes to improve performance of building docker containers and dns lookups OUTSIDE the kubernetes env.
