@@ -21,7 +21,7 @@ var exec = function(command, options = {}) {
 }
 
 var execSilent = function(command, options = {}) {
-	return execSync(command, options).toString().trim();
+	return execSync(command, Object.assign({ stdio : "pipe" }, options)).toString().trim();
 }
 
 function checkOutdated() {
