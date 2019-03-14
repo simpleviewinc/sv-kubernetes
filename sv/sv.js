@@ -15,6 +15,7 @@ const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
 var scripts = {};
 
 var exec = function(command) {
+	console.debug(` SV.exec() is running command : ${command}`);
 	return child_process.execSync(command, { stdio : "inherit" });
 }
 
@@ -31,7 +32,7 @@ scripts.build = function(args) {
 	
 	let path;
 	let tag;
-	
+
 	if (flags.app === undefined) {
 		path = `/sv/containers/${flags.name}`;
 		tag = flags.name;
@@ -89,7 +90,7 @@ scripts.deploy = function(args) {
 	
 	exec(`rm -rf /tmp/test`);
 	exec(`cp -R /sv/applications/${flags.applicationName} /tmp/test`);
-	exec(`docker run -it -e PROJECT_ID=${flags.project_id} -e CLUSTER=${flags.cluster} -e ENV=${flags.env} -e APPLICATION=${flags.applicationName} -v /tmp/test:/repo ${flags.image} deploy`);
+	exec(`docker run -it -e PROJECT_ID=${flags.project_id} -e CLUSTER=${flags.cluster} -e ENV=${flags.env} -e APPLICATION=${flags.applicationName} -v /tmp/test:/repo ${flags.image}`);
 }
 
 scripts.install = function(args) {
@@ -136,7 +137,7 @@ scripts.start = function(args) {
 	var flags = commandLineArgs([
 		{ name : "build", type : String }
 	], { argv : myArgs, stopAtFirstUnknown : true });
-	
+
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
 	
@@ -161,9 +162,11 @@ scripts.start = function(args) {
 	
 	const settings = loadSettingsYaml(applicationName);
 	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
-	
+
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
-	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	const cmd = `helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")} --debug`;
+	console.debug(`Start is executing command : ${cmd}`);
+	exec(cmd);
 }
 
 scripts.stop = function(args) {
@@ -179,7 +182,7 @@ scripts.logs = function(args) {
 		// watch the pods to listen as the pods start/stop/restart
 		{ name : "watch", type : String }
 	], { argv : args.argv });
-	
+
 	if (flags.watch === undefined) {
 		var pods = getCurrentPods(flags.filter);
 		
