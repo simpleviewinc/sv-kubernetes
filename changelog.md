@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 3/14/2019
+
+* Adds a mechanic to verify if the sv-kubernetes installation is out of date, ran when executing `sv` commands.
+
 ## 3/13/2019
 
 * Updates the `sv install` command to update a checkout if it already exists as well as support switching to the proper remote/branch.

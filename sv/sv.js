@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const child_process = require("child_process");
+const { execSync, spawn } = require("child_process");
 const read = require("read");
 const util = require("util");
 const commandLineArgs = require("command-line-args");
@@ -16,8 +16,50 @@ const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
 
 var scripts = {};
 
-var exec = function(command) {
-	return child_process.execSync(command, { stdio : "inherit" });
+var exec = function(command, options = {}) {
+	return execSync(command, Object.assign({ stdio : "inherit" }, options));
+}
+
+var execSilent = function(command, options = {}) {
+	return execSync(command, options).toString().trim();
+}
+
+function checkOutdated() {
+	const path = `/tmp/check_outdated.txt`;
+	const allowedAge = 1000 * 60 * 60 * 24;
+	if (!fs.existsSync(path)) {
+		execSilent(`touch ${path}`);
+	}
+	
+	const stats = fs.statSync(path);
+	if (stats.mtimeMs + allowedAge > Date.now()) {
+		// we have checked for updates already today, do nothing
+		return;
+	}
+	
+	execSilent("git fetch", { cwd : "/sv" });
+	const status = gitStatus("/sv");
+	if (status === "behind") {
+		console.log("-----------------");
+		console.log("WARNING: Your sv-kubernetes is out of date. Please git pull and re-run setup.sh to update.");
+		console.log("See the change log at https://github.com/simpleviewinc/sv-kubernetes/blob/master/changelog.md for more info.");
+		console.log("-----------------");
+	}
+}
+
+function gitStatus(path) {
+	const localCommit = execSilent(`git rev-parse @`, { cwd : path });
+	const remoteCommit = execSilent(`git rev-parse @{u}`, { cwd : path });
+	const baseCommit = execSilent(`git merge-base @ @{u}`, { cwd : path });
+	
+	// check the status of our remote working copy versus the remote to see if we have changes
+	if (localCommit === remoteCommit) {
+		return "equal";
+	} else if (baseCommit !== localCommit) {
+		return "ahead";
+	} else {
+		return "behind";
+	}
 }
 
 // public scripts
@@ -74,12 +116,12 @@ scripts.install = async function(args) {
 	
 	// execute from a specific path pipes the output via stdio inherit
 	const execPath = function(str) {
-		return exec(`cd ${path} && ${str}`);
+		return exec(str, { cwd : path });
 	}
 	
 	// execute from a specific path but return the result to a variable rather than stdio
 	const execPathSilent = function(str) {
-		return child_process.execSync(`cd ${path} && ${str}`).toString().trim();
+		return execSilent(str, { cwd : path });
 	}
 	
 	const desiredRemoteBranch = `remotes/${remote}/${branch}`;
@@ -127,14 +169,8 @@ scripts.install = async function(args) {
 		}
 	}
 	
-	const localCommit = execPathSilent(`git rev-parse @`);
-	const remoteCommit = execPathSilent(`git rev-parse @{u}`);
-	const baseCommit = execPathSilent(`git merge-base @ @{u}`);
-	
-	// check the status of our remote working copy versus the remote to see if we have changes
-	if (localCommit === remoteCommit) {
-		// no changes
-	} else if (localCommit === baseCommit){
+	const status = gitStatus(path);
+	if (status !== "equal") {
 		console.log(`Repository ${path} can be updated, this will git pull those changes.`);
 		const result = await readP({ prompt : "Press [enter] to continue, or type 'no' to skip: " });
 		if (result !== "no") {
@@ -279,7 +315,7 @@ const loadSettingsYaml = function(app) {
 }
 
 const getCurrentPods = function(filter) {
-	const all = JSON.parse(child_process.execSync(`kubectl get pods -o json`));
+	const all = JSON.parse(execSync(`kubectl get pods -o json`));
 	
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
 	var pods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
@@ -308,7 +344,7 @@ async function watchPods(filter) {
 	names.forEach(function(val, i) {
 		if (_watched[val] === undefined) {
 			console.log(`Adding watcher for pod ${val}`);
-			var child = child_process.spawn(`kubectl`, ["logs", val, "-f"], { stdio : "inherit" });
+			var child = spawn(`kubectl`, ["logs", val, "-f"], { stdio : "inherit" });
 			child.on("close", function(code) {
 				console.log(`pod closing ${val} ${code}`);
 				delete _watched[val];
@@ -327,7 +363,7 @@ async function watchPods(filter) {
 
 // stores the state of the docker registry in a local file, exposing to to sv start
 scripts._buildSvInfo = function(args) {
-	var test = child_process.execSync(`docker image list --format "{{.Repository}},{{.Tag}},{{.ID}}" --filter "dangling=false"`);
+	var test = execSync(`docker image list --format "{{.Repository}},{{.Tag}},{{.ID}}" --filter "dangling=false"`);
 	var results = {
 		sv : {
 			ids : {}
@@ -360,5 +396,7 @@ if (scripts[scriptName] === undefined) {
 	console.log(`Script '${scriptName}' doesn't exist.`);
 	return;
 }
+
+checkOutdated();
 
 scripts[scriptName]({ argv : argv });
