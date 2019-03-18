@@ -159,7 +159,7 @@ scripts.install = async function(args) {
 		if (result !== "no") {
 			try {
 				// check if the branch exists already on this repo
-				execPath(`git branch | grep ${desiredLocalBranch}`);
+				execPath(`git branch | grep "${desiredLocalBranch}"`);
 			} catch(e) {
 				// branch doesn't exist, add it
 				execPath(`git branch "${desiredLocalBranch}" --track "${desiredRemoteBranch}"`);
