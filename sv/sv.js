@@ -45,6 +45,8 @@ function checkOutdated() {
 		console.log("See the change log at https://github.com/simpleviewinc/sv-kubernetes/blob/master/changelog.md for more info.");
 		console.log("-----------------");
 	}
+	
+	execSilent(`touch ${path}`);
 }
 
 function gitStatus(path) {
