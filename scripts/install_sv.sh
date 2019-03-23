@@ -18,12 +18,8 @@ if [ "$node_version" != "$node_version_expected" ]; then
 fi
 
 apt-get install -y ntp
+timedatectl set-ntp off
 timedatectl set-ntp on
-
-# sync date
-sudo service ntp stop
-sudo ntpd -gq
-sudo service ntp start
 
 mkdir -p /opt/sv
 cp /sv/sv/package.json /opt/sv/package.json
