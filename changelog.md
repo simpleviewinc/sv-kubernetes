@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 4/3/2019
+
+* Added `sv script` for executing scripts within your repositories.
+* Added `sv copyFrom` for copying files out of running containers.
+
 ## 3/14/2019
 
 * Adds a mechanic to verify if the sv-kubernetes installation is out of date, ran when executing `sv` commands.

@@ -277,6 +277,34 @@ scripts.enterPod = function(args) {
 	exec(`kubectl exec -it ${pod.name} /bin/sh`);
 }
 
+scripts.copyFrom = function(args) {
+	const podName = args.argv[0];
+	const pathFrom = args.argv[1];
+	const pathTo = args.argv[2];
+	const pod = getCurrentPods(podName)[0];
+	execSilent(`kubectl cp ${pod.name}:"${pathFrom}" "${pathTo}"`);
+	console.log(`Copy complete to ${pathTo}`);
+}
+
+scripts.script = function(args) {
+	const [applicationName, scriptName, ...flags] = args.argv;
+	
+	validateApp(applicationName);
+	
+	const appPath = `/sv/applications/${applicationName}`;
+	
+	const envVars = {
+		SV_APP_PATH : appPath,
+		SV_APP_NAME : applicationName
+	};
+	
+	const script = `${appPath}/scripts/${scriptName} ${flags.join(" ")}`;
+	
+	exec(script, {
+		env : Object.assign({}, process.env, envVars)
+	});
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
