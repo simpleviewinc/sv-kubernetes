@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 4/10/2019
+
+* Added support for `settings.buildOrder` for handling multi-step docker builds.
+* Added support for `settings.dockerBase`.
+
 ## 4/3/2019
 
 * Added `sv script` for executing scripts within your repositories.

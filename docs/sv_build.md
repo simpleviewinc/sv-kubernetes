@@ -4,6 +4,12 @@ Build a container from a folder located in your /containers/ folder.
 
 Will result in a local docker image being tagged [container]:local
 
+## Supported Flags
+
+* `--app` - If building an application's container, specify the name of the app.
+* `--name` - The name of the container.
+* `--pushTag` - If passed it will append this tag and attempt a docker push on that tag.
+
 Example:
 ```
 # build the container in /applications/sv-kubernetes-example-app/containers/server/

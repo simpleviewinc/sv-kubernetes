@@ -96,10 +96,17 @@ The recommended approach is to utilize a single repo which contains your applica
 ### settings.yaml
 
 * version - string - The semver that will be appended to your compiled containers.
+* dockerBase - string - The root of the docker registry which your container and tag are appended. E.g. `gcr.io/sv-shared-231700`.
+* buildOrder - array of string - The build order of the containers. Needed when doing multi-part docker builds that utilize a shared container.
 
 example:
 ```
 version: 1.0.0
+dockerBase: gcr.io/sv-shared-231700
+buildOrder:
+	- container1
+	- container2
+	- container3
 ```
 
 ## Chart Additional Capabilities
