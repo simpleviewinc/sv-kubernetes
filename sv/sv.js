@@ -69,6 +69,7 @@ scripts.build = function(args) {
 	const flags = commandLineArgs([
 		{ name : "name", type : String },
 		{ name : "app", type : String },
+		{ name : "pushTag", type : String }
 	], { argv : args.argv });
 	
 	if (flags.name === undefined) {
@@ -76,19 +77,32 @@ scripts.build = function(args) {
 	}
 	
 	let path;
-	let tag;
+	let containerName;
 	
 	if (flags.app === undefined) {
 		path = `/sv/containers/${flags.name}`;
-		tag = flags.name;
+		containerName = flags.name;
 	} else {
 		path = `/sv/applications/${flags.app}/containers/${flags.name}`;
-		tag = `${flags.app}-${flags.name}`;
+		containerName = `${flags.app}-${flags.name}`;
 	}
 	
 	validatePath(path);
 	
-	exec(`cd ${path} && docker build -t ${tag}:local .`);
+	const tagsArr = [];
+	tagsArr.push(`-t ${containerName}:local`);
+	
+	if (flags.pushTag !== undefined) {
+		tagsArr.push(`-t ${flags.pushTag}`);
+	}
+	
+	const tags = tagsArr.join(" ");
+	
+	exec(`cd ${path} && docker build ${tags} .`);
+	
+	if (flags.pushTag !== undefined) {
+		exec(`cd ${path} && docker push ${flags.pushTag}`);
+	}
 }
 
 scripts.install = async function(args) {
@@ -190,7 +204,8 @@ scripts.start = function(args) {
 	validateEnv(env);
 	
 	var flags = commandLineArgs([
-		{ name : "build", type : String }
+		{ name : "build", type : Boolean },
+		{ name : "push", type : Boolean }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
 	// set our args to those flags we don't recognize or an empty array if there are none
@@ -205,18 +220,36 @@ scripts.start = function(args) {
 		myArgs.unshift(`-f ${envFile}`);
 	}
 	
-	if (flags.build !== undefined && fs.existsSync(containerFolder)) {
+	const settings = loadSettingsYaml(applicationName);
+	// use the dockerBase from config or dynamically generate it, the env variable will be present in circleci
+	const dockerBase = settings.dockerBase || `gcr.io/${process.env.PROJECT_ID}`;
+	
+	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
+	
+	if (flags.build !== undefined) {
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
-		const dirs = fs.readdirSync(containerFolder).filter(isDirectory);
+		let dirs = fs.readdirSync(containerFolder).filter(isDirectory);
+		
+		if (settings.buildOrder !== undefined) {
+			dirs.forEach(function(val, i) {
+				if (settings.buildOrder.includes(val) === false) {
+					throw new Error(`Container '${val}' exists, but is not declared in settings.yaml 'buildOrder' key.`);
+				}
+			});
+			
+			dirs = settings.buildOrder;
+		}
+		
 		dirs.forEach(function(val, i) {
-			exec(`sv build --app=${applicationName} --name=${val}`);
+			let pushTag = "";
+			if (flags.push === true) {
+				pushTag = `--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`;
+			}
+			exec(`sv build --app=${applicationName} --name=${val} ${pushTag}`);
 		});
 		
 		exec(`sv _buildSvInfo`);
 	}
-	
-	const settings = loadSettingsYaml(applicationName);
-	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
 	
 	console.log(`Starting application '${applicationName}' in env '${env}'`);
 	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
@@ -335,7 +368,6 @@ const validatePath = function(path) {
 
 const loadSettingsYaml = function(app) {
 	const path = `/sv/applications/${app}/settings.yaml`;
-	console.log(path);
 	if (fs.existsSync(path) === false) {
 		return {};
 	}
