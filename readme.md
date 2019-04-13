@@ -98,15 +98,23 @@ The recommended approach is to utilize a single repo which contains your applica
 * version - string - The semver that will be appended to your compiled containers.
 * dockerBase - string - The root of the docker registry which your container and tag are appended. E.g. `gcr.io/sv-shared-231700`.
 * buildOrder - array of string - The build order of the containers. Needed when doing multi-part docker builds that utilize a shared container.
+* dependencies - array of object - Other applications and containers this repository needs installed to function.
+	* name - string - required - Name of the repository
+	* branch - string - default 'master' - The branch to checkout
+	* type - string - default 'app' - Whether the repository is a app repo or a container repo.
 
 example:
 ```
 version: 1.0.0
 dockerBase: gcr.io/sv-shared-231700
 buildOrder:
-	- container1
-	- container2
-	- container3
+  - container1
+  - container2
+  - container3
+dependencies:
+  - name: sv-graphql-client
+    type: container
+  - name: sv-kube-proxy
 ```
 
 ## Chart Additional Capabilities

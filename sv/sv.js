@@ -193,6 +193,27 @@ scripts.install = async function(args) {
 			execPath(`git pull`);
 		}
 	}
+	
+	if (type === "app") {
+		// if we are install an app, see if the app has dependencies and sv install those as well
+		const settings = loadSettingsYaml(name);
+		if (settings.dependencies) {
+			for(var [key, dependency] of Object.entries(settings.dependencies)) {
+				const argsArr = [];
+				if (dependency.type) {
+					argsArr.push(`--type=${dependency.type}`);
+				}
+				
+				if (dependency.branch) {
+					argsArr.push(`--branch=${dependency.branch}`);
+				}
+				
+				const argString = argsArr.join(" ");
+				
+				exec(`sv install ${dependency.name} ${argString}`);
+			}
+		}
+	}
 }
 
 scripts.start = function(args) {

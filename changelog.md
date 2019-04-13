@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 4/12/2019
+
+* Adds support for applications to have dependencies to allow installing/updating an app and all of it's dependencies in one call.
+
 ## 4/10/2019
 
 * Added support for `settings.buildOrder` for handling multi-step docker builds.

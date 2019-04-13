@@ -4,6 +4,8 @@ Checks out a repository from a specific remote/branch. It will not start the app
 
 If the repository is already checked out, it will update it to the desired remote, branch and perform a git pull.
 
+If the repository has `dependencies` declared in it's `settings.yaml` file it will also install/update those by recursively calling `sv install` on them.
+
 ## Supported Flags
 
 * `--type` - default `app` - `app` or `container` - Whether the repo being checked out is an app to checkout to `/sv/applications/` or a container to checkout to `/sv/containers/`.
