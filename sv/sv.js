@@ -106,11 +106,12 @@ scripts.build = function(args) {
 }
 
 scripts.install = async function(args) {
-	const { name, type, branch, remote } = commandLineArgs([
+	const { name, type, branch, remote, "no-dependencies" : noDependencies } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
 		{ name : "type", type : String, defaultValue : "app" },
 		{ name : "branch", type : String, defaultValue : "master" },
-		{ name : "remote", type : String, defaultValue : "origin" }
+		{ name : "remote", type : String, defaultValue : "origin" },
+		{ name : "no-dependencies", type : Boolean }
 	], { argv : args.argv });
 	
 	if (["app", "container"].includes(type) === false) {
@@ -194,7 +195,7 @@ scripts.install = async function(args) {
 		}
 	}
 	
-	if (type === "app") {
+	if (type === "app" && !noDependencies) {
 		// if we are install an app, see if the app has dependencies and sv install those as well
 		const settings = loadSettingsYaml(name);
 		if (settings.dependencies) {
