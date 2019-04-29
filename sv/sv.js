@@ -227,11 +227,14 @@ scripts.start = function(args) {
 	
 	var flags = commandLineArgs([
 		{ name : "build", type : Boolean },
-		{ name : "push", type : Boolean }
+		{ name : "push", type : Boolean },
+		{ name : "alias", type : String }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
+	
+	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 	
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
@@ -273,8 +276,8 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
-	console.log(`Starting application '${applicationName}' in env '${env}'`);
-	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
+	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
 
 scripts.stop = function(args) {
