@@ -233,6 +233,8 @@ scripts.start = function(args) {
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
 	
+	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
+	
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
@@ -273,14 +275,19 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
-	console.log(`Starting application '${applicationName}' in env '${env}'`);
-	exec(`helm upgrade ${applicationName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	console.log(`Starting application '${deploymentName}' in env '${env}'`);
+	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
 
 scripts.stop = function(args) {
 	var applicationName = args.argv[0];
+	var flags = commandLineArgs([
+		{ name : "alias", type : String }
+	], { argv : args.argv.slice(), stopAtFirstUnknown : true });
 	
-	exec(`helm delete ${applicationName} --purge`);
+	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
+	
+	exec(`helm delete ${deploymentName} --purge`);
 }
 
 scripts.logs = function(args) {
