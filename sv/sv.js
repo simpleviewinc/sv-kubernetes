@@ -277,7 +277,7 @@ scripts.start = function(args) {
 	}
 	
 	console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
-	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
 
 scripts.stop = function(args) {

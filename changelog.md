@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 4/30/2019
+
+* In the test environment we can now run multiple pull requests at the same time by giving them each a unique application name via the `--alias` flag. If you need to know the name of the deployed app you can access the `sv.deploymentName` variable in your helm chart.
+
 ## 4/12/2019
 
 * Adds support for applications to have dependencies to allow installing/updating an app and all of it's dependencies in one call.
