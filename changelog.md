@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 5/8/2019
+
+* Adds `sv restartPod` to restart one pod in an application.
+
 ## 4/30/2019
 
 * In the test environment we can now run multiple pull requests at the same time by giving them each a unique application name via the `--alias` flag. If you need to know the name of the deployed app you can access the `sv.deploymentName` variable in your helm chart.

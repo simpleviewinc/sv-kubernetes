@@ -363,6 +363,17 @@ scripts.script = function(args) {
 	});
 }
 
+scripts.restartPod = function(args) {
+	const podName = args.argv[0];
+	const pods = getCurrentPods(podName);
+	
+	if (pods.length > 1) {
+		throw new Error("Pod name returned more than 1 pod.");
+	}
+	
+	exec(`kubectl delete pod ${pods[0].name} --force --grace-period=0`);
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
