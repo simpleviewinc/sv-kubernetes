@@ -1,3 +1,3 @@
 . /sv/scripts/errorHandler.sh
 
-helm init --upgrade
+helm init --upgrade --history-max=3
