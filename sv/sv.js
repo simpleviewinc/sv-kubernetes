@@ -276,6 +276,16 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
+	// Load Secrets
+	var secretsFile = `${chartFolder}/secrets_${env}.yaml`;
+		secretsFile = fs.existsSync(secretsFile) ? secretsFile : `${chartFolder}/secrets.yaml`;
+	
+	// Only load secrets if a secrets file is detected.
+	if (fs.existsSync(secretsFile) && secretsFile.length > 0) {
+		console.log(`Applying secrets to '${applicationName} in env ${env}`);
+		exec(`kubesec decrypt ${secretsFile} | kubectl apply -f -`)
+	}
+	
 	console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
 	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
 }
