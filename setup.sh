@@ -12,6 +12,7 @@ fi
 . /sv/scripts/install_kubectl.sh
 . /sv/scripts/install_docker.sh
 . /sv/scripts/install_helm.sh
+. /sv/scripts/install_kubesec.sh
 
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
