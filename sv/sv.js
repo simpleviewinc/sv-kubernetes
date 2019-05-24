@@ -356,7 +356,12 @@ scripts.script = function(args) {
 		SV_APP_NAME : applicationName
 	};
 	
-	const script = `${appPath}/scripts/${scriptName} ${flags.join(" ")}`;
+	const rootPath = `${appPath}/scripts/${scriptName}`;
+	const isJsFile = fs.existsSync(`${rootPath}.js`);
+	
+	const path = isJsFile ? rootPath + ".js" : rootPath;
+	
+	const script = `${path} ${flags.join(" ")}`;
 	
 	exec(script, {
 		env : Object.assign({}, process.env, envVars)
