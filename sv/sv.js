@@ -277,14 +277,13 @@ scripts.start = function(args) {
 	}
 	
 	// Load Secrets
-	var secretsFile = `${chartFolder}/secrets_${env}.yaml`;
-		secretsFile = fs.existsSync(secretsFile) ? secretsFile : `${chartFolder}/secrets.yaml`;
-	
-	// Only load secrets if a secrets file is detected.
-	if (fs.existsSync(secretsFile) && secretsFile.length > 0) {
-		console.log(`Applying secrets to '${applicationName} in env ${env}`);
-		exec(`kubesec decrypt ${secretsFile} | kubectl apply -f -`)
-	}
+	let secretFilesArray = [`${chartFolder}/secrets_${env}.yaml`, `${chartFolder}/secrets.yaml`];
+		secretFilesArray.forEach(file => {
+			if (fs.existsSync(file)) {
+				console.log(`Applying secrets to '${applicationName} in env ${env}`);
+				exec(`kubesec decrypt ${file} | kubectl apply -f -`)
+			}
+		})
 	
 	try {
 		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
@@ -394,16 +393,18 @@ scripts.restartPod = function(args) {
 scripts.editSecrets = function (args) {
 	let myArgs = args.argv.slice();
 	let applicationName = myArgs.shift();
-	let env = myArgs.shift();
-	
-	validateApp(applicationName);
-	validateEnv(env);
 	
 	let flags = commandLineArgs([
 		{ name : "key", type : String },
+		{ name : "env", type : String }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
 	myArgs = flags._unknown || [];
+	
+	validateApp(applicationName);
+	if (flags.env) {
+		validateEnv(flags.env)
+	}
 	
 	if (!flags.key) {
 		throw new Error(`You must provide an valid key.`)
@@ -412,14 +413,25 @@ scripts.editSecrets = function (args) {
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
-	let secretsFile = `${chartFolder}/secrets_${env}.yaml`;
-		secretsFile = fs.existsSync(secretsFile) ? secretsFile : `${chartFolder}/secrets.yaml`;
+	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
+		secretsTemplate = secretsTemplate.replace('$$appName$$', applicationName);
+		secretsTemplate = flags.env ? secretsTemplate.replace('$$env$$', flags.env) : secretsTemplate.replace('$$env$$', 'global')
+	
+	let secretsFile = `${chartFolder}/secrets_${flags.env}.yaml`;
+		secretsFile = flags.env ? secretsFile : `${chartFolder}/secrets.yaml`;
+	
+	// start the new secrets file from the secretsTemplate.yaml file.
+	if (!fs.existsSync(secretsFile)) {
+		fs.writeFileSync(`${secretsFile}`, secretsTemplate);
+	}
 	
 	try {
-		console.log(`Editing secrets for ${applicationName} in ${env}`)
-		exec(`kubesec edit -i --key=gpg:${flags.key} ${secretsFile}`)
+		console.log(`Editing secrets for ${applicationName} in env ${flags.env}`)
+		exec(`kubesec edit -if --key=gcp:${flags.key} ${secretsFile}`);
 	} catch (err) {
-		throw new Error(`Error modifying secrets for ${applicationName} in ${env}\n${err}`);
+		throw new Error(`Error modifying secrets for ${applicationName} in env ${flags.env}\n${err}`);
+	} finally {
+		console.log(`Saved secrets for ${applicationName} in env ${flags.env}`);
 	}
 }
 
