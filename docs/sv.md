@@ -11,5 +11,6 @@ Commands:
 	start		Start an Helm chart
 	stop		Stop a Helm chart
 	test		Execute tests within running containers
+	editSecrets	Edit/Create secret files
 
 Run 'sudo sv [command]' for more information on that command

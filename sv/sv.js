@@ -286,8 +286,15 @@ scripts.start = function(args) {
 		exec(`kubesec decrypt ${secretsFile} | kubectl apply -f -`)
 	}
 	
-	console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
-	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	try {
+		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
+		exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	} catch (err) {
+		throw new Error(`Error Starting application '${applicationName}' as '${deploymentName}' in env '${env}'\n${err}`);
+	} finally {
+		
+	}
+	
 }
 
 scripts.stop = function(args) {
@@ -382,6 +389,38 @@ scripts.restartPod = function(args) {
 	}
 	
 	exec(`kubectl delete pod ${pods[0].name} --force --grace-period=0`);
+}
+
+scripts.editSecrets = function (args) {
+	let myArgs = args.argv.slice();
+	let applicationName = myArgs.shift();
+	let env = myArgs.shift();
+	
+	validateApp(applicationName);
+	validateEnv(env);
+	
+	let flags = commandLineArgs([
+		{ name : "key", type : String },
+	], { argv : myArgs, stopAtFirstUnknown : true });
+	
+	myArgs = flags._unknown || [];
+	
+	if (!flags.key) {
+		throw new Error(`You must provide an valid key.`)
+	}
+	
+	const appFolder = `/sv/applications/${applicationName}`;
+	const chartFolder = `${appFolder}/chart`;
+	const containerFolder = `${appFolder}/containers`;
+	let secretsFile = `${chartFolder}/secrets_${env}.yaml`;
+		secretsFile = fs.existsSync(secretsFile) ? secretsFile : `${chartFolder}/secrets.yaml`;
+	
+	try {
+		console.log(`Editing secrets for ${applicationName} in ${env}`)
+		exec(`kubesec edit -i --key=gpg:${flags.key} ${secretsFile}`)
+	} catch (err) {
+		throw new Error(`Error modifying secrets for ${applicationName} in ${env}\n${err}`);
+	}
 }
 
 //// PRIVATE METHODS
