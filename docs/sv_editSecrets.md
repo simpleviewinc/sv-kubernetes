@@ -2,6 +2,11 @@ Usage: sudo sv editSecrets [applicationName] --env=[environment] --key=[googleKM
 
 Create encrypted secret files that will be decrypted and installed during application deployment.
 
+**Supported Flags**
+
+- --env: live|qa|test|dev|local environment specific secrets (will only be deployed to that environment)
+- --key: The google KMS key
+
 Examples:
 ```
 Create a Global Secret:
