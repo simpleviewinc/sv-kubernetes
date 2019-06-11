@@ -277,13 +277,17 @@ scripts.start = function(args) {
 	}
 	
 	// Load Secrets
-	let secretFilesArray = [`${chartFolder}/secrets_${env}.yaml`, `${chartFolder}/secrets.yaml`];
+	let secretFilesArray = [`secrets_${env}.yaml`, `secrets.yaml`];
 		secretFilesArray.forEach(file => {
-			if (fs.existsSync(file)) {
+			let encryptedFile = `${chartFolder}/${file}`;
+			let decryptedFile = `${chartFolder}/templates/${file}.dec`;
+			
+			// check if the encrypted file exists before loading
+			if (fs.existsSync(encryptedFile)) {
 				console.log(`Applying secrets to '${applicationName} in env ${env}`);
-				exec(`kubesec decrypt ${file} | kubectl apply -f -`)
+				exec(`kubesec decrypt ${encryptedFile} >> ${decryptedFile}`);
 			}
-		})
+		});
 	
 	try {
 		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
@@ -291,7 +295,16 @@ scripts.start = function(args) {
 	} catch (err) {
 		throw new Error(`Error Starting application '${applicationName}' as '${deploymentName}' in env '${env}'\n${err}`);
 	} finally {
-		
+		// always delete decrypted files after upgrade.
+		secretFilesArray.forEach(file => {
+			let encryptedFile = `${chartFolder}/${file}`;
+			let decryptedFile = `${chartFolder}/templates/${file}.dec`;
+			
+			// ensure the file exists before attempting to delete it.
+			if (fs.existsSync(decryptedFile)) {
+				fs.unlinkSync(decryptedFile)
+			}
+		});
 	}
 	
 }
@@ -418,7 +431,7 @@ scripts.editSecrets = function (args) {
 		secretsTemplate = flags.env ? secretsTemplate.replace('$$env$$', flags.env) : secretsTemplate.replace('$$env$$', 'global')
 	
 	let secretsFile = `${chartFolder}/secrets_${flags.env}.yaml`;
-		secretsFile = flags.env ? secretsFile : `${chartFolder}/secrets.yaml`;
+		secretsFile = flags.env ? secretsFile : `${chartFolder}/templates/secrets.yaml`;
 	
 	// start the new secrets file from the secretsTemplate.yaml file.
 	if (!fs.existsSync(secretsFile)) {
