@@ -66,6 +66,7 @@ Run `sudo sv` for documentation within the VM.
 * [sv enterPod](docs/sv_enterPod.md) - Enter a running container.
 * [sv restartPod](docs/sv_restartPod.md) - Restart a pod in an application.
 * [sv test](docs/sv_test.md) - Run tests for an application.
+* [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
 
 # Applications
 
@@ -140,6 +141,7 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example](https://github.com/simpleviewinc/sv-kubernetes-example) for an example.
+* Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs. 
 
 ## Container Structure
 
