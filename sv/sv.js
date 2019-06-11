@@ -431,7 +431,7 @@ scripts.editSecrets = function (args) {
 		secretsTemplate = flags.env ? secretsTemplate.replace('$$env$$', flags.env) : secretsTemplate.replace('$$env$$', 'global')
 	
 	let secretsFile = `${chartFolder}/secrets_${flags.env}.yaml`;
-		secretsFile = flags.env ? secretsFile : `${chartFolder}/templates/secrets.yaml`;
+		secretsFile = flags.env ? secretsFile : `${chartFolder}/secrets.yaml`;
 	
 	// start the new secrets file from the secretsTemplate.yaml file.
 	if (!fs.existsSync(secretsFile)) {
