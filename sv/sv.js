@@ -276,8 +276,48 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
-	console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
-	exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	const secretFilesArray = [
+		{
+			encrypted : `${chartFolder}/secrets.yaml`,
+			decrypted : `${chartFolder}/templates/secrets.dec.yaml`
+		},
+		{
+			encrypted : `${chartFolder}/secrets_${env}.yaml`,
+			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`
+		}
+	]
+	
+	function deleteSecrets() {
+		secretFilesArray.forEach(file => {
+			// ensure the file exists before attempting to delete it.
+			if (fs.existsSync(file.decrypted)) {
+				fs.unlinkSync(file.decrypted)
+			}
+		});
+	}
+	
+	// Load Secrets
+	secretFilesArray.forEach(file => {
+		// check if the encrypted file exists before loading
+		if (fs.existsSync(file.encrypted)) {
+			try {
+				exec(`kubesec decrypt ${file.encrypted} > ${file.decrypted}`);
+			} catch(e) {
+				// if we failed to decrypt, delete what was decrypted, and then throw
+				deleteSecrets();
+				throw e;
+			}
+		}
+	});
+	
+	let err;
+	try {
+		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
+		exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	} finally {
+		// always delete decrypted files after upgrade.
+		deleteSecrets();
+	}
 }
 
 scripts.stop = function(args) {
@@ -377,6 +417,46 @@ scripts.restartPod = function(args) {
 	}
 	
 	exec(`kubectl delete pod ${pods[0].name} --force --grace-period=0`);
+}
+
+scripts.editSecrets = function (args) {
+	const myArgs = args.argv.slice();
+	const applicationName = myArgs.shift();
+	
+	const flags = commandLineArgs([
+		{ name : "env", type : String }
+	], { argv : myArgs, stopAtFirstUnknown : true });
+	
+	validateApp(applicationName);
+	if (flags.env) {
+		validateEnv(flags.env)
+	}
+	
+	const appFolder = `/sv/applications/${applicationName}`;
+	const chartFolder = `${appFolder}/chart`;
+	const containerFolder = `${appFolder}/containers`;
+	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
+	const envValue = flags.env ? "env" : "all";
+	const secretName = `${applicationName}-secrets-${envValue}`;
+	secretsTemplate = secretsTemplate.replace('$$name$$', secretName);
+	secretsTemplate = secretsTemplate.replace('$$env$$', flags.env || "all");
+	
+	const secretsFile = flags.env ? `${chartFolder}/secrets_${flags.env}.yaml` : `${chartFolder}/secrets.yaml`;
+	
+	// start the new secrets file from the secretsTemplate.yaml file.
+	if (!fs.existsSync(secretsFile)) {
+		fs.writeFileSync(secretsFile, secretsTemplate);
+	}
+	
+	const settings = loadSettingsYaml(applicationName);
+	
+	if (settings.gcp_project === undefined) {
+		throw new Error("You must have a gcp_project variable in your settings.yaml.");
+	}
+	
+	const key = `gcp:projects/${settings.gcp_project}/locations/global/keyRings/kubernetes/cryptoKeys/default`;
+	
+	exec(`EDITOR=nano kubesec edit -if --key=${key} ${secretsFile}`);
 }
 
 //// PRIVATE METHODS

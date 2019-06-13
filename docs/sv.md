@@ -3,6 +3,7 @@ Usage: sudo sv [command]
 Commands:
 	build		Build a container and tag it
 	copyFrom	Copy a file from a running container
+	editSecrets	Edit/Create secret files
 	enterPod	Enter a running container
 	restartPod	Restart a running pod
 	install		Install a application or container to your local machine
