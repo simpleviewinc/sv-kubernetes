@@ -276,37 +276,48 @@ scripts.start = function(args) {
 		exec(`sv _buildSvInfo`);
 	}
 	
-	// Load Secrets
-	let secretFilesArray = [`secrets_${env}.yaml`, `secrets.yaml`];
-		secretFilesArray.forEach(file => {
-			let encryptedFile = `${chartFolder}/${file}`;
-			let decryptedFile = `${chartFolder}/templates/${file}.dec`;
-			
-			// check if the encrypted file exists before loading
-			if (fs.existsSync(encryptedFile)) {
-				console.log(`Applying secrets to '${applicationName} in env ${env}`);
-				exec(`kubesec decrypt ${encryptedFile} >> ${decryptedFile}`);
-			}
-		});
+	const secretFilesArray = [
+		{
+			encrypted : `${chartFolder}/secrets.yaml`,
+			decrypted : `${chartFolder}/templates/secrets.dec.yaml`
+		},
+		{
+			encrypted : `${chartFolder}/secrets_${env}.yaml`,
+			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`
+		}
+	]
 	
-	try {
-		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
-		exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
-	} catch (err) {
-		throw new Error(`Error Starting application '${applicationName}' as '${deploymentName}' in env '${env}'\n${err}`);
-	} finally {
-		// always delete decrypted files after upgrade.
+	function deleteSecrets() {
 		secretFilesArray.forEach(file => {
-			let encryptedFile = `${chartFolder}/${file}`;
-			let decryptedFile = `${chartFolder}/templates/${file}.dec`;
-			
 			// ensure the file exists before attempting to delete it.
-			if (fs.existsSync(decryptedFile)) {
-				fs.unlinkSync(decryptedFile)
+			if (fs.existsSync(file.decrypted)) {
+				fs.unlinkSync(file.decrypted)
 			}
 		});
 	}
 	
+	// Load Secrets
+	secretFilesArray.forEach(file => {
+		// check if the encrypted file exists before loading
+		if (fs.existsSync(file.encrypted)) {
+			try {
+				exec(`kubesec decrypt ${file.encrypted} > ${file.decrypted}`);
+			} catch(e) {
+				// if we failed to decrypt, delete what was decrypted, and then throw
+				deleteSecrets();
+				throw e;
+			}
+		}
+	});
+	
+	let err;
+	try {
+		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
+		exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+	} finally {
+		// always delete decrypted files after upgrade.
+		deleteSecrets();
+	}
 }
 
 scripts.stop = function(args) {
@@ -404,48 +415,43 @@ scripts.restartPod = function(args) {
 }
 
 scripts.editSecrets = function (args) {
-	let myArgs = args.argv.slice();
-	let applicationName = myArgs.shift();
+	const myArgs = args.argv.slice();
+	const applicationName = myArgs.shift();
 	
-	let flags = commandLineArgs([
-		{ name : "key", type : String },
+	const flags = commandLineArgs([
 		{ name : "env", type : String }
 	], { argv : myArgs, stopAtFirstUnknown : true });
-	
-	myArgs = flags._unknown || [];
 	
 	validateApp(applicationName);
 	if (flags.env) {
 		validateEnv(flags.env)
 	}
 	
-	if (!flags.key) {
-		throw new Error(`You must provide an valid key.`)
-	}
-	
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
 	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
-		secretsTemplate = secretsTemplate.replace('$$appName$$', applicationName);
-		secretsTemplate = flags.env ? secretsTemplate.replace('$$env$$', flags.env) : secretsTemplate.replace('$$env$$', 'global')
+	const envValue = flags.env ? "env" : "all";
+	const secretName = `${applicationName}-secrets-${envValue}`;
+	secretsTemplate = secretsTemplate.replace('$$name$$', secretName);
+	secretsTemplate = secretsTemplate.replace('$$env$$', flags.env || "all");
 	
-	let secretsFile = `${chartFolder}/secrets_${flags.env}.yaml`;
-		secretsFile = flags.env ? secretsFile : `${chartFolder}/secrets.yaml`;
+	const secretsFile = flags.env ? `${chartFolder}/secrets_${flags.env}.yaml` : `${chartFolder}/secrets.yaml`;
 	
 	// start the new secrets file from the secretsTemplate.yaml file.
 	if (!fs.existsSync(secretsFile)) {
-		fs.writeFileSync(`${secretsFile}`, secretsTemplate);
+		fs.writeFileSync(secretsFile, secretsTemplate);
 	}
 	
-	try {
-		console.log(`Editing secrets for ${applicationName} in env ${flags.env}`)
-		exec(`kubesec edit -if --key=gcp:${flags.key} ${secretsFile}`);
-	} catch (err) {
-		throw new Error(`Error modifying secrets for ${applicationName} in env ${flags.env}\n${err}`);
-	} finally {
-		console.log(`Saved secrets for ${applicationName} in env ${flags.env}`);
+	const settings = loadSettingsYaml(applicationName);
+	
+	if (settings.gcp_project === undefined) {
+		throw new Error("You must have a gcp_project variable in your settings.yaml.");
 	}
+	
+	const key = `gcp:projects/${settings.gcp_project}/locations/global/keyRings/kubernetes/cryptoKeys/default`;
+	
+	exec(`EDITOR=nano kubesec edit -if --key=${key} ${secretsFile}`);
 }
 
 //// PRIVATE METHODS
