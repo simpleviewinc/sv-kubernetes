@@ -249,6 +249,12 @@ scripts.start = function(args) {
 	// use the dockerBase from config or dynamically generate it, the env variable will be present in circleci
 	const dockerBase = settings.dockerBase || `gcr.io/${process.env.PROJECT_ID}`;
 	
+	for(let [key, val] of Object.entries(settings)) {
+		if (typeof val === "string") {
+			myArgs.unshift(`--set sv.settings.${key}=${val}`);
+		}
+	}
+	
 	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
 	
 	if (flags.build !== undefined) {
