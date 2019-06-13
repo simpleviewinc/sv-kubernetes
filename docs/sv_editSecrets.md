@@ -1,23 +1,16 @@
-Usage: sudo sv editSecrets [applicationName] --env=[environment] --key=[googleKMSKey]
+Usage: sudo sv editSecrets [applicationName] --env=[environment]
 
 Create encrypted secret files that will be decrypted and installed during application deployment.
 
-**Supported Flags**
+## Supported Flags
 
-- --env: live|qa|test|dev|local environment specific secrets (will only be deployed to that environment)
-- --key: The google KMS key
+* `--env` - If passed, it will edit an environment specific secret file. If not passed it will edit the secret file loaded in all envs.
 
 Examples:
 ```
-Create a Global Secret:
-sudo sv editSecrets sv-kubernetes-example --key=[key]
+# Create a Global Secret:
+sudo sv editSecrets sv-kubernetes-example
 
-Create an Environment Secret:
-sudo sv editSecrets sv-kubernetes-example --env=local --key=[key]
-
-Changing the Default Terminal Editor
-export EDITOR=nano;
-sudo -E sv editSecrets sv-kubernetes-example --env=local --key=[key]
+# Create an Environment Secret:
+sudo sv editSecrets sv-kubernetes-example --env=local
 ```
-**Key Example**
-projects/[projectID]/locations/us-east1/keyRings/[keyRing]/cryptoKeys/[keyId]
