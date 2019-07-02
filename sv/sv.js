@@ -64,18 +64,26 @@ function gitStatus(path) {
 	}
 }
 
+function buildArgsToString(args=[]) {
+	if (args.length === 0) { return '' }
+	let stringArgs = args.map(arg => { return `--build-arg ${arg}` }).join(" ");
+	return stringArgs;
+}
+
 // public scripts
 scripts.build = function(args) {
 	const flags = commandLineArgs([
 		{ name : "name", type : String },
 		{ name : "app", type : String },
-		{ name : "pushTag", type : String }
+		{ name : "pushTag", type : String },
+		{ name : "build-arg", type : String, multiple: true }
 	], { argv : args.argv });
 	
 	if (flags.name === undefined) {
 		throw new Error(`Must specify '--name'`);
 	}
 	
+	const buildArgs = buildArgsToString(flags['build-arg']);
 	let path;
 	let containerName;
 	
@@ -98,7 +106,7 @@ scripts.build = function(args) {
 	
 	const tags = tagsArr.join(" ");
 	
-	exec(`cd ${path} && docker build ${tags} .`);
+	exec(`cd ${path} && docker build ${buildArgs} ${tags} .`);
 	
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
@@ -228,12 +236,14 @@ scripts.start = function(args) {
 	var flags = commandLineArgs([
 		{ name : "build", type : Boolean },
 		{ name : "push", type : Boolean },
-		{ name : "alias", type : String }
+		{ name : "alias", type : String },
+		{ name : "build-arg", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
 	
+	const buildArgs = buildArgsToString(flags['build-arg']);
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 	
 	const appFolder = `/sv/applications/${applicationName}`;
@@ -276,7 +286,7 @@ scripts.start = function(args) {
 			if (flags.push === true) {
 				pushTag = `--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`;
 			}
-			exec(`sv build --app=${applicationName} --name=${val} ${pushTag}`);
+			exec(`sv build --app=${applicationName} --name=${val} ${buildArgs} ${pushTag}`);
 		});
 		
 		exec(`sv _buildSvInfo`);

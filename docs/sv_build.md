@@ -9,6 +9,7 @@ Will result in a local docker image being tagged [container]:local
 * `--app` - If building an application's container, specify the name of the app.
 * `--name` - The name of the container.
 * `--pushTag` - If passed it will append this tag and attempt a docker push on that tag.
+* `--build-arg` - If passed the build-arg will be passed to the Dockerfile
 
 Example:
 ```
