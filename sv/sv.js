@@ -64,10 +64,8 @@ function gitStatus(path) {
 	}
 }
 
-function buildArgsToString(args=[]) {
-	if (args.length === 0) { return '' }
-	let stringArgs = args.map(arg => { return `--build-arg ${arg}` }).join(" ");
-	return stringArgs;
+function mapBuildArgs(args=[]) {
+	return args.map(arg => `--build-arg ${arg}`);
 }
 
 // public scripts
@@ -83,7 +81,6 @@ scripts.build = function(args) {
 		throw new Error(`Must specify '--name'`);
 	}
 	
-	const buildArgs = buildArgsToString(flags['build-arg']);
 	let path;
 	let containerName;
 	
@@ -97,16 +94,19 @@ scripts.build = function(args) {
 	
 	validatePath(path);
 	
-	const tagsArr = [];
-	tagsArr.push(`-t ${containerName}:local`);
+	const commandArgs = [];
+	commandArgs.push(`-t ${containerName}:local`);
 	
 	if (flags.pushTag !== undefined) {
-		tagsArr.push(`-t ${flags.pushTag}`);
+		commandArgs.push(`-t ${flags.pushTag}`);
 	}
 	
-	const tags = tagsArr.join(" ");
+	if (flags["build-arg"] !== undefined) {
+		commandArgs.push(...mapBuildArgs(flags["build-arg"]));
+	}
 	
-	exec(`cd ${path} && docker build ${buildArgs} ${tags} .`);
+	const commandArgString = commandArgs.join(" ");
+	exec(`cd ${path} && docker build ${commandArgString} .`);
 	
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
@@ -240,22 +240,26 @@ scripts.start = function(args) {
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
-	// set our args to those flags we don't recognize or an empty array if there are none
-	myArgs = flags._unknown || [];
-	
-	flags["build-arg"] = flags["build-arg"] || [];
-	// push SV_ENV so it's available in all docker envs
-	flags["build-arg"].push(`SV_ENV=${env}`);
-	const buildArgs = buildArgsToString(flags['build-arg']);
+	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
-	
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
 	
+	commandArgs.push(
+		deploymentName,
+		chartFolder,
+		`--install`,
+		`--set sv.deploymentName=${deploymentName}`,
+		`--set sv.env=${env}`,
+		`--set sv.applicationPath=${appFolder}`,
+		`--set sv.containerPath=${containerFolder}`,
+		`-f /sv/internal/sv.json`
+	);
+	
 	var envFile = `${chartFolder}/values_${env}.yaml`;
 	if (fs.existsSync(envFile)) {
-		myArgs.unshift(`-f ${envFile}`);
+		commandArgs.push(`-f ${envFile}`);
 	}
 	
 	const settings = loadSettingsYaml(applicationName);
@@ -264,13 +268,23 @@ scripts.start = function(args) {
 	
 	for(let [key, val] of Object.entries(settings)) {
 		if (typeof val === "string") {
-			myArgs.unshift(`--set sv.settings.${key}=${val}`);
+			commandArgs.push(`--set sv.settings.${key}=${val}`);
 		}
 	}
 	
 	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
+	commandArgs.push(`--set sv.tag=${tag}`);
 	
 	if (flags.build !== undefined) {
+		const buildArgs = [
+			`--app ${applicationName}`,
+			`--build-arg SV_ENV=${env}`
+		];
+		
+		if (flags["build-arg"] !== undefined) {
+			buildArgs.push(...mapBuildArgs(flags["build-arg"]));
+		}
+		
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
 		let dirs = fs.readdirSync(containerFolder).filter(isDirectory);
 		
@@ -285,11 +299,15 @@ scripts.start = function(args) {
 		}
 		
 		dirs.forEach(function(val, i) {
-			let pushTag = "";
+			buildArgs.push(`--name ${val}`);
+			
 			if (flags.push === true) {
-				pushTag = `--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`;
+				buildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
 			}
-			exec(`sv build --app=${applicationName} --name=${val} ${buildArgs} ${pushTag}`);
+			
+			const buildArgString = buildArgs.join(" ");
+			
+			exec(`sv build ${buildArgString}`);
 		});
 		
 		exec(`sv _buildSvInfo`);
@@ -329,10 +347,16 @@ scripts.start = function(args) {
 		}
 	});
 	
-	let err;
+	// append flags we don't recognize to pass to upgrade
+	if (flags._unknown) {
+		commandArgs.push(...flags._unknown);
+	}
+	
+	const commandArgString = commandArgs.join(" ");
+	
 	try {
 		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
-		exec(`helm upgrade ${deploymentName} ${chartFolder} --install --set sv.tag=${tag} --set sv.deploymentName=${deploymentName} --set sv.env=${env} --set sv.applicationPath=${appFolder} --set sv.containerPath=${containerFolder} -f /sv/internal/sv.json ${myArgs.join(" ")}`);
+		exec(`helm upgrade ${commandArgString}`);
 	} finally {
 		// always delete decrypted files after upgrade.
 		deleteSecrets();
