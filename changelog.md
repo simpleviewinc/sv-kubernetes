@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 7/5/2019
+
+* Adds ability to pass `--build-arg` to `sv start` to pass custom docker build args.
+* `sv start` will now automatically pass a `SV_ENV=env` build arg to all builds allowing Dockerfile's to have conditional behavior based on the env. Please use this with caution as different builds based on environment, by definition, introduce differnces between environments.
+
 ## 5/8/2019
 
 * Adds `sv restartPod` to restart one pod in an application.
