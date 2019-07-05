@@ -243,6 +243,9 @@ scripts.start = function(args) {
 	// set our args to those flags we don't recognize or an empty array if there are none
 	myArgs = flags._unknown || [];
 	
+	flags["build-arg"] = flags["build-arg"] || [];
+	// push SV_ENV so it's available in all docker envs
+	flags["build-arg"].push(`SV_ENV=${env}`);
 	const buildArgs = buildArgsToString(flags['build-arg']);
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 	
