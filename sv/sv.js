@@ -299,13 +299,14 @@ scripts.start = function(args) {
 		}
 		
 		dirs.forEach(function(val, i) {
-			buildArgs.push(`--name ${val}`);
+			const myBuildArgs = [...buildArgs];
+			myBuildArgs.push(`--name ${val}`);
 			
 			if (flags.push === true) {
-				buildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
+				myBuildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
 			}
 			
-			const buildArgString = buildArgs.join(" ");
+			const buildArgString = myBuildArgs.join(" ");
 			
 			exec(`sv build ${buildArgString}`);
 		});
