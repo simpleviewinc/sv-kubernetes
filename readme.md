@@ -104,6 +104,7 @@ The recommended approach is to utilize a single repo which contains your applica
 	* name - string - required - Name of the repository
 	* branch - string - default 'master' - The branch to checkout
 	* type - string - default 'app' - Whether the repository is a app repo or a container repo.
+* secrets_key - string - The key used to encrypt the secrets for the project. All developers of the application need access to this key to build/run the application. *When using a GCP secret you must prefix with `gcp:`*
 
 example:
 ```
@@ -117,6 +118,7 @@ dependencies:
   - name: sv-graphql-client
     type: container
   - name: sv-kube-proxy
+secrets_key: gcp:projects/sv-shared-231700/locations/global/keyRings/kubernetes/cryptoKeys/default
 ```
 
 ## Chart Additional Capabilities

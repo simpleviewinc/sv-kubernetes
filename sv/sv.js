@@ -494,13 +494,11 @@ scripts.editSecrets = function (args) {
 	
 	const settings = loadSettingsYaml(applicationName);
 	
-	if (settings.gcp_project === undefined) {
-		throw new Error("You must have a gcp_project variable in your settings.yaml.");
+	if (settings.secrets_key === undefined) {
+		throw new Error("You must have a 'secrets_key' variable in your settings.yaml.");
 	}
 	
-	const key = `gcp:projects/${settings.gcp_project}/locations/global/keyRings/kubernetes/cryptoKeys/default`;
-	
-	exec(`EDITOR=nano kubesec edit -if --key=${key} ${secretsFile}`);
+	exec(`EDITOR=nano kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
 }
 
 //// PRIVATE METHODS

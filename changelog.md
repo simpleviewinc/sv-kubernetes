@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 7/10/2019
+
+* Breaking change to how secrets are managed. `secrets_key` must now be added to the settings.yaml. See the secrets docs for more info.
+
 ## 7/5/2019
 
 * Adds ability to pass `--build-arg` to `sv start` to pass custom docker build args.
