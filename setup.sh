@@ -9,6 +9,7 @@ fi
 . /sv/scripts/install_github.sh
 . /sv/scripts/install_sv.sh
 . /sv/scripts/install_minikube.sh
+. /sv/scripts/install_gcloud.sh
 . /sv/scripts/install_kubectl.sh
 . /sv/scripts/install_docker.sh
 . /sv/scripts/install_helm.sh
