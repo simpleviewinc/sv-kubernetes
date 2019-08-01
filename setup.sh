@@ -34,5 +34,7 @@ if [ "$gcr_pull" == "missing" ]; then
 	kubectl create -f /sv/internal/gcrPullSecret.yaml
 fi
 
+gcloud auth application-default login
+
 # build server config
 sv _buildSvInfo
