@@ -3,16 +3,29 @@
 ## Instructions
 1. Verify permissions and ensure you are a member of your department's secrets Google Group
 2. Ensure you are logged in using the gcloud auth command sudo gcloud auth application-default login
-3. Execute the sudo sv editSecrets command to either create or modify existing secrets.
-4. Update your corresponding deployment.yaml file to include the environment variables for your secrets.
-5. Secrets are injected into the application at runtime, in order to use secrets you must pull them from the environment. This may vary depending on your application's language
-6. After creating/modifying a secret you will need to redeploy your application by running the sudo sv start appName env --build
-7. Test your application to ensure you are able to retrieve the secrets from the environment.
-8. If a secret is compromised and becomes a security risk immediately reach out to the Staff and Devops Engineer in order to update the new secret and rotate the KMS token ring to ensure other applications on your cluster are not affected.
+3. If this is a new application contact DEVOPS to generate a keyRing for your project.
+4. Once a keyRing is assigned in GCP add the key to your settings.yml file under the `secrets_key` with a `gcp:` prefix
+
+**Example**
+```
+# settings.yml
+secrets_key: gcp:projects/<projectId>/locations/global/keyRings/kubernetes/cryptoKeys/<applicationName>
+```
+5. Execute the sudo sv editSecrets command to either create or modify existing secrets.
+6. Update your corresponding deployment.yaml file to include the environment variables for your secrets.
+7. Secrets are injected into the application at runtime, in order to use secrets you must pull them from the environment. This may vary depending on your application's language
+8. After creating/modifying a secret you will need to redeploy your application by running the sudo sv start appName env --build
+9.  Test your application to ensure you are able to retrieve the secrets from the environment.
+10. If a secret is compromised and becomes a security risk immediately reach out to the Staff and Devops Engineer in order to update the new secret and rotate the KMS token ring to ensure other applications on your cluster are not affected.
 
 ## Details
 ### Verifying Permissions
 In order to manage secrets the executing user must have permissions to edit secrets on the departments cluster. 
+
+If you are setting up a new project, contact DEVOPS to create the Google Group and Google KMS keyRing for your project.
+DEVOPS will respond with url to your KMS keyRing.
+
+Place this value in the `secrets_key` section of your `settings.yml` file. 
 
 Permissions are granted when the user is added to the department's secrets Google Group. 
 
