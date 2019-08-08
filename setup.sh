@@ -18,14 +18,23 @@ fi
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
 
-coredns=$(minikube addons list | grep "coredns: disabled" || echo "enabled")
-if [ "$coredns" == "enabled" ]; then
+. /sv/scripts/install_kube_dns_addon.sh
+
+coredns=$(minikube addons list | grep "coredns: enabled" || echo "not_installed")
+if [ "$coredns" != "not_installed" ]; then
 	minikube addons disable coredns || true
 fi
 
 kubedns=$(minikube addons list | grep "kube-dns: disabled" || echo "enabled")
 if [ "$kubedns" != "enabled" ]; then
 	minikube addons enable kube-dns
+fi
+
+# remove the coredns deployment if it was installed as a chart rather an addon
+coredns_chart=$(kubectl get all --all-namespaces | grep "coredns" || echo "installed")
+if [ "$coredns_chart" == "installed" ]; then
+	kubectl delete deployment.apps/coredns -n kube-system
+	kubectl delete cm coredns -n kube-system
 fi
 
 # authorize local kubernetes to pull from remote GCR
