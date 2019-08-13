@@ -5,3 +5,4 @@ gits/
 test/
 internal/sv.json
 sv-kubernetes.sublime-workspace
+.idea
