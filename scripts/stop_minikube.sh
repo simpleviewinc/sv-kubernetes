@@ -1,4 +1,3 @@
 minikube delete
-cd /etc/kubernetes
-rm *.conf
+rm -rf /etc/kubernetes/addons
 rm -rf /root/.minikube
