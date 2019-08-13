@@ -26,8 +26,14 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
-	minikube start --vm-driver=none --extra-config=apiserver.service-node-port-range=80-32767 --kubernetes-version="$kubernetes_version" --cpus 2
+	minikube start \
+		--vm-driver=none \
+		--extra-config=apiserver.service-node-port-range=80-32767 \
+		--kubernetes-version="$kubernetes_version" \
+		--cpus 2
 	
 	# start any systems that need to be booted up after minikube starts
 	. /sv/scripts/start_helm.sh
+	# adds coredns so that external dns entries finish quickly
+	kubectl apply -f /sv/internal/coredns_config.yaml
 fi
