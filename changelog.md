@@ -1,5 +1,14 @@
 # sv-kubernetes changelog
 
+## 8/8/2019
+
+* Upgrade Kubernetes from `1.11 -> 1.13.7`
+* Increase box memory from `2 GB -> 4 GB`
+* Increase box cpu from `1 cpu -> 2 cpus`
+* Upgrade minikube version from `v0.30.0 -> v1.3.0`
+* Upgrade kubectl version from `1.11.0 -> 1.13.7`
+* Update minikube to use 2 CPUs
+
 ## 7/10/2019
 
 * Breaking change to how secrets are managed. `secrets_key` must now be added to the settings.yaml. See the secrets docs for more info.
