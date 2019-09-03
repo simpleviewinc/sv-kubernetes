@@ -64,6 +64,7 @@ Run `sudo sv` for documentation within the VM.
 * [sv start](docs/sv_start.md) - Start an application.
 * [sv stop](docs/sv_stop.md) - Stop an application.
 * [sv enterPod](docs/sv_enterPod.md) - Enter a running container.
+* [sv execPod](docs/sv_execPod.md) - Execute a command on a running container.
 * [sv restartPod](docs/sv_restartPod.md) - Restart a pod in an application.
 * [sv test](docs/sv_test.md) - Run tests for an application.
 * [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
