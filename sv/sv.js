@@ -73,7 +73,8 @@ scripts.build = function(args) {
 	const flags = commandLineArgs([
 		{ name : "name", type : String },
 		{ name : "app", type : String },
-		{ name : "pushTag", type : String },
+		{ name : "tag", type : String },
+		{ name : "push", type : Boolean },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv : args.argv });
 	
@@ -95,10 +96,10 @@ scripts.build = function(args) {
 	validatePath(path);
 	
 	const commandArgs = [];
-	commandArgs.push(`-t ${containerName}:local`);
-	
-	if (flags.pushTag !== undefined) {
-		commandArgs.push(`-t ${flags.pushTag}`);
+	if (flags.tag == undefined) {
+		commandArgs.push(`-t ${containerName}:local`);
+	} else {
+		commandArgs.push(`-t ${flags.tag}`);
 	}
 	
 	if (flags["build-arg"] !== undefined) {
@@ -108,8 +109,8 @@ scripts.build = function(args) {
 	const commandArgString = commandArgs.join(" ");
 	exec(`cd ${path} && docker build ${commandArgString} .`);
 	
-	if (flags.pushTag !== undefined) {
-		exec(`cd ${path} && docker push ${flags.pushTag}`);
+	if (flags.push !== undefined) {
+		exec(`cd ${path} && docker push ${flags.tag}`);
 	}
 }
 
@@ -300,10 +301,14 @@ scripts.start = function(args) {
 		
 		dirs.forEach(function(val, i) {
 			const myBuildArgs = [...buildArgs];
+			const containerTag = `${applicationName}-${val}:${tag}`
 			myBuildArgs.push(`--name ${val}`);
 			
 			if (flags.push === true) {
-				myBuildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
+				myBuildArgs.push(`--push`);
+				myBuildArgs.push(`--tag ${dockerBase}/${containerTag}`);
+			} else {
+				myBuildArgs.push(`--tag ${containerTag}`);
 			}
 			
 			const buildArgString = myBuildArgs.join(" ");
