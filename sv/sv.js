@@ -101,6 +101,12 @@ scripts.build = function(args) {
 		commandArgs.push(`-t ${flags.pushTag}`);
 	}
 	
+	if (flags.pushTag !== undefined) {
+		// if we have a pushTag attempt a pull so we can prime the docker cache, if the remote image doesn't exist, we ignore the error
+		exec(`cd ${path} && docker pull ${flags.pushTag} || true`);
+		commandArgs.push(`--cache-from ${flags.pushTag}`);
+	}
+	
 	if (flags["build-arg"] !== undefined) {
 		commandArgs.push(...mapBuildArgs(flags["build-arg"]));
 	}
@@ -272,7 +278,7 @@ scripts.start = function(args) {
 		}
 	}
 	
-	const tag = env === "local" ? "local" : `${env}-${settings.version}`;
+	const tag = env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 	
 	if (flags.build !== undefined) {
