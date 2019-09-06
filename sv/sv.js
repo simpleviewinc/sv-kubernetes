@@ -421,8 +421,18 @@ scripts.test = function(args) {
 scripts.enterPod = function(args) {
 	var podName = args.argv[0];
 	var pod = getCurrentPods(podName)[0];
-	console.log("Entering Pod:", pod.name)
-	exec(`kubectl exec -it ${pod.name} /bin/sh`);
+	// pick the best available shell, exec $shell replaces the initial /bin/sh with whatever shell it chooses to run
+	const cmd = `/bin/sh -c 'shell=$(which bash >/dev/null 2>&1 && echo "bash" || echo "sh"); exec $shell'`
+	console.log("Entering Pod:", pod.name);
+	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
+}
+
+scripts.execPod = function(args) {
+	const [podName, ...cmdParams] = args.argv;
+	var pod = getCurrentPods(podName)[0];
+	var cmd = cmdParams.join(" ");
+	console.log(`Executing on pod: ${pod.name}`);
+	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
 }
 
 scripts.copyFrom = function(args) {
