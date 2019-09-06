@@ -1,8 +1,8 @@
 # Overview
 
-[Change Log](changelog.md)
-[Dockerfile Best Practices](dockerfile_best_practices.md)
-[Secrets](secrets.md)
+* [Change Log](changelog.md)
+* [Dockerfile Best Practices](dockerfile_best_practices.md)
+* [Secrets](secrets.md)
 
 This repository is meant to be a base to install Kubernetes, Helm and begin running applications on your machine and remote in the Google Cloud Engine (gce). The overall structure of the repo is:
 
