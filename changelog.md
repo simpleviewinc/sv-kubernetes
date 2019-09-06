@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 9/6/2019
+
+* #16 via Zeke - Adds `sv execPod` to run an arbitrary command on a running container. Updates `sv enterPod` so that it uses bash if available and falls back to sh if not.
+
 ## 9/5/2019
 
 * The deployment system will now leverage docker layer caching.
