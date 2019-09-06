@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 9/5/2019
+
+* The deployment system will now leverage docker layer caching.
+* Images tagged for in the GCR used to be tagged with `ENV-VERSION` they are now just being tagged with `ENV` so an example would be `gcr.io/sv-shared-231700/sv-deploy-gce:dev`.
+
 ## 8/8/2019
 
 * Upgrade Kubernetes from `1.11 -> 1.13.7`
