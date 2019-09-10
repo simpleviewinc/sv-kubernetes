@@ -20,3 +20,13 @@ data:
         reload
         loadbalance
     }
+    220office.local:53 {
+      errors
+      cache 30
+      forward . 172.16.0.80 172.16.0.81
+    }
+    sv.local:53 {
+      errors
+      cache 30
+      forward . 172.16.0.80 172.16.0.81
+    }
