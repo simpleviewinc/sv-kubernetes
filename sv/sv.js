@@ -564,7 +564,7 @@ const getCurrentPods = function(filter) {
 	// simplify the return for downstream functions
 	pods = pods.map(val => ({
 		name : val.metadata.name,
-		testCommand : val.metadata.annotations["sv-test-command"],
+		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
 		ip : val.podIP
 	}));
