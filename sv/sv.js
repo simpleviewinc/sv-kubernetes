@@ -440,12 +440,16 @@ scripts.execPod = function(args) {
 }
 
 scripts.describePod = function(args) {
-	var podName = args.argv[0];
-	var pod = getCurrentPods(podName)[0];
-	if(pod === undefined){
-		console.log(`${podName} not is not currently installed or running.`);
-		return
+	const podName = args.argv[0];
+	if (podName === undefined) {
+		throw new Error("Must specify a pod to enter.");
 	}
+	
+	const pod = getCurrentPods(podName)[0];
+	if (pod === undefined) {
+		throw new Error(`${podName} not is not currently installed or running.`);
+	}
+	
 	console.log(`Displaying Details of ${podName} pod`);
 	exec(`kubectl describe pod/${pod.name}`);
 }
