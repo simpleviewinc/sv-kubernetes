@@ -78,21 +78,24 @@ Run `sudo sv` for documentation within the VM.
 * [sv debug](docs/sv_debug.md) - Output the versions and state of your local box for devops debugging purposes.
 
 # Troubleshooting
-Here are a few useful commands that can help troubleshoot your application(s)
-
+Here are a few scenarios and useful commands that can help troubleshoot your application(s)
 ```
-sudo sv logs --filter=sv-kuberentes-example
 # The applicaiton is running but not acting correctly.
+sudo sv logs --filter=test-application
 ```
 ```
-sudo sv decribePod sv-kuberentes-example
+# The container is stuck in creatingContainer
+# The contaier wont start
+sudo sv decribePod test-application
 ```
-Use this command if:
-* The container is stuck in creatingContainer
-* The contaier wont start
-
-
-
+```
+# Volume is not mounted correctly. 
+sudo sv start test-application local --dry-run --debug
+```
+```
+# Debugging a runtime error 
+sudo sv enterPod test-application
+```
 # Applications
 
 Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` library wraps the capabilities of Helm and Kubernetes to ensure an easy development environment.
