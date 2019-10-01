@@ -427,7 +427,7 @@ scripts.enterPod = function(args) {
 	var pod = getCurrentPods(podName)[0];
 	// pick the best available shell, exec $shell replaces the initial /bin/sh with whatever shell it chooses to run
 	const cmd = `/bin/sh -c 'shell=$(which bash >/dev/null 2>&1 && echo "bash" || echo "sh"); exec $shell'`
-	console.log("Entering Pod:", pod.name);
+	console.log(`Entering Pod: ${pod.name}`);
 	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
 }
 
@@ -437,6 +437,21 @@ scripts.execPod = function(args) {
 	var cmd = cmdParams.join(" ");
 	console.log(`Executing on pod: ${pod.name}`);
 	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
+}
+
+scripts.describePod = function(args) {
+	const podName = args.argv[0];
+	if (podName === undefined) {
+		throw new Error("Must specify a pod to enter.");
+	}
+	
+	const pod = getCurrentPods(podName)[0];
+	if (pod === undefined) {
+		throw new Error(`${podName} not is not currently installed or running.`);
+	}
+	
+	console.log(`Describe Pod: ${pod.name}`);
+	exec(`kubectl describe pod/${pod.name}`);
 }
 
 scripts.copyFrom = function(args) {

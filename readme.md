@@ -47,6 +47,8 @@ Often in order to work your project you will want to install and start the follo
 	* If your application needs an additional nginx entry, please pull request it in to that repo.
 * `sv-graphl` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
 	* If your application needs an additional graphql, please pull request it in to that repo.
+* `sv-geo` A microservice that returns geo location. Queries can be ran in the graphql playground at `graphql.kube.simpleview.io`.
+	* This repo is not required but if you are planning on building a graphql microservice it is recommended to pull down so that you can pull up a functional graphql application to ensure your env is functional.
 
 ```
 sudo sv install sv-kube-proxy
@@ -54,6 +56,9 @@ sudo sv start sv-kube-proxy local --build
 
 sudo sv install sv-graphql
 sudo sv start sv-graphql local --build
+
+sudo sv install sv-geo
+sudo sv start sv-geo local --build
 ```
 
 ## sv command
@@ -67,12 +72,32 @@ Run `sudo sv` for documentation within the VM.
 * [sv stop](docs/sv_stop.md) - Stop an application.
 * [sv enterPod](docs/sv_enterPod.md) - Enter a running container.
 * [sv execPod](docs/sv_execPod.md) - Execute a command on a running container.
+* [sv describePod](docs/sv_describePod.md) - Show details of a specific pod.
 * [sv restartPod](docs/sv_restartPod.md) - Restart a pod in an application.
 * [sv test](docs/sv_test.md) - Run tests for an application.
 * [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
 * [sv debug](docs/sv_debug.md) - Output the versions and state of your local box for devops debugging purposes.
 
-# Applications
+## Troubleshooting
+Here are a few scenarios and useful commands that can help troubleshoot your application(s)
+
+* Verify the application started:
+    *   `sudo kubectl get all`
+    *   All pods should be in ready 1/1 and status RUNNING
+* If the pods haven't started or are stuck in `ContainerCreating` describe the pod to see why it won't start:
+    * `sudo sv describePod [podname]`
+    * This should show the kubernetes events on a pod such as whether it can't mount a directory, or can't pull an image, or lacks some sort of permission.
+* If the pod has started but isn't responding to a browser request:
+    * `sudo sv logs --filter=test-application-container --watch`
+    * This will follow the `stdout` and `stderr` from the container allowing you to watch the output to see if it's bootlooping to failing in another way.
+* If your application is failing to start because of a helm or kubernetes error:
+    * `sudo sv start [my-app] local --dry-run --debug`
+    * This will output the compiled version of your kubernetes configs, with variables filled in. You can review the compiled yaml and see if there is an error in the way you are handling variables.
+* If you need to shell into a container so that you can explore it while it's running:
+    * `sudo sv enterPod test-application-container`
+    * This will shell into the running container so you can explore the runtime environment and folder structure.
+
+# Application
 
 Applications are written as [Helm charts](https://docs.helm.sh/). Our `sv` library wraps the capabilities of Helm and Kubernetes to ensure an easy development environment.
 
@@ -164,6 +189,8 @@ Containers are written as standard Docker containers.
 
 * See all applications that are running - `sudo helm list`
 * See all that's running - `sudo kubectl get all`
+* See all that's running, including kubernetes system services - `sudo kubectl get all --all-namespaces`
+* Start an application and see the compiled configs - `sudo sv start [app] [env] --dry-run --debug`
 * Get a pods logs - `sudo kubectl logs [podname]`
 * See minikube logs - `sudo minikube logs`
 * See current config - `sudo kubectl config`
@@ -171,6 +198,7 @@ Containers are written as standard Docker containers.
 * Run a container to debug - `sudo docker run -it image:tag`
 * Run a container with a specific command - `sudo docker run -it image:tag /bin/bash`
 * Enter a running container - `sudo kubectl exec -it [podName] /bin/bash`
+* Describe the nodes of a kubernetes cluster - `sudo kubectl describe nodes`
 * Describe pod for debugging pod boot errors - `sudo kubectl describe pod [podName]`
 
 Connecting to clusters
