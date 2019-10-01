@@ -47,6 +47,7 @@ Often in order to work your project you will want to install and start the follo
 	* If your application needs an additional nginx entry, please pull request it in to that repo.
 * `sv-graphl` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
 	* If your application needs an additional graphql, please pull request it in to that repo.
+* `sv-geo` A microservice that returns geo location. Queries can be ran in the graphql playground at `graphql.kube.simpleview.io`.
 
 ```
 sudo sv install sv-kube-proxy
@@ -54,6 +55,9 @@ sudo sv start sv-kube-proxy local --build
 
 sudo sv install sv-graphql
 sudo sv start sv-graphql local --build
+
+sudo sv install sv-geo
+sudo sv start sv-geo local --build
 ```
 
 ## sv command
@@ -67,10 +71,27 @@ Run `sudo sv` for documentation within the VM.
 * [sv stop](docs/sv_stop.md) - Stop an application.
 * [sv enterPod](docs/sv_enterPod.md) - Enter a running container.
 * [sv execPod](docs/sv_execPod.md) - Execute a command on a running container.
+* [sv describePod](docs/sv_describePod.md) - Show details of a specific pod.
 * [sv restartPod](docs/sv_restartPod.md) - Restart a pod in an application.
 * [sv test](docs/sv_test.md) - Run tests for an application.
 * [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
 * [sv debug](docs/sv_debug.md) - Output the versions and state of your local box for devops debugging purposes.
+
+# Troubleshooting
+Here are a few useful commands that can help troubleshoot your application(s)
+
+```
+sudo sv logs --filter=sv-kuberentes-example
+# The applicaiton is running but not acting correctly.
+```
+```
+sudo sv decribePod sv-kuberentes-example
+```
+Use this command if:
+* The container is stuck in creatingContainer
+* The contaier wont start
+
+
 
 # Applications
 
