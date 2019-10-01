@@ -70,6 +70,7 @@ Run `sudo sv` for documentation within the VM.
 * [sv restartPod](docs/sv_restartPod.md) - Restart a pod in an application.
 * [sv test](docs/sv_test.md) - Run tests for an application.
 * [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
+* [sv debug](docs/sv_debug.md) - Output the versions and state of your local box for devops debugging purposes.
 
 # Applications
 

@@ -517,6 +517,32 @@ scripts.editSecrets = function (args) {
 	exec(`EDITOR=nano kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
 }
 
+scripts.debug = function(args) {
+	function reverse(str) {
+		console.log("\x1b[7m%s\x1b[0m", str);
+	}
+	
+	function block(title, fn) {
+		console.log("--------");
+		reverse(title);
+		console.log("");
+		fn();
+		console.log("");
+	}
+	
+	block("Kubernetes Version", () => exec(`kubectl version --short`));
+	block("Docker Version", () => exec(`docker -v`));
+	block("Minikube Version", () => exec(`minikube version`));
+	block("Helm Version", () => exec(`helm version`));
+	block("sv-kubernetes", () => {
+		const branch = execSilent(`git rev-parse --abbrev-ref --symbolic-full-name @{u}`, { cwd : "/sv" });
+		const commit = execSilent(`git rev-parse @`, { cwd : "/sv" });
+		console.log(`${branch} at ${commit}`);
+	});
+	block("Nodes", () => exec(`kubectl describe nodes`));
+	block("All Running", () => exec(`kubectl get all --all-namespaces`));
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
