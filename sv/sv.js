@@ -128,6 +128,10 @@ scripts.install = async function(args) {
 		{ name : "no-dependencies", type : Boolean }
 	], { argv : args.argv });
 	
+	if (name === undefined) {
+		throw new Error("Must specify an application.");
+	}
+	
 	if (["app", "container"].includes(type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
@@ -651,7 +655,7 @@ if (process.argv.length < 3) {
 	return;
 }
 
-if (process.argv.length < 4) {
+if (process.argv.length === 4 && process.argv[3] === "--help") {
 	var docPath = `/sv/docs/sv_${scriptName}.md`;
 	if (fs.existsSync(docPath)) {
 		console.log(fs.readFileSync(docPath).toString());

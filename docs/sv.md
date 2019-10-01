@@ -13,4 +13,4 @@ Commands:
 	stop		Stop a Helm chart
 	test		Execute tests within running containers
 
-Run 'sudo sv [command]' for more information on that command
+Run 'sudo sv [command] --help' for more information on that command

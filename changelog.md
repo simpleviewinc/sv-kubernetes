@@ -3,6 +3,7 @@
 ## 10/1/2019
 
 * Adds `sv debug` for assisting in debugging purposes.
+* Accessing help documentation for a command now requires `sudo sv [command] --help` since not all commands have arguments.
 
 ## 9/6/2019
 
