@@ -128,6 +128,10 @@ scripts.install = async function(args) {
 		{ name : "no-dependencies", type : Boolean }
 	], { argv : args.argv });
 	
+	if (name === undefined) {
+		throw new Error("Must specify an application.");
+	}
+	
 	if (["app", "container"].includes(type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
@@ -423,7 +427,7 @@ scripts.enterPod = function(args) {
 	var pod = getCurrentPods(podName)[0];
 	// pick the best available shell, exec $shell replaces the initial /bin/sh with whatever shell it chooses to run
 	const cmd = `/bin/sh -c 'shell=$(which bash >/dev/null 2>&1 && echo "bash" || echo "sh"); exec $shell'`
-	console.log("Entering Pod:", pod.name);
+	console.log(`Entering Pod: ${pod.name}`);
 	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
 }
 
@@ -433,6 +437,21 @@ scripts.execPod = function(args) {
 	var cmd = cmdParams.join(" ");
 	console.log(`Executing on pod: ${pod.name}`);
 	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
+}
+
+scripts.describePod = function(args) {
+	const podName = args.argv[0];
+	if (podName === undefined) {
+		throw new Error("Must specify a pod to enter.");
+	}
+	
+	const pod = getCurrentPods(podName)[0];
+	if (pod === undefined) {
+		throw new Error(`${podName} not is not currently installed or running.`);
+	}
+	
+	console.log(`Describe Pod: ${pod.name}`);
+	exec(`kubectl describe pod/${pod.name}`);
 }
 
 scripts.copyFrom = function(args) {
@@ -517,6 +536,32 @@ scripts.editSecrets = function (args) {
 	exec(`EDITOR=nano kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
 }
 
+scripts.debug = function(args) {
+	function reverse(str) {
+		console.log("\x1b[7m%s\x1b[0m", str);
+	}
+	
+	function block(title, fn) {
+		console.log("--------");
+		reverse(title);
+		console.log("");
+		fn();
+		console.log("");
+	}
+	
+	block("Kubernetes Version", () => exec(`kubectl version --short`));
+	block("Docker Version", () => exec(`docker -v`));
+	block("Minikube Version", () => exec(`minikube version`));
+	block("Helm Version", () => exec(`helm version`));
+	block("sv-kubernetes", () => {
+		const branch = execSilent(`git rev-parse --abbrev-ref --symbolic-full-name @{u}`, { cwd : "/sv" });
+		const commit = execSilent(`git rev-parse @`, { cwd : "/sv" });
+		console.log(`${branch} at ${commit}`);
+	});
+	block("Nodes", () => exec(`kubectl describe nodes`));
+	block("All Running", () => exec(`kubectl get all --all-namespaces`));
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
@@ -564,7 +609,7 @@ const getCurrentPods = function(filter) {
 	// simplify the return for downstream functions
 	pods = pods.map(val => ({
 		name : val.metadata.name,
-		testCommand : val.metadata.annotations["sv-test-command"],
+		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
 		ip : val.podIP
 	}));
@@ -625,7 +670,7 @@ if (process.argv.length < 3) {
 	return;
 }
 
-if (process.argv.length < 4) {
+if (process.argv.length === 4 && process.argv[3] === "--help") {
 	var docPath = `/sv/docs/sv_${scriptName}.md`;
 	if (fs.existsSync(docPath)) {
 		console.log(fs.readFileSync(docPath).toString());

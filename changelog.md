@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 10/1/2019
+
+* Adds `sv debug` for assisting in debugging purposes.
+* Accessing help documentation for a command now requires `sudo sv [command] --help` since not all commands have arguments.
+
 ## 9/6/2019
 
 * [#17](https://github.com/simpleviewinc/sv-kubernetes/pull/17) via Zeke - Adds `sv execPod` to run an arbitrary command on a running container. Updates `sv enterPod` so that it uses bash if available and falls back to sh if not.
