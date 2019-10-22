@@ -1,5 +1,11 @@
 # sv-kubernetes changelog
 
+## 10/22/2019
+
+* Adds support for per env buildOrder
+* Options now available in settings.yaml `buildOrder_live`, `buildOrder_qa`, `buildOrder_dev`, `buildOrder_test`
+* Env specific buildOrders overwrite the global `buildOrder` setting
+
 ## 10/1/2019
 
 * Adds `sv debug` for assisting in debugging purposes.
