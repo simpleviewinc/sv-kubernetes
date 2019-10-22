@@ -1,6 +1,5 @@
 . /sv/scripts/errorHandler.sh
 
-
 running=$(minikube ip 2> /dev/null || true)
 running_expected="10.0.2.15"
 kubernetes_version="v1.13.7"
@@ -37,7 +36,4 @@ if [ "$minikube_start" == "true" ]; then
 	. /sv/scripts/start_helm.sh
 	# adds coredns so that external dns entries finish quickly
 	kubectl apply -f /sv/internal/coredns_config.yaml
-	
-	# ensure kubelet system is enabled, helps restart minikube on a server restart
-	systemctl enable kubelet.service
 fi
