@@ -302,7 +302,7 @@ scripts.start = function(args) {
 
 		if (buildOrder_env !== undefined) {
 			dirs = buildOrder_env;
-		} else {
+		} else if (buildOrder !== undefined) {
 			dirs = buildOrder
 		}
 		
