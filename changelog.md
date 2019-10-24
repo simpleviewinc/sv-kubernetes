@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 10/24/2019
+
+* Adds `sv fixDate` for resyncing the linux clock if it has drifted.
+
 ## 10/1/2019
 
 * Adds `sv debug` for assisting in debugging purposes.

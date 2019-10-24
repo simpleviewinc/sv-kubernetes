@@ -562,6 +562,12 @@ scripts.debug = function(args) {
 	block("All Running", () => exec(`kubectl get all --all-namespaces`));
 }
 
+scripts.fixDate = function() {
+	exec(`service ntp stop`);
+	exec(`sudo ntpd -gq`);
+	exec(`service ntp start`);
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {

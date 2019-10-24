@@ -77,6 +77,7 @@ Run `sudo sv` for documentation within the VM.
 * [sv test](docs/sv_test.md) - Run tests for an application.
 * [sv editSecrets](docs/sv_editSecrets.md) - Manage secrets for an application.
 * [sv debug](docs/sv_debug.md) - Output the versions and state of your local box for devops debugging purposes.
+* [sv fixDate](docs/sv_fixDate.md) - Re-syncs your linux clock, sometimes needed after the box was sleeping for a while.
 
 ## Troubleshooting
 Here are a few scenarios and useful commands that can help troubleshoot your application(s)
