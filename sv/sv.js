@@ -418,6 +418,7 @@ scripts.test = function(args) {
 		
 		names.push(val.rootName);
 		
+		console.log(`Running tests on ${val.name}`);
 		exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
 	});
 }
