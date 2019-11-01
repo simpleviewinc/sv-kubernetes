@@ -167,7 +167,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 
 Best Practices:
 
-* In your template files utilize the `{{ .Release.name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
+* In your template files utilize the `{{ .Release.Name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
 * In your values.yaml hard-code the `image:tag` you will be utilizing. This ensures rollback capability.
 * In your values_local.yaml specify a variable for each container with it's value being `[image]:local` and reference that in your deployment files.
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
