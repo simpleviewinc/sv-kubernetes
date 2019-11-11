@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 11/11/2019
+
+* Updates sv start to set dockerRegistry to `.Values.sv.dockerRegistry` to utilize the application root docker registry in non-local enviroments.
+
 ## 10/24/2019
 
 * Adds `sv fixDate` for resyncing the linux clock if it has drifted.
