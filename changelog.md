@@ -6,6 +6,7 @@
 * Adds support for per env `settings.buildOrder`
 	* Options now available in settings.yaml `buildOrder_live`, `buildOrder_qa`, `buildOrder_dev`, `buildOrder_test`
 	* Env specific buildOrders overwrite the global `buildOrder` setting
+* Building of containers will now log a date stamp with when they start and finish to help determine which containers are building slow.
 
 ## 10/24/2019
 
