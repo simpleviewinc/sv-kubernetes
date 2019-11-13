@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 11/11/2019
+
+* Updates sv start to set `.Values.sv.dockerRegistry` to simplify building the docker image references in deployment files.
+
 ## 10/24/2019
 
 * Adds `sv fixDate` for resyncing the linux clock if it has drifted.
