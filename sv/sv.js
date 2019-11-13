@@ -24,6 +24,12 @@ var execSilent = function(command, options = {}) {
 	return execSync(command, Object.assign({ stdio : "pipe" }, options)).toString().trim();
 }
 
+function log(str) {
+	var now = new Date();
+	
+	console.log(now.toISOString(), str);
+}
+
 function checkOutdated() {
 	const path = `/tmp/check_outdated.txt`;
 	const allowedAge = 1000 * 60 * 60 * 24;
@@ -112,7 +118,9 @@ scripts.build = function(args) {
 	}
 	
 	const commandArgString = commandArgs.join(" ");
+	log(`Starting build of ${containerName}`);
 	exec(`cd ${path} && docker build ${commandArgString} .`);
+	log(`Completed build of ${containerName}`);
 	
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
