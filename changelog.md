@@ -3,6 +3,9 @@
 ## 11/11/2019
 
 * Updates sv start to set `.Values.sv.dockerRegistry` to simplify building the docker image references in deployment files.
+* Adds support for per env `settings.buildOrder`
+	* Options now available in settings.yaml `buildOrder_live`, `buildOrder_qa`, `buildOrder_dev`, `buildOrder_test`
+	* Env specific buildOrders overwrite the global `buildOrder` setting
 
 ## 10/24/2019
 

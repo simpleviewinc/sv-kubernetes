@@ -130,6 +130,10 @@ The recommended approach is to utilize a single repo which contains your applica
 * version - string - The semver that will be appended to your compiled containers.
 * dockerBase - string - The root of the docker registry which your container and tag are appended. E.g. `gcr.io/sv-shared-231700`.
 * buildOrder - array of string - The build order of the containers. Needed when doing multi-part docker builds that utilize a shared container.
+* buildOrder_live - array of string - Build order for live, overwrites buildOrder if specified.
+* buildOrder_qa - array of string - Build order for qa, overwrites buildOrder if specified.
+* buildOrder_dev - array of string - Build order for dev, overwrites buildOrder if specified.
+* buildOrder_local - array of string - Build order for local, overwrites buildOrder if specified.
 * dependencies - array of object - Other applications and containers this repository needs installed to function.
 	* name - string - required - Name of the repository
 	* branch - string - default 'master' - The branch to checkout

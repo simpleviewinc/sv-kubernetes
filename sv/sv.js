@@ -299,17 +299,11 @@ scripts.start = function(args) {
 		}
 		
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
-		let dirs = fs.readdirSync(containerFolder).filter(isDirectory);
-		
-		if (settings.buildOrder !== undefined) {
-			dirs.forEach(function(val, i) {
-				if (settings.buildOrder.includes(val) === false) {
-					throw new Error(`Container '${val}' exists, but is not declared in settings.yaml 'buildOrder' key.`);
-				}
-			});
-			
-			dirs = settings.buildOrder;
-		}
+		const dirs =
+			settings[`buildOrder_${env}`] ||
+			settings.buildOrder ||
+			fs.readdirSync(containerFolder).filter(isDirectory)
+		;
 		
 		dirs.forEach(function(val, i) {
 			const myBuildArgs = [...buildArgs];
