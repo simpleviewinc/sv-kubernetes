@@ -2,7 +2,7 @@
 
 ## 11/11/2019
 
-* Updates sv start to set dockerRegistry to `.Values.sv.dockerRegistry` to utilize the application root docker registry in non-local enviroments.
+* Updates sv start to set `.Values.sv.dockerRegistry` to simplify building the docker image references in deployment files.
 
 ## 10/24/2019
 

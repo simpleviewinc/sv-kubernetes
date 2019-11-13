@@ -285,7 +285,7 @@ scripts.start = function(args) {
 	const tag = env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
-	const dockerRegistry = tag !== "local"? `${dockerBase}/` : "";
+	const dockerRegistry = env !== "local" ? `${dockerBase}/` : "";
 	commandArgs.push(`--set sv.dockerRegistry=${dockerRegistry}`);
 
 	if (flags.build !== undefined) {

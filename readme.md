@@ -164,17 +164,21 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* applicationPath - The path to the folder of the application itself.
 	* deploymentName - The sv system boots the app as "app" in all non-test environments, but in test it named with the name of the branch so "crm-pull-5". In cases where this value needs to be none, you can use `{{ .Values.sv.deploymentName }}` and it will work in all envs.
 	* tag - When loading in non-local environments the tag for containers is `branch-version`. On local it's just `local`. You can utilize `{{ .Values.sv.tag}}` to get the value of the tag in all environments.
-	* dockerRegistry - When loading in non-local environments the dockerRegistry will be set the applications root docker registry also known as dockerBase. You can utilize `{{ .Values.sv.dockerRegistry}}` to get the value of the registry in non-local environments.
+	* dockerRegistry - The dockerRegistry prefix will be set to either `""` or `settings.dockerBase/` to allow you to prefix your image urls in all envs.
 
 Best Practices:
 
 * In your template files utilize the `{{ .Release.Name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
-* In your values.yaml hard-code the `image:tag` you will be utilizing. This ensures rollback capability.
-* In your values_local.yaml specify a variable for each container with it's value being `[image]:local` and reference that in your deployment files.
+* It is recommended that you utilize variables at the top of each chart file. This allows you to reference those values in multiple places throughout your chartfile so you can change them in one place. It also assists with the possible versioning of chart files when you need to support multiple versions of a container simultaneously.
+	```
+    {{ $name := "server" }}
+    {{ $version := "v1" }}
+    {{ $fullName := printf "%s-%s-%s" .Release.Name $name $version }}
+    {{ $image := printf "%s%s:%s" .Values.sv.dockerRegistry $fullName .Values.sv.tag }}
+    ```
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
-* To utilize the GCR container registry, you will want to put `imagePullSecrets` using `gcr-pull` in your yaml files. Reference [sv-kubernetes-example](https://github.com/simpleviewinc/sv-kubernetes-example) for an example.
-* Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs. 
+* Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs.
 
 ## Container Structure
 
