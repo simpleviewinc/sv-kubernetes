@@ -424,7 +424,12 @@ scripts.test = function(args) {
 		names.push(val.rootName);
 		
 		console.log(`Running tests on ${val.name}`);
-		exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
+		try {
+			exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
+		} catch(e) {
+			// ensure that this process counts as failing, but allows us to continue running other tests
+			process.exitCode = 1;
+		}
 	});
 }
 
