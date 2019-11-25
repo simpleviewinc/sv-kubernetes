@@ -255,6 +255,7 @@ scripts.start = function(args) {
 		{ name : "build", type : Boolean },
 		{ name : "push", type : Boolean },
 		{ name : "alias", type : String },
+		{ name : "tag", type : String },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 	
@@ -290,7 +291,7 @@ scripts.start = function(args) {
 		}
 	}
 	
-	const tag = env;
+	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
 	const dockerRegistry = env !== "local" ? `${dockerBase}/` : "";

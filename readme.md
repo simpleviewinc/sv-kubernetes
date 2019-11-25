@@ -172,14 +172,15 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 
 Best Practices:
 
-* In your template files utilize the `{{ .Release.Name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
+* In your kubernetes template files utilize the `{{ .Release.Name }}-name` for naming each component. This will pull the name from your Charts.yaml file so all of the portions of this application are clearly named.
 * It is recommended that you utilize variables at the top of each chart file. This allows you to reference those values in multiple places throughout your chartfile so you can change them in one place. It also assists with the possible versioning of chart files when you need to support multiple versions of a container simultaneously.
 	```
     {{ $name := "server" }}
     {{ $version := "v1" }}
     {{ $fullName := printf "%s-%s-%s" .Release.Name $name $version }}
-    {{ $image := printf "%s%s:%s" .Values.sv.dockerRegistry $fullName .Values.sv.tag }}
+    {{ $image := printf "%s%s-%s-%s:%s" .Values.sv.dockerRegistry .Chart.Name $name $version .Values.sv.tag }}
     ```
+* While you should use `{{ .Release.Name }}` when naming your kubernetes components, **do not use `{{ .Release.Name }}` when naming a docker image**. This will prevent it from working on the test environment on pull requests. Instead ensure that your Chart.yaml has the right name and use `{{ .Chart.Name }}`.
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs.

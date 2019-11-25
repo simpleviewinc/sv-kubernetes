@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 11/25/2019
+
+* Fixes issue with images on pull requests being tagged incorrectly. Previously all images for pull requests were tagged as `:test` meaning that you could encounter race conditions between multiple pull requests. They now receive a unique name relative to the PR number.
+
 ## 11/11/2019
 
 * Updates sv start to set `.Values.sv.dockerRegistry` to simplify building the docker image references in deployment files.
