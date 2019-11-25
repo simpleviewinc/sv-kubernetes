@@ -167,7 +167,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* containerPath - The path to the `/containers/` folder within the application. This way you can use relative paths to your containers making `yaml` files more portable between projects.
 	* applicationPath - The path to the folder of the application itself.
 	* deploymentName - The sv system boots the app as "app" in all non-test environments, but in test it named with the name of the branch so "crm-pull-5". In cases where this value needs to be none, you can use `{{ .Values.sv.deploymentName }}` and it will work in all envs.
-	* tag - When loading in non-local environments the tag for containers is `branch-version`. On local it's just `local`. You can utilize `{{ .Values.sv.tag}}` to get the value of the tag in all environments.
+	* tag - When loading in non-local environments the tag for containers is `env`. On local it's just `local`. In pull requests it is `pull-NUM`. Best practice is to utilize `{{ .Values.sv.tag}}` to get the value of the tag in all environments.
 	* dockerRegistry - The dockerRegistry prefix will be set to either `""` or `settings.dockerBase/` to allow you to prefix your image urls in all envs.
 
 Best Practices:

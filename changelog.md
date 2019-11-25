@@ -3,6 +3,8 @@
 ## 11/25/2019
 
 * Fixes issue with images on pull requests being tagged incorrectly. Previously all images for pull requests were tagged as `:test` meaning that you could encounter race conditions between multiple pull requests. They now receive a unique name relative to the PR number.
+* `{{ .Release.Name }}` should not be used in Docker image tags, instead use `{{ .Chart.Name }}`. `{{ .Release.Name }}` is still recommended for naming for all kubernetes resources.
+* Kubernetes secret template updated to utilize a `{{ .Release.Name }}` variable so that it works appropriately with Pull Requests. Pre-existing secrets should be updated to use the variable and wrap the whole value in `""` otherwise you may receive a decryption error.
 
 ## 11/11/2019
 
