@@ -2,7 +2,7 @@
 
 ## 11/25/2019
 
-* Fixes issue with images on pull requests being tagged incorrectly. Previously all images for pull requests were tagged as `:test` meaning that you could encounter race conditions between multiple pull requests. They now receive a unique name relative to the PR number. If you are using `{{ .Values.sv.tag}}` in your chart, then it should pick up the fix without change.
+* Fixes issue with images on pull requests being tagged incorrectly. Previously all images for pull requests were tagged as `:test` meaning that you could encounter race conditions between multiple pull requests. They now receive a unique name relative to the PR number, `:pull-NUM`. If you are using `{{ .Values.sv.tag }}` in your chart, then it should pick up the fix without change.
 * `{{ .Release.Name }}` should not be used in Docker image tags, instead use `{{ .Chart.Name }}`. `{{ .Release.Name }}` is still recommended for naming for all kubernetes resources. The `{{ .Release.Name}}` changes depending on when the application boots in alias mode, such as for PRs where we support multiple variants of the same app in the same environment, while `{{ .Chart.Name }}` stays consistent for the application, so it's appropriate for using in a Docker image tag.
 * Kubernetes secret template updated to utilize a `{{ .Release.Name }}` variable so that it works appropriately with Pull Requests. Pre-existing secrets should be updated to use the variable and wrap the whole value in `""` otherwise you may receive a decryption error.
 
