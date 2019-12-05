@@ -3,7 +3,6 @@
 ## 12/05/2019
 * Adds a weekly cron job to run the `docker system prune -f` command which cleans dangling images, containers, volumes and networks.
 * This cron job runs on Friday's and only affects docker/kubernetes resources that are no longer used (dangling)
-* Logs from the cron jobs are added to /sv/.sv_logs which is added to your .gitignore
 
 ## 11/25/2019
 
