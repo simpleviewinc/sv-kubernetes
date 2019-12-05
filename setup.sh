@@ -14,6 +14,7 @@ fi
 . /sv/scripts/install_docker.sh
 . /sv/scripts/install_helm.sh
 . /sv/scripts/install_kubesec.sh
+. /sv/scripts/install_crontab.sh
 
 . /sv/scripts/start_minikube.sh
 
