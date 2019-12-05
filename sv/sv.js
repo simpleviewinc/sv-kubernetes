@@ -554,10 +554,15 @@ scripts.debug = function(args) {
 		console.log("--------");
 		reverse(title);
 		console.log("");
-		fn();
+		try {
+			fn();
+		} catch (err) {
+			// no need to use the error, we're already streaming the output to the console
+		}
 		console.log("");
 	}
 	
+	block("Memory Utilized", () => exec(`sudo free -m`));
 	block("Kubernetes Version", () => exec(`kubectl version --short`));
 	block("Docker Version", () => exec(`docker -v`));
 	block("Minikube Version", () => exec(`minikube version`));
