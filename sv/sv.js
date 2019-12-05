@@ -556,8 +556,8 @@ scripts.debug = function(args) {
 		console.log("");
 		try {
 			fn();
-		}catch (err){
-			console.log(err)
+		} catch (err) {
+			// no need to use the error, we're already streaming the output to the console
 		}
 		console.log("");
 	}
