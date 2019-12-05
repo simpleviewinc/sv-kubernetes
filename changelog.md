@@ -1,5 +1,10 @@
 # sv-kubernetes changelog
 
+## 12/05/2019
+* Adds a weekly cron job to run the `docker system prune -f` command which cleans dangling images, containers, volumes and networks.
+* This cron job runs on Friday's and only affects docker/kubernetes resources that are no longer used (dangling)
+* Logs from the cron jobs are added to /sv/.sv_logs which is added to your .gitignore
+
 ## 11/25/2019
 
 * Fixes issue with images on pull requests being tagged incorrectly. Previously all images for pull requests were tagged as `:test` meaning that you could encounter race conditions between multiple pull requests. They now receive a unique name relative to the PR number, `:pull-NUM`. If you are using `{{ .Values.sv.tag }}` in your chart, then it should pick up the fix without change.

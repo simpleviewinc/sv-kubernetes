@@ -17,6 +17,8 @@ fi
 
 . /sv/scripts/start_minikube.sh
 
+. /sv/scripts/install_crontabs.sh
+
 gcloud auth application-default login
 
 # build server config
