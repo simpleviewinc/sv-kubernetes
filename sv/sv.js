@@ -554,10 +554,15 @@ scripts.debug = function(args) {
 		console.log("--------");
 		reverse(title);
 		console.log("");
-		fn();
+		try {
+			fn();
+		}catch (err){
+			console.log(err)
+		}
 		console.log("");
 	}
 	
+	block("Memory Utilized", () => exec(`sudo free -m`));
 	block("Kubernetes Version", () => exec(`kubectl version --short`));
 	block("Docker Version", () => exec(`docker -v`));
 	block("Minikube Version", () => exec(`minikube version`));
