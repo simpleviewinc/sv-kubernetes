@@ -1,5 +1,8 @@
 # sv-kubernetes changelog
 
+## 01/20/2020
+* Update vagrant box version from 201807.12.0 to 201912.14.0
+
 ## 12/05/2019
 * Adds a weekly cron job to run the `docker system prune -f` command which cleans dangling images, containers, volumes and networks.
 * This cron job runs on Friday's and only affects docker/kubernetes resources that are no longer used (dangling)
