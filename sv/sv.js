@@ -389,22 +389,31 @@ scripts.stop = function(args) {
 scripts.logs = function(args) {
 	var flags = commandLineArgs([
 		// filter to only listen on a specific set of pods
-		{ name : "filter", type : String },
+		{ name : "filter", type : String, defaultOption : true },
+		{ name : "container", alias : "c", type : String },
 		// watch the pods to listen as the pods start/stop/restart
 		{ name : "watch", type : String }
 	], { argv : args.argv });
 	
+	if (flags.filter === undefined) {
+		throw new Error("Must specify an application/pod to retrieve logs from.");
+	}
+
 	if (flags.watch === undefined) {
-		var pods = getCurrentPods(flags.filter);
+		var pods = getCurrentPods(flags.filter, flags.container);
 		
-		pods.forEach(function(val) {
-			exec(`kubectl logs ${val.name}`);
+		pods.forEach(function(pod) {
+			pod.containerNames.forEach(containerName => {
+				exec(`kubectl logs ${pod.name} -c ${containerName}`);
+			});
 		});
 	} else {
-		watchPods(flags.filter);
-		setInterval(function() {
-			watchPods(flags.filter);
-		}, 2000);
+		const watch = function() {
+			watchPods(flags.filter, flags.container);
+		}
+
+		watch();
+		setInterval(watch, 2000);
 	}
 }
 
@@ -435,12 +444,21 @@ scripts.test = function(args) {
 }
 
 scripts.enterPod = function(args) {
-	var podName = args.argv[0];
-	var pod = getCurrentPods(podName)[0];
+	var flags = commandLineArgs([
+		{ name : "podName", type : String, defaultOption : true },
+		{ name : "container", alias : "c", type : String }
+	], { argv : args.argv });
+
+	var pod = getCurrentPods(flags.podName, flags.container)[0];
+
+	if (pod === undefined) {
+		throw new Error("Pod not found");
+	}
+
 	// pick the best available shell, exec $shell replaces the initial /bin/sh with whatever shell it chooses to run
 	const cmd = `/bin/sh -c 'shell=$(which bash >/dev/null 2>&1 && echo "bash" || echo "sh"); exec $shell'`
 	console.log(`Entering Pod: ${pod.name}`);
-	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
+	exec(`kubectl exec -it ${pod.name} -c ${pod.containerNames[0]} -- ${cmd}`);
 }
 
 scripts.execPod = function(args) {
@@ -620,7 +638,11 @@ const loadSettingsYaml = function(app) {
 	return settings;
 }
 
-const getCurrentPods = function(filter) {
+/**
+ * @param {string} filter - The pod or application you are filtering on
+ * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
+ */
+function getCurrentPods(filter, container) {
 	const all = JSON.parse(execSync(`kubectl get pods -o json`));
 	
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
@@ -631,33 +653,48 @@ const getCurrentPods = function(filter) {
 		name : val.metadata.name,
 		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
-		ip : val.podIP
+		ip : val.podIP,
+		containerNames : val.spec.containers.map(val => val.name)
 	}));
-	
+
 	// if we have a passed in filter, apply it
 	if (filter) {
 		pods = pods.filter(val => val.name.match(filter));
 	}
-	
+
+	// if we have a passed in container, filter to pods which have that container
+	// also clean out the containerNames to only contain the specified container for easier downstream code
+	if (container !== undefined) {
+		pods = pods.filter(val => val.containerNames.includes(container));
+		pods.forEach(pod => {
+			pod.containerNames = [container];
+		});
+	}
+
 	return pods;
 }
 
-const _watched = [];
-async function watchPods(filter) {
-	var pods = getCurrentPods(filter);
-	var names = pods.map(val => val.name);
-	
-	names.forEach(function(val, i) {
-		if (_watched[val] === undefined) {
-			console.log(`Adding watcher for pod ${val}`);
-			var child = spawn(`kubectl`, ["logs", val, "-f"], { stdio : "inherit" });
-			child.on("close", function(code) {
-				console.log(`pod closing ${val} ${code}`);
-				delete _watched[val];
-			});
+const _watched = {};
+async function watchPods(filter, container) {
+	const pods = getCurrentPods(filter, container);
+	const names = [];
+
+	pods.forEach(({ name, containerNames }) => {
+		containerNames.forEach(containerName => {
+			const key = `${name}:${containerName}`;
+			names.push(key);
 			
-			_watched[val] = child;
-		}
+			if (_watched[key] === undefined) {
+				console.log(`Adding watcher for pod ${key}`);
+				var child = spawn(`kubectl`, ["logs", name, "-f", "-c", containerName], { stdio : "inherit" });
+				child.on("close", function(code) {
+					console.log(`pod closing ${key} ${code}`);
+					delete _watched[key];
+				});
+				
+				_watched[key] = child;
+			}
+		});
 	});
 	
 	for(var i in _watched) {

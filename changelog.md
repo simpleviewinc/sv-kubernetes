@@ -2,6 +2,9 @@
 
 ## 01/20/2020
 * Update vagrant box version from 201807.12.0 to 201912.14.0
+* `sv logs` no longer requires passing `--filter`, it is now implied. So both `sudo sv logs sv-kubernetes-example` and `sudo sv logs --filter=sv-kubernetes-example` are valid.
+* `sv logs` now supports multi-container pods.
+* `sv enterPod` now supports multi-container pods.
 
 ## 12/05/2019
 * Adds a weekly cron job to run the `docker system prune -f` command which cleans dangling images, containers, volumes and networks.
