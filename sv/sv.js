@@ -643,13 +643,14 @@ const loadSettingsYaml = function(app) {
  * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
  */
 function getCurrentPods(filter, container) {
+	/** @type {import("./definitions").PodJson}*/
 	const all = JSON.parse(execSync(`kubectl get pods -o json`));
-	
+
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
-	var pods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
+	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
 	
 	// simplify the return for downstream functions
-	pods = pods.map(val => ({
+	let pods = originalPods.map(val => ({
 		name : val.metadata.name,
 		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
