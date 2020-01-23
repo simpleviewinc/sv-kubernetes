@@ -3,9 +3,9 @@ export interface PodJson {
         {
             metadata : {
                 name: string,
-                podIP : string,
                 annotations : { [key: string]: string }
             },
+            podIP : string,
             spec : {
                 containers : [
                     {
