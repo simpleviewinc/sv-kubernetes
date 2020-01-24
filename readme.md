@@ -30,7 +30,11 @@ Open a command prompt as Admin and `cd` to the folder which you checked out this
 vagrant up
 ```
 
-SSH into the box
+SSH into the box at IP address: 192.168.50.100
+
+Username: vagrant
+
+Password: vagrant
 
 ```
 # ssh putty session (192.168.50.100)
@@ -82,6 +86,9 @@ Run `sudo sv` for documentation within the VM.
 ## Troubleshooting
 Here are a few scenarios and useful commands that can help troubleshoot your application(s)
 
+* If you receive the error `/sv/setup.sh: line 25: syntax error: unexpected end of file` when you attempt to run `sudo bash /sv/setup.sh`:
+    * This indicates that the repo was cloned with Windows line endings instead of Unix line endings
+    * To fix, follow the instructions in this [discourse answer](https://discourse.devops.simpleviewtools.com/t/unable-to-setup-sv-kubernetes/68)
 * Verify the application started:
     *   `sudo kubectl get all`
     *   All pods should be in ready 1/1 and status RUNNING
