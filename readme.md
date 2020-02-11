@@ -212,6 +212,7 @@ The following are the recommended best practices for keeping your team notified 
 	* Set the webhook URL to https://hooks.slack.com/services/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
 	* Set the room to the slack channel you are using.
 	* This will ensure that anyone subscribed to the channel will get notifications for each deployment and PR success via circle-ci.
+* In your projects readme, include the name of the slack channel that people can use for being subscribed to notifications about your product.
 
 # Other useful Docker/Kubernetes commands
 
