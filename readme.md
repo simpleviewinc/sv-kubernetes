@@ -202,6 +202,17 @@ Containers are written as standard Docker containers.
 * Seek to minimize the number of layers in your Dockerfile while also maximizing the cache re-use. This means placing the actions which rarely change high in your file, and the actions which frequently change lower in the file.
 * If you are using a local mount, ensure that you are performing a COPY for that content so the Dockerfile works in non-local environments.
 
+## Slack Notifications
+
+The following are the recommended best practices for keeping your team notified about changes within a repository.
+
+* Create/Use an existing channel within slack that is unique to your application. If possible, public is preferred, since you never know who might need notifications.
+* Within that channel `/github subscribe simpleview/MY-APPLICATION` that will cause all github PRs, commits etc to notify the channel.
+* Go into the CircleCI -> find the project -> click the settings gear next to the project -> Chat notifications.
+	* Set the webhook URL to https://hooks.slack.com/services/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
+	* Set the room to the slack channel you are using.
+	* This will ensure that anyone subscribed to the channel will get notifications for each deployment and PR success via circle-ci.
+
 # Other useful Docker/Kubernetes commands
 
 * See all applications that are running - `sudo helm list`
