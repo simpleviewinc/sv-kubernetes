@@ -7,3 +7,4 @@ internal/sv.json
 sv-kubernetes.sublime-workspace
 .idea
 .DS_Store
+node_modules

@@ -7,6 +7,7 @@ const util = require("util");
 const commandLineArgs = require("command-line-args");
 const js_yaml = require("js-yaml");
 const git_state = require("git-state");
+const chalk = require('chalk');
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -22,6 +23,10 @@ var exec = function(command, options = {}) {
 
 var execSilent = function(command, options = {}) {
 	return execSync(command, Object.assign({ stdio : "pipe" }, options)).toString().trim();
+}
+
+function getCurrentContext() {
+	return `${execSync("kubectl config current-context")}`;
 }
 
 function log(str) {
@@ -73,6 +78,9 @@ function gitStatus(path) {
 function mapBuildArgs(args=[]) {
 	return args.map(arg => `--build-arg ${arg}`);
 }
+
+// always print the current context
+console.log(chalk.blue(`[Current Context]: ${getCurrentContext()}`));
 
 // public scripts
 scripts.build = function(args) {
@@ -441,6 +449,41 @@ scripts.test = function(args) {
 			process.exitCode = 1;
 		}
 	});
+};
+
+scripts.switchContext = function (args) {
+	let flags = commandLineArgs([
+		{ name : "project", type: String, alias : "p" },
+		{ name : "cluster", type: String, alias : "c" }
+	], { argv: args.argv });
+
+	// must always pass a cluster
+	if (flags.cluster === undefined) {
+		throw new Error("You must pass a {cluster} of type [dev|test|local]");
+	}
+
+	if (flags.cluster !== "local" && flags.project === undefined) {
+		throw new Error("You must provide a {project} and a {cluster} of type [dev|test] when switching to GCP resources");
+	}
+
+	try {
+		if (flags.cluster !== "local") {
+			console.log(chalk.blue(`Attempting to get GKE cluster credentials`));
+			exec(`gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
+			console.log(chalk.blue(`Attempting to switch contexts`));
+			exec(`kubectl config use-context ${getCurrentContext()}`);
+
+		} else {
+			console.log(chalk.blue(`Switching Context to ${flags.cluster}`));
+			exec(`kubectl config use-context minikube`);
+		}
+	} catch(err) {
+		throw new Error(`Error Switching Contexts\nCluster: ${chalk.blue(flags.cluster)}\nProject: ${chalk.blue(flags.project)}`);
+	}
+};
+
+scripts.getContext = function (args) {
+	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
 }
 
 scripts.enterPod = function(args) {
