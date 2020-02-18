@@ -1,5 +1,8 @@
 # sv-kubernetes changelog
 
+## 02/18/2020
+* Update sv.js to contain two new commands `sv switchContext` and `sv getContext`
+
 ## 01/20/2020
 * Update vagrant box version from 201807.12.0 to 201912.14.0
 * `sv logs` no longer requires passing `--filter`, it is now implied. So both `sudo sv logs sv-kubernetes-example` and `sudo sv logs --filter=sv-kubernetes-example` are valid.
