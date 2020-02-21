@@ -26,7 +26,11 @@ var execSilent = function(command, options = {}) {
 }
 
 function getCurrentContext() {
-	return `${execSync("kubectl config current-context")}`;
+	return execSync("kubectl config current-context").toString().trim();
+}
+
+function logContext() {
+	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
 }
 
 function log(str) {
@@ -78,9 +82,6 @@ function gitStatus(path) {
 function mapBuildArgs(args=[]) {
 	return args.map(arg => `--build-arg ${arg}`);
 }
-
-// always print the current context
-console.log(chalk.blue(`[Current Context]: ${getCurrentContext()}`));
 
 // public scripts
 scripts.build = function(args) {
@@ -252,6 +253,8 @@ scripts.install = async function(args) {
 }
 
 scripts.start = function(args) {
+	logContext();
+
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
 	var env = myArgs.shift();
@@ -389,6 +392,8 @@ scripts.start = function(args) {
 }
 
 scripts.stop = function(args) {
+	logContext();
+
 	var applicationName = args.argv[0];
 	
 	exec(`helm delete ${applicationName} --purge`);
@@ -468,13 +473,9 @@ scripts.switchContext = function (args) {
 
 	try {
 		if (flags.cluster !== "local") {
-			console.log(chalk.blue(`Attempting to get GKE cluster credentials`));
 			exec(`gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
-			console.log(chalk.blue(`Attempting to switch contexts`));
 			exec(`kubectl config use-context ${getCurrentContext()}`);
-
 		} else {
-			console.log(chalk.blue(`Switching Context to ${flags.cluster}`));
 			exec(`kubectl config use-context minikube`);
 		}
 	} catch(err) {
@@ -483,7 +484,7 @@ scripts.switchContext = function (args) {
 };
 
 scripts.getContext = function (args) {
-	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
+	logContext();
 }
 
 scripts.enterPod = function(args) {
