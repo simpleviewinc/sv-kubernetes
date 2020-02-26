@@ -36,4 +36,6 @@ if [ "$minikube_start" == "true" ]; then
 	. /sv/scripts/start_helm.sh
 	# adds coredns so that external dns entries finish quickly
 	kubectl apply -f /sv/internal/coredns_config.yaml
+
+	systemctl enable kubelet.service
 fi
