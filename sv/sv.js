@@ -7,6 +7,7 @@ const util = require("util");
 const commandLineArgs = require("command-line-args");
 const js_yaml = require("js-yaml");
 const git_state = require("git-state");
+const chalk = require('chalk');
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -22,6 +23,14 @@ var exec = function(command, options = {}) {
 
 var execSilent = function(command, options = {}) {
 	return execSync(command, Object.assign({ stdio : "pipe" }, options)).toString().trim();
+}
+
+function getCurrentContext() {
+	return execSync("kubectl config current-context").toString().trim();
+}
+
+function logContext() {
+	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
 }
 
 function log(str) {
@@ -244,6 +253,8 @@ scripts.install = async function(args) {
 }
 
 scripts.start = function(args) {
+	logContext();
+
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
 	var env = myArgs.shift();
@@ -381,6 +392,8 @@ scripts.start = function(args) {
 }
 
 scripts.stop = function(args) {
+	logContext();
+
 	var applicationName = args.argv[0];
 	
 	exec(`helm delete ${applicationName} --purge`);
@@ -441,6 +454,53 @@ scripts.test = function(args) {
 			process.exitCode = 1;
 		}
 	});
+};
+
+scripts.switchContext = function (args) {
+	let flags = commandLineArgs([
+		{ name : "project", type: String, alias : "p" },
+		{ name : "cluster", type: String, alias : "c" }
+	], { argv: args.argv });
+
+	// must always pass a cluster
+	if (flags.cluster === undefined) {
+		throw new Error("You must pass a {cluster} of type [dev|test|local]");
+	}
+
+	if (flags.cluster !== "local" && flags.project === undefined) {
+		throw new Error("You must provide a {project} and a {cluster} of type [dev|test] when switching to GCP resources");
+	}
+
+	try {
+		if (flags.cluster !== "local") {
+			exec(`gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
+			exec(`kubectl config use-context ${getCurrentContext()}`);
+		} else {
+			exec(`kubectl config use-context minikube`);
+		}
+	} catch(err) {
+		throw new Error(`Error Switching Contexts\nCluster: ${chalk.blue(flags.cluster)}\nProject: ${chalk.blue(flags.project)}`);
+	}
+};
+
+scripts.getContext = function (args) {
+	logContext();
+}
+
+scripts.listProjects = function() {
+	const data = JSON.parse(execSync(`gcloud projects list --filter sv- --format json`).toString().trim());
+
+	// the project switch mechanics only allow sv-foo-231700 so we're enforcing that here
+	const regex = /^sv\-(.+)-231700$/
+
+	const temp = data
+		.filter(val => val.projectId.match(/^sv\-.+-231700$/))
+		.map(val => val.projectId.replace(regex, "$1"))
+	;
+
+	temp.sort();
+
+	console.log(temp.join("\n"));
 }
 
 scripts.enterPod = function(args) {
