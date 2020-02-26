@@ -1,7 +1,7 @@
 # sv-kubernetes changelog
 
-## 02/18/2020
-* Update sv.js to contain two new commands `sv switchContext` and `sv getContext`
+## 02/26/2020
+* Update sv.js to contain new commands `sv switchContext`, `sv getContext` and `sv listProjects`.
 
 ## 01/20/2020
 * Update vagrant box version from 201807.12.0 to 201912.14.0

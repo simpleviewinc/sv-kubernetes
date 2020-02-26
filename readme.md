@@ -83,6 +83,7 @@ Run `sudo sv` for documentation within the VM.
 * [sv fixDate](docs/sv_fixDate.md) - Re-syncs your linux clock, sometimes needed after the box was sleeping for a while.
 * [sv switchContext](docs/sv_switchContext.md) - Switch between Kubernetes Contexts.
 * [sv getContext](docs/sv_getContext.md) - Get the current Kubernetes Context.
+* [sv listProjects](docs/sv_listProjects.md) - List available kubernetes projects.
 
 ## Troubleshooting
 Here are a few scenarios and useful commands that can help troubleshoot your application(s)
