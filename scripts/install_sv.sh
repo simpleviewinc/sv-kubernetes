@@ -3,6 +3,8 @@
 node_version=$(node --version 2> /dev/null || true)
 node_version_expected=v12.14.1
 
+export DEBIAN_FRONTEND=noninteractive
+
 if [ "$node_version" != "$node_version_expected" ]; then
 	apt-get update
 	apt-get install -y git curl
