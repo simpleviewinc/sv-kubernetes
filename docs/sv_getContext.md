@@ -2,7 +2,7 @@ Usage: sudo sv getContext
 
 Get your current Kubernetes Context
 * No arguments are required
-* Each command will print in blue the current context. Ex: `[Current Context]: minikube`
+* Each command will print the current context. Ex: `[Current Context]: minikube`
 
 Example:
 ```

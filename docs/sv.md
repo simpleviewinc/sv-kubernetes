@@ -8,6 +8,7 @@ Commands:
 	getContext      Get the current Kubernetes Context
 	restartPod      Restart a running pod
 	install         Install a application or container to your local machine
+	listProjects    List available projects for use with switchContext
 	logs            Getting logging information for a set of pods
 	script          Executes a script from an application repo
 	start           Start an Helm chart

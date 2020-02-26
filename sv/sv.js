@@ -487,6 +487,22 @@ scripts.getContext = function (args) {
 	logContext();
 }
 
+scripts.listProjects = function() {
+	const data = JSON.parse(execSync(`gcloud projects list --filter sv- --format json`).toString().trim());
+
+	// the project switch mechanics only allow sv-foo-231700 so we're enforcing that here
+	const regex = /^sv\-(.+)-231700$/
+
+	const temp = data
+		.filter(val => val.projectId.match(/^sv\-.+-231700$/))
+		.map(val => val.projectId.replace(regex, "$1"))
+	;
+
+	temp.sort();
+
+	console.log(temp.join("\n"));
+}
+
 scripts.enterPod = function(args) {
 	var flags = commandLineArgs([
 		{ name : "podName", type : String, defaultOption : true },
