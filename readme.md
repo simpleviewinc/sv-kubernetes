@@ -217,6 +217,21 @@ The following are the recommended best practices for keeping your team notified 
 	* This will ensure that anyone subscribed to the channel will get notifications for each deployment and PR success via circle-ci.
 * In your projects readme, include the name of the slack channel that people can use for being subscribed to notifications about your product.
 
+## Running commands on Dev/Test Clusters
+This section provides information on how to switch contexts to a dev/test cluster.
+* Acquire access to the cluster by following the documentation [here] (https://wiki.simpleviewtools.com/display/DEVOPS/Acquiring+Access+to+Kubernetes+Cluster)
+* Ensure you are running the latest version of `sv-kubernetes`
+* Ensure you are gcloud authenticated by running this command in sv-kubernetes `gcloud auth login`
+
+> All commands run on the cluster must run through `helm tiller` except for the local cluster
+> Ex: `sudo sv logs` now becomes `sudo helm tiller run sv logs`
+
+*Related Commands*:
+* [listProjects](docs/sv_listProjects.md)
+* [switchContext](docs/sv_switchContext.md)
+* [getContext](docs/sv_getContext.md)
+
+
 # Other useful Docker/Kubernetes commands
 
 * See all applications that are running - `sudo helm list`
