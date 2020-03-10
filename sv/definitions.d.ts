@@ -12,6 +12,9 @@ export interface PodJson {
 						name: string
 					}
 				]
+			},
+			status : {
+				phase : string
 			}
 		}
 	]

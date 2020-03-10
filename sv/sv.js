@@ -660,6 +660,18 @@ scripts.fixDate = function() {
 	exec(`service ntp start`);
 }
 
+/**
+ * Delete pods which are in a failed status, usually due to eviction. Kubernetes leaves these behind so developers can debug them, but they can clutter if too many are left behind
+ */
+scripts.deleteFailedPods = function() {
+	const pods = getCurrentPods();
+	const failed = pods.filter(val => val.status === "Failed");
+	for(let [key, val] of Object.entries(failed)) {
+		console.log("deleting", val.name);
+		execSync(`kubectl delete pod ${val.name}`);
+	}
+}
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
@@ -704,7 +716,7 @@ const loadSettingsYaml = function(app) {
  */
 function getCurrentPods(filter, container) {
 	/** @type {import("./definitions").PodJson}*/
-	const all = JSON.parse(execSync(`kubectl get pods -o json`));
+	const all = JSON.parse(execSync(`kubectl get pods -o json`, { maxBuffer : 100 * 1024 * 1024 }));
 
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
 	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
@@ -715,7 +727,8 @@ function getCurrentPods(filter, container) {
 		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
 		ip : val.podIP,
-		containerNames : val.spec.containers.map(val => val.name)
+		containerNames : val.spec.containers.map(val => val.name),
+		status : val.status.phase
 	}));
 
 	// if we have a passed in filter, apply it
