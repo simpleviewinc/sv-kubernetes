@@ -222,10 +222,10 @@ This section provides information on how to switch contexts to a dev/test cluste
 * Acquire access to the cluster by following the documentation [here] (https://wiki.simpleviewtools.com/display/DEVOPS/Acquiring+Access+to+Kubernetes+Cluster)
 * Ensure you are running the latest version of `sv-kubernetes`
 * Ensure you are gcloud authenticated by running this command in sv-kubernetes `sudo gcloud auth login`
-
-> When on a non-local cluster, commands that alter the clusters state, such as `start` or `stop` must run through `helm tiller`.
-> Ex: `sudo sv start sv-graphql local` now becomes `sudo helm tiller run sv start sv-graphql local`
-> This does not affect commands like `sudo sv logs` or `sudo sv enterPod` those can be run like normal.
+* When on a non-local cluster, commands that alter the clusters state, such as `start` or `stop` must run through `helm tiller`.
+	* Ex: `sudo sv start sv-graphql local` now becomes `sudo helm tiller run sv start sv-graphql local`.
+	* This does not affect commands like `sudo sv logs` or `sudo sv enterPod` those can be run like normal.
+* When on a non-local cluster `--build` will not work as expected, because it does not push the built container to the cloud, for the remote instance to grab it. If you need to alter the runtime state either do it via `sudo sv enterPod` or push a new build via the normal CI/CD.
 
 *Related Commands*:
 * [listProjects](docs/sv_listProjects.md)
