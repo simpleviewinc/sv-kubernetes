@@ -232,7 +232,6 @@ This section provides information on how to switch contexts to a dev/test cluste
 * [switchContext](docs/sv_switchContext.md)
 * [getContext](docs/sv_getContext.md)
 
-
 # Other useful Docker/Kubernetes commands
 
 * See all applications that are running - `sudo helm list`
