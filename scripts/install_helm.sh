@@ -14,6 +14,3 @@ if [ "$helm_version" != "$helm_version_expected" ]; then
 	mv linux-amd64/helm /usr/bin/helm
 	rm -rf linux-amd64
 fi
-
-# install tiller for context switching [AUT-313]
-helm plugin install https://github.com/rimusz/helm-tiller
