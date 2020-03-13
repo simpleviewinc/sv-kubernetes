@@ -221,10 +221,11 @@ The following are the recommended best practices for keeping your team notified 
 This section provides information on how to switch contexts to a dev/test cluster.
 * Acquire access to the cluster by following the documentation [here] (https://wiki.simpleviewtools.com/display/DEVOPS/Acquiring+Access+to+Kubernetes+Cluster)
 * Ensure you are running the latest version of `sv-kubernetes`
-* Ensure you are gcloud authenticated by running this command in sv-kubernetes `gcloud auth login`
+* Ensure you are gcloud authenticated by running this command in sv-kubernetes `sudo gcloud auth login`
 
-> All commands run on the cluster must run through `helm tiller` except for the local cluster
-> Ex: `sudo sv logs` now becomes `sudo helm tiller run sv logs`
+> When on a non-local cluster, commands that alter the clusters state, such as `start` or `stop` must run through `helm tiller`.
+> Ex: `sudo sv start sv-graphql local` now becomes `sudo helm tiller run sv start sv-graphql local`
+> This does not affect commands like `sudo sv logs` or `sudo sv enterPod` those can be run like normal.
 
 *Related Commands*:
 * [listProjects](docs/sv_listProjects.md)
