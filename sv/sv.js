@@ -192,7 +192,7 @@ scripts.install = async function(args) {
 	}
 	
 	// pull down the latest code from that remote
-	execPath(`git fetch ${remote}`);
+	execPath(`git fetch --recurse-submodules ${remote}`);
 	
 	// check out local copy to see if we have untracked changes
 	const result = git_state.checkSync(path);
@@ -218,6 +218,7 @@ scripts.install = async function(args) {
 			}
 			
 			execPath(`git checkout "${desiredLocalBranch}"`);
+			execPath(`git submodule update --init --recursive`);
 		}
 	}
 	
@@ -226,7 +227,7 @@ scripts.install = async function(args) {
 		console.log(`Repository ${path} can be updated, this will git pull those changes.`);
 		const result = await readP({ prompt : "Press [enter] to continue, or type 'no' to skip: " });
 		if (result !== "no") {
-			execPath(`git pull`);
+			execPath(`git pull --recurse-submodules`);
 		}
 	}
 	
