@@ -1,5 +1,8 @@
 # sv-kubernetes changelog
 
+## 05/19/2020
+* Update Kubernetes version from 1.13.7 to 1.14.10
+
 ## 02/26/2020
 * Update sv.js to contain new commands `sv switchContext`, `sv getContext` and `sv listProjects`.
 
