@@ -22,7 +22,7 @@ Using Kubernetes [gcePersistentDisk](https://kubernetes.io/docs/concepts/storage
 * Cons
     * A GCP disk can only be attached to **one** kubernetes Node at a time. Most of our kubernetes clusters consist of 2 nodes and as we scale the system out will likely become more than 2 nodes. So if your application has a Deployment with replicas, then ALL of the replicas for that deployment must be hosted on the same Node. Normally, kubernetes distributes the replicas for a Pods across all nodes to spread the load so it would place 2 replices on one Host-1 and 2 replicas on Host-2. This is not possible if a persistent disk is required, Kubernetes would need to mount all 4 replicas to the same Host, but that may have negative affects on application fault tolerance/scalability.
     * Your application will need appropriate taints/tolerances/targetting to ensure that the Pod needing the disk is always allocated to the host machine with the disk attached.
-    * In some Kubernetes update scenarios, there may be unavoidable downtime because the disk cannot be attached to two Hosts at once preventing Kubernetes from running the old app and the new app simultaneously (as usually occurs during most zero-downtime deployments).
+    * In some scenarios where Kubernetes itself needs updates, there may be unavoidable downtime because the disk cannot be attached to two Hosts at once preventing Kubernetes from running the old app and the new app simultaneously (as usually occurs during most zero-downtime deployments).
     * The data cannot be accessed by other environments, projects, unless they are hosted on the exact same Kubernetes Host.
 
 ### Installation/Usage
