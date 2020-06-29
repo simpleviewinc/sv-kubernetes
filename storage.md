@@ -75,12 +75,13 @@ Using [gcsfuse](https://cloud.google.com/storage/docs/gcs-fuse) you can mount a 
 ### Installation/Usage
 
 1. Contact DEVOPS to provision the buckets that your system will require and which service accounts/users should be granted access to those buckets and what access each should be granted (read/write/admin). If your application does not have secrets setup or a service account, please ensure DEVOPS handles this as well.
-1. Download the `gcs_mount.sh` from the sv-kubernetes-example pull request and place it in your container's code. This file will handle mounting the bucket with some reasonable defaults and error handling.
+1. Download the `gcs_mount.sh` from the [sv-kubernetes-example](INSERT LINK HERE) and place it in your container's code. This file will handle mounting the bucket with some reasonable defaults and error handling.
 1. In a container that needs to mount the bucket, update the `Dockerfile` to install `gcsfuse`. See the [installation instructions](https://github.com/GoogleCloudPlatform/gcsfuse/blob/master/docs/installing.md) provided by Google.
 1. Update the `Dockerfile` so that the `CMD` now runs `CMD ["bash", "-c", "./gcs_mount.sh && YOUR_PREVIOUS _COMMAND"]`. Basically we need to run the gcs_mount bash file prior to executing your command. If it gets intricate you can also create an `init.sh` which contains the `./gcs_mount.sh` command AND your command. One key caveat is that gcs_mount.sh **must be run by** `bash`, if you attempt to run under `sh` it will not work due to line endings complications in the SERVICE_ACCOUNT_JSON strings.
 1. Update deployment to specify env config values. Most applications just need the required keys defined.
-    * SERVICE_ACCOUNT_JSON (required) - The service account for your application that will be used for granting permissions. If you need to use **different** credentials for your main app and the bucket, you can specify SV_GCS_MOUNT_CREDENTIALS to have the system read from a different ENV value.
-    * SV_GCS_MOUNT_DIR (required) - The directory where the bucket will be mounted.
-    * SV_GCS_MOUNT_BUCKET (required) - The name of the bucket (not the url, just it's name).
-    * SV_GCS_MOUNT_KEYPATH (optional) - default `/var/lib/google_credentials.json` - Specify this key only if there is a reason the creds cannot be stored in the default location.
-    * SV_GCS_MOUNT_CREDENTIALS (optional) - default `SERVICE_ACCOUNT_JSON`. This is the name of the ENV value that stores the credentials that Google should use for mounting the bucket. At execution, the gcs_mount.sh file will copy the contents of this env value and store them at SV_GCS_MOUNT_KEYPATH to pass to `gcsfuse`.
+    * `SERVICE_ACCOUNT_JSON` (required) - The service account for your application that will be used for granting permissions. If you need to use **different** credentials for your main app and the bucket, you can specify SV_GCS_MOUNT_CREDENTIALS to have the system read from a different ENV value.
+    * `SV_GCS_MOUNT_DIR` (required) - The directory where the bucket will be mounted.
+    * `SV_GCS_MOUNT_BUCKET` (required) - The name of the bucket (not the url, just it's name).
+    * `SV_GCS_MOUNT_KEYPATH` (optional) - default `/var/lib/google_credentials.json` - Specify this key only if there is a reason the creds cannot be stored in the default location.
+    * `SV_GCS_MOUNT_CREDENTIALS` (optional) - default `SERVICE_ACCOUNT_JSON`. This is the name of the ENV value that stores the credentials that Google should use for mounting the bucket. At execution, the gcs_mount.sh file will copy the contents of this env value and store them at SV_GCS_MOUNT_KEYPATH to pass to `gcsfuse`.
+1. See the [branch comparison](INSERT LINK HERE) for an example of what it means to update a project to use a GCS Bucket.
