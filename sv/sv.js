@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const { execSync, spawn } = require("child_process");
+const { execSync, spawn, fork } = require("child_process");
 const read = require("read");
 const util = require("util");
 const commandLineArgs = require("command-line-args");
@@ -546,11 +546,20 @@ scripts.describePod = function(args) {
 }
 
 scripts.copyFrom = function(args) {
-	const podName = args.argv[0];
-	const pathFrom = args.argv[1];
-	const pathTo = args.argv[2];
+	var flags = commandLineArgs([
+		// filter to only listen on a specific set of pods
+		{ name : "container", alias : "c", type : String },
+		{ name : "args", type : String, multiple : true, defaultOption : true }
+	], { argv : args.argv });
+
+	const podName = flags.args[0];
+	const pathFrom = flags.args[1];
+	const pathTo = flags.args[2];
 	const pod = getCurrentPods(podName)[0];
-	execSilent(`kubectl cp ${pod.name}:"${pathFrom}" "${pathTo}"`);
+
+	const containerString = flags.container !== undefined ? `-c ${flags.container}` : "";
+
+	execSilent(`kubectl cp ${containerString} ${pod.name}:"${pathFrom}" "${pathTo}"`);
 	console.log(`Copy complete to ${pathTo}`);
 }
 
@@ -570,12 +579,24 @@ scripts.script = function(args) {
 	const isJsFile = fs.existsSync(`${rootPath}.js`);
 	
 	const path = isJsFile ? rootPath + ".js" : rootPath;
-	
-	const script = `${path} ${flags.join(" ")}`;
-	
-	exec(script, {
-		env : Object.assign({}, process.env, envVars)
-	});
+
+	const env = {
+		...process.env,
+		envVars
+	};
+
+	if (isJsFile) {
+		fork(path, {
+			env,
+			execArgv : flags
+		});
+	} else {
+		const script = `${path} ${flags.join(" ")}`;
+
+		exec(script, {
+			env : Object.assign({}, process.env, envVars)
+		});
+	}
 }
 
 scripts.restartPod = function(args) {
