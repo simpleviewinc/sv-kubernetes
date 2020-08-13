@@ -1,5 +1,8 @@
 # sv-kubernetes changelog
 
+## 8/13/2020
+* Adds `--github` flag to `sv install` for easily installing from a remote:branch for PR review.
+
 ## 05/19/2020
 * Update Kubernetes version from 1.13.7 to 1.14.10
 

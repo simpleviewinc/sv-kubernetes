@@ -137,14 +137,25 @@ scripts.build = function(args) {
 }
 
 scripts.install = async function(args) {
-	const { name, type, branch, remote, "no-dependencies" : noDependencies } = commandLineArgs([
+	let { name, type, branch, remote, "no-dependencies" : noDependencies, github } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
 		{ name : "type", type : String, defaultValue : "app" },
 		{ name : "branch", type : String, defaultValue : "master" },
 		{ name : "remote", type : String, defaultValue : "origin" },
+		{ name : "github", type : String },
 		{ name : "no-dependencies", type : Boolean }
 	], { argv : args.argv });
 	
+	if (github !== undefined) {
+		const match = github.match(/^(.*?):(.*)$/);
+		if (match === null || match.length !== 3) {
+			throw new Error(`Github flag is invalid, must be in the form copied from github like --github="remote:branch"`);
+		}
+
+		remote = match[1];
+		branch = match[2];
+	}
+
 	if (name === undefined) {
 		throw new Error("Must specify an application.");
 	}
