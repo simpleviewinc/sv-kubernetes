@@ -107,6 +107,8 @@ Here are a few scenarios and useful commands that can help troubleshoot your app
 * If you need to shell into a container so that you can explore it while it's running:
     * `sudo sv enterPod test-application-container`
     * This will shell into the running container so you can explore the runtime environment and folder structure.
+* If you have experienced a power outage or shutdown your environment without running `vagrant halt` please see the discourse article
+  [here](https://discourse.devops.simpleviewtools.com/t/unable-to-access-running-applications-in-sv-kubernetes-after-vagrant-workstation-reboot/167/2)
 
 # Application
 
@@ -194,6 +196,7 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs.
+* Always run `vagrant halt` to shutdown the environment prior to shutting down the host machine.
 
 ## Container Structure
 
