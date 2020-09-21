@@ -30,6 +30,7 @@ if [ "$minikube_start" == "true" ]; then
 		--vm-driver=none \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
 		--kubernetes-version="$kubernetes_version" \
+		--memory=2200mb \
 		--cpus 2
 	
 	# start any systems that need to be booted up after minikube starts
