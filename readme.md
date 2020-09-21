@@ -173,8 +173,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 
 * sv
 	* ids - An object containing each "image:tag" reference with the Docker image_id. The value is a hash of the exact contents, to verify whether the container has changed.
-		* Recommended use-case is to refer to `checksum: {{ index .Values.sv.ids "image:tag" }}`. In the `annotations` of your deployment.yaml template. This way the container will only restart if the checksum has changed.
-		* If the image name is coming from a variable, you can utilize that by swapping `"image:tag"` for `.Values.my_image_variable`. See example application for reference.
+		* Recommended use-case is to refer to `checksum: "{{ index .Values.sv.ids $image }}"`. In the `annotations` of your deployment.yaml template. This way the container will only restart if the checksum has changed.
 	* env - The current env dictated by the `sv start` command.
 	* containerPath - The path to the `/containers/` folder within the application. This way you can use relative paths to your containers making `yaml` files more portable between projects.
 	* applicationPath - The path to the folder of the application itself.
