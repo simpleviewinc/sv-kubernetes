@@ -3,11 +3,18 @@
 
 # halts execution of script if anything here fails + outputs everything
 set -e
-set -x
- 
+
+# checks to ensure that the /dev/sdb disk exists
+status=$((fdisk -l /dev/sdb >/dev/null 2>&1 && echo "0") || echo "1")
+
+# if the user hasn't run vagrant halt and vagrant up to init the disk then nothing to do, exit peacefully
+if [ $status == "1" ]; then
+   echo "Additional disk not added yet via vagrant halt and vagrant up."
+   exit 0
+fi
+
 if [ -f /etc/disk_added_date ]
 then
-   echo "disk already added so exiting."
    exit 0
 fi
  
