@@ -5,6 +5,8 @@ fi
 
 . /sv/scripts/errorHandler.sh
 
+. /sv/scripts/extend_disk.sh
+
 . /sv/scripts/install_dnsmasq.sh
 . /sv/scripts/install_github.sh
 . /sv/scripts/install_sv.sh
