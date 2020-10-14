@@ -637,8 +637,10 @@ scripts.editSecrets = function (args) {
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
+
+	const secretsFlag = flags.env ? 'env' : 'all';
 	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
-	secretsTemplate = secretsTemplate.replace(/\$\$env\$\$/g, flags.env || "all");
+	secretsTemplate = secretsTemplate.replace(/\$\$env\$\$/g, secretsFlag );
 	
 	const secretsFile = flags.env ? `${chartFolder}/secrets_${flags.env}.yaml` : `${chartFolder}/secrets.yaml`;
 	
