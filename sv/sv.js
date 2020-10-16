@@ -597,9 +597,8 @@ scripts.script = function(args) {
 	};
 
 	if (isJsFile) {
-		fork(path, {
-			env,
-			execArgv : flags
+		fork(path, flags, {
+			env
 		});
 	} else {
 		const script = `${path} ${flags.join(" ")}`;
