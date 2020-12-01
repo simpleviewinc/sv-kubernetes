@@ -169,7 +169,6 @@ scripts.install = async function(args) {
 		container : "containers"
 	}
 	
-	const github_token = fs.readFileSync(`/sv/internal/github_token`).toString();
 	const path = `/sv/${resultType[type]}/${name}`;
 	
 	if (!fs.existsSync(path)) {

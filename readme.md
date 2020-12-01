@@ -22,6 +22,8 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 ## Installation
 
+Generate an ssh key and save it as "[your home folder]/.ssh/id_rsa". Github has a good guide on how to do this. [Connecting to GitHub with SSH](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh)
+
 Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`, see [this thread](https://discourse.devops.simpleviewtools.com/t/unable-to-setup-sv-kubernetes/68) for more info.
 
 Open a command prompt as Admin and `cd` to the folder which you checked out this repository.
