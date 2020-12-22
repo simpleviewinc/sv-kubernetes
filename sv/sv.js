@@ -89,7 +89,8 @@ scripts.build = function(args) {
 		{ name : "name", type : String },
 		{ name : "app", type : String },
 		{ name : "pushTag", type : String },
-		{ name : "build-arg", type : String, multiple: true }
+		{ name : "build-arg", type : String, multiple: true },
+		{ name : "skipBuildSvInfo", type : Boolean }
 	], { argv : args.argv });
 	
 	if (flags.name === undefined) {
@@ -133,6 +134,10 @@ scripts.build = function(args) {
 	
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
+	}
+
+	if (flags.skipBuildSvInfo === undefined) {
+		exec(`sv _buildSvInfo`);
 	}
 }
 
@@ -346,7 +351,7 @@ scripts.start = function(args) {
 			
 			const buildArgString = myBuildArgs.join(" ");
 			
-			exec(`sv build ${buildArgString}`);
+			exec(`sv build --skipBuildSvInfo ${buildArgString}`);
 		});
 		
 		exec(`sv _buildSvInfo`);
