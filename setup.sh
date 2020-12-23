@@ -19,6 +19,7 @@ bash /sv/scripts/extend_disk.sh
 . /sv/scripts/install_crontab.sh
 
 . /sv/scripts/start_minikube.sh
+. /sv/scripts/start_helm.sh
 
 gcloud auth application-default login
 

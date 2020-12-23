@@ -33,8 +33,6 @@ if [ "$minikube_start" == "true" ]; then
 		--memory=2200mb \
 		--cpus 2
 	
-	# start any systems that need to be booted up after minikube starts
-	. /sv/scripts/start_helm.sh
 	# adds coredns so that external dns entries finish quickly
 	kubectl apply -f /sv/internal/coredns_config.yaml
 
