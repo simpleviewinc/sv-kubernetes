@@ -89,28 +89,10 @@ Run `sudo sv` for documentation within the VM.
 * [sv listProjects](docs/sv_listProjects.md) - List available kubernetes projects.
 
 ## Troubleshooting
-Here are a few scenarios and useful commands that can help troubleshoot your application(s)
 
-* If you receive the error `/sv/setup.sh: line 25: syntax error: unexpected end of file` when you attempt to run `sudo bash /sv/setup.sh`:
-    * This indicates that the repo was cloned with Windows line endings instead of Unix line endings
-    * To fix, follow the instructions in this [discourse answer](https://discourse.devops.simpleviewtools.com/t/unable-to-setup-sv-kubernetes/68)
-* Verify the application started:
-    *   `sudo kubectl get all`
-    *   All pods should be in ready 1/1 and status RUNNING
-* If the pods haven't started or are stuck in `ContainerCreating` describe the pod to see why it won't start:
-    * `sudo sv describePod [podname]`
-    * This should show the kubernetes events on a pod such as whether it can't mount a directory, or can't pull an image, or lacks some sort of permission.
-* If the pod has started but isn't responding to a browser request:
-    * `sudo sv logs --filter=test-application-container --watch`
-    * This will follow the `stdout` and `stderr` from the container allowing you to watch the output to see if it's bootlooping to failing in another way.
-* If your application is failing to start because of a helm or kubernetes error:
-    * `sudo sv start [my-app] local --dry-run --debug`
-    * This will output the compiled version of your kubernetes configs, with variables filled in. You can review the compiled yaml and see if there is an error in the way you are handling variables.
-* If you need to shell into a container so that you can explore it while it's running:
-    * `sudo sv enterPod test-application-container`
-    * This will shell into the running container so you can explore the runtime environment and folder structure.
-* If you have experienced a power outage or shutdown your environment without running `vagrant halt` please see the discourse article
-  [here](https://discourse.devops.simpleviewtools.com/t/unable-to-access-running-applications-in-sv-kubernetes-after-vagrant-workstation-reboot/167/2)
+If you are having problems with an sv-kubernetes application or the system itself, please see the documentation [here](https://wiki.simpleviewtools.com/display/PRD/Kubernetes).
+
+If the docs do not help then speak up in the #devops slack channel or the #devchannel Google chat room.
 
 # Application
 
