@@ -306,6 +306,37 @@ scripts.start = function(args) {
 	const settings = loadSettingsYaml(applicationName);
 	// use the dockerBase from config or dynamically generate it, the env variable will be present in circleci
 	const dockerBase = settings.dockerBase || `gcr.io/${process.env.PROJECT_ID}`;
+
+	const neededDependencies = [];
+	
+	if (settings.dependencies) {
+		
+		for(var [key, dependency] of Object.entries(settings.dependencies)) {
+			
+			if (!dependency.type) {
+				const dependencyPod = getCurrentPods(dependency.name);
+			
+				if(dependencyPod.length > 0) {
+					const [{name}] = dependencyPod;
+					const podReady = execSilent(`kubectl get pods ${name} -o jsonpath="{..status.containerStatuses[*].ready}"`)
+					if (!podReady){
+						neededDependencies.push(dependency.name);
+						continue;
+					}
+					continue;
+				}
+				neededDependencies.push(dependency.name);
+
+				console.log(`${neededDependencies} dependencies currently are not in a ready state. These dependencies are required to run ${applicationName}`);
+				return; 
+			}
+		}
+	}
+
+
+	debugger
+
+
 	
 	for(let [key, val] of Object.entries(settings)) {
 		if (typeof val === "string") {
