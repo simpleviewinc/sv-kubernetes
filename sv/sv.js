@@ -306,10 +306,9 @@ scripts.start = function(args) {
 	const settings = loadSettingsYaml(applicationName);
 	// use the dockerBase from config or dynamically generate it, the env variable will be present in circleci
 	const dockerBase = settings.dockerBase || `gcr.io/${process.env.PROJECT_ID}`;
-
-	const neededDependencies = [];
 	
 	if (settings.dependencies) {
+		const neededDependencies = [];
 		for(var [key, dependency] of Object.entries(settings.dependencies)) {
 			
 			if (!dependency.type) {
@@ -328,7 +327,7 @@ scripts.start = function(args) {
 		}
 
 		if(neededDependencies.length > 0){
-			console.log(`${neededDependencies} dependencies currently are not in a ready state. These dependencies are required to run ${applicationName}`);
+			console.log(`These dependencies "${neededDependencies}" are currently are not in a ready state. For ${applicationName}, ${neededDependencies} are required dependencies and need to be running in a ready state.`);
 			return; 
 		}
 	}
