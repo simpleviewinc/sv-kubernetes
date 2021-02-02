@@ -310,12 +310,10 @@ scripts.start = function(args) {
 	const neededDependencies = [];
 	
 	if (settings.dependencies) {
-		
 		for(var [key, dependency] of Object.entries(settings.dependencies)) {
 			
 			if (!dependency.type) {
 				const dependencyPod = getCurrentPods(dependency.name);
-			
 				if(dependencyPod.length <= 0) {
 					neededDependencies.push(dependency.name);
 					continue;
@@ -335,7 +333,6 @@ scripts.start = function(args) {
 		}
 	}
 
-	
 	for(let [key, val] of Object.entries(settings)) {
 		if (typeof val === "string") {
 			commandArgs.push(`--set sv.settings.${key}=${val}`);
