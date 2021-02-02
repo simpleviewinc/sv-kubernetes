@@ -316,26 +316,24 @@ scripts.start = function(args) {
 			if (!dependency.type) {
 				const dependencyPod = getCurrentPods(dependency.name);
 			
-				if(dependencyPod.length > 0) {
-					const [{name}] = dependencyPod;
-					const podReady = execSilent(`kubectl get pods ${name} -o jsonpath="{..status.containerStatuses[*].ready}"`)
-					if (!podReady){
-						neededDependencies.push(dependency.name);
-						continue;
-					}
+				if(dependencyPod.length <= 0) {
+					neededDependencies.push(dependency.name);
 					continue;
 				}
-				neededDependencies.push(dependency.name);
-
-				console.log(`${neededDependencies} dependencies currently are not in a ready state. These dependencies are required to run ${applicationName}`);
-				return; 
+			
+				const [{name}] = dependencyPod;
+				const podReady = execSilent(`kubectl get pods ${name} -o jsonpath="{..status.containerStatuses[*].ready}"`)
+				if (!podReady){
+					neededDependencies.push(dependency.name);
+				}
 			}
 		}
+
+		if(neededDependencies.length > 0){
+			console.log(`${neededDependencies} dependencies currently are not in a ready state. These dependencies are required to run ${applicationName}`);
+			return; 
+		}
 	}
-
-
-	debugger
-
 
 	
 	for(let [key, val] of Object.entries(settings)) {
