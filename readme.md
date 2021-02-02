@@ -51,7 +51,7 @@ Often in order to work your project you will want to install and start the follo
 
 * `sv-kube-proxy` allows you to access resources on your box at `kube.simpleview.io`.
 	* If your application needs an additional nginx entry, please pull request it in to that repo.
-* `sv-graphl` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
+* `sv-graphql` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
 	* If your application needs an additional graphql, please pull request it in to that repo.
 * `sv-geo` A microservice that returns geo location. Queries can be ran in the graphql playground at `graphql.kube.simpleview.io`.
 	* This repo is not required but if you are planning on building a graphql microservice it is recommended to pull down so that you can pull up a functional graphql application to ensure your env is functional.
