@@ -56,7 +56,7 @@ If no flag is passed a global secrets.yaml file is created. Both global and env
 sudo sv editSecrets sv-kubernetes-example
 
 # example for environment specific secrets
-sudo sv editSecrets sv-kubernetes-example --env live|qa|dev|test
+sudo sv editSecrets sv-kubernetes-example --env live|qa|dev|test|local
 ```
 
 > Depending on your application you may have more than one deployment.yaml file in app → chart → templates
