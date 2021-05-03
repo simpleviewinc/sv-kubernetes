@@ -1,6 +1,6 @@
 . /sv/scripts/errorHandler.sh
 
-kubectl_version="v1.14.10" # previous version v1.13.7
+kubectl_version="v1.17.4" # previous version v1.13.7
 current_kubectl_version=$(kubectl version --client --short 2> /dev/null || true)
 kubectl_version_expected=$"Client Version: $kubectl_version"
 
