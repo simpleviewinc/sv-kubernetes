@@ -169,7 +169,6 @@ scripts.install = async function(args) {
 		container : "containers"
 	}
 	
-	const github_token = fs.readFileSync(`/sv/internal/github_token`).toString();
 	const path = `/sv/${resultType[type]}/${name}`;
 	
 	if (!fs.existsSync(path)) {
@@ -597,9 +596,8 @@ scripts.script = function(args) {
 	};
 
 	if (isJsFile) {
-		fork(path, {
-			env,
-			execArgv : flags
+		fork(path, flags, {
+			env
 		});
 	} else {
 		const script = `${path} ${flags.join(" ")}`;
@@ -637,8 +635,10 @@ scripts.editSecrets = function (args) {
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
+
+	const secretsFlag = flags.env ? 'env' : 'all';
 	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
-	secretsTemplate = secretsTemplate.replace(/\$\$env\$\$/g, flags.env || "all");
+	secretsTemplate = secretsTemplate.replace(/\$\$env\$\$/g, secretsFlag );
 	
 	const secretsFile = flags.env ? `${chartFolder}/secrets_${flags.env}.yaml` : `${chartFolder}/secrets.yaml`;
 	
