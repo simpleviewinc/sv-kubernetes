@@ -324,6 +324,17 @@ scripts.start = function(args) {
 			`--app ${applicationName}`,
 			`--build-arg SV_ENV=${env}`
 		];
+
+		// Build Args from helm values
+		try {
+			const valuesYaml = js_yaml.load(fs.readFileSync(`${envFile}`, 'utf8'));
+			if(valuesYaml["build_args"] !== undefined && valuesYaml["build_args"].length > 0) {
+				buildArgs.push(...mapBuildArgs(valuesYaml["build_args"]));
+			}
+		} catch (e) {
+			console.log(e);
+		}
+		
 		
 		if (flags["build-arg"] !== undefined) {
 			buildArgs.push(...mapBuildArgs(flags["build-arg"]));
@@ -345,6 +356,8 @@ scripts.start = function(args) {
 			}
 			
 			const buildArgString = myBuildArgs.join(" ");
+
+			console.log("Command: sv build ", buildArgString)
 			
 			exec(`sv build ${buildArgString}`);
 		});
