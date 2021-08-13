@@ -3,6 +3,7 @@ Usage: sudo sv [command]
 Commands:
 	build           Build a container and tag it
 	copyFrom        Copy a file from a running container
+	dashboard       Start and Stop the Minikube Dashboard & Metrics Server
 	editSecrets     Edit/Create secret files
 	enterPod        Enter a running container
 	getContext      Get the current Kubernetes Context

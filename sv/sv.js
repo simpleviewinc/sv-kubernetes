@@ -705,6 +705,43 @@ scripts.deleteFailedPods = function() {
 	}
 }
 
+/**
+ * Scripts to Manage Minikube Dashboard
+ */
+
+ scripts.dashboard = function (args) {
+	/**
+	 * @type {string}
+	 */
+	const _command = args.argv[0];
+	
+	if( ! /[start|stop]/.test(_command)) {
+		throw new Error ("You must pass a start or stop argument to the command.")
+	}
+	
+	if (_command === "start") {
+		exec(`echo "Starting Minikube Dashboard"`);
+		execSilent(`sudo minikube addons enable dashboard`);
+		
+		exec(`echo "Starting Metrics Server"`);
+		execSilent(`sudo minikube addons enable metrics-server`);
+		
+		exec(`echo "Patching Kubernetes Dashboard Service"`);
+		exec(`
+			sudo kubectl patch service kubernetes-dashboard -n kubernetes-dashboard -p \
+			'{"spec": { "type": "NodePort", "ports": [{"port": 80, "nodePort": 9090}]}}'
+		`)
+		exec(`echo "Minikube Dashboard Started - http://192.168.50.100:9090"`);
+	}
+	
+	if (_command === "stop") {
+		exec(`echo "Stopping the Minikube Dashboard. Please wait."`);
+		execSilent(`sudo minikube addons disable dashboard`);
+		execSilent(`sudo minikube addons disable metrics-server`);
+		exec(`echo "Minikube Dashboard Disabled Successfully."`);
+	}
+};
+
 //// PRIVATE METHODS
 
 const validateEnv = function(env) {
