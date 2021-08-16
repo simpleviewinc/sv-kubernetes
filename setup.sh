@@ -5,6 +5,8 @@ fi
 
 . /sv/scripts/errorHandler.sh
 
+apt-get update
+
 bash /sv/scripts/extend_disk.sh
 
 . /sv/scripts/install_dnsmasq.sh
