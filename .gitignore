@@ -9,3 +9,4 @@ sv-kubernetes.sublime-workspace
 .DS_Store
 node_modules
 extended-disk.vdi
+scripts/aws*
