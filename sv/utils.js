@@ -24,11 +24,12 @@ function getCurrentContext() {
 }
 
 /**
+ * Deep-merge an object with another object where arrays overwrite rather than blending.
  * @param {Object} object
- * @param {...Object} sources
+ * @param {Object} object2
 */
-function deepMerge(object, sources) {
-	return lodash.mergeWith(object, sources, function(objValue, srcValue) {
+function deepMerge(object, object2) {
+	return lodash.mergeWith(object, object2, function(objValue, srcValue) {
 		if (objValue instanceof Array) {
 			return srcValue;
 		}

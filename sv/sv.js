@@ -12,6 +12,15 @@ const chalk = require('chalk');
 const lodash = require("lodash");
 const scriptsNew = require("./scripts");
 
+const {
+	exec,
+	execSilent,
+	getCurrentContext,
+	loadSettingsYaml,
+	logContext,
+	mapBuildArgs,
+} = require("./utils");
+
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
 var argv = process.argv.filter(function(val, i){ return i > 2; });
@@ -20,28 +29,6 @@ const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
 
 /** @type {Record<string, ({}: { argv: string[] }) => void>} */
 const scripts = { ...scriptsNew };
-
-var exec = function(command, options = {}) {
-	return execSync(command, Object.assign({ stdio : "inherit" }, options));
-}
-
-var execSilent = function(command, options = {}) {
-	return execSync(command, Object.assign({ stdio : "pipe" }, options)).toString().trim();
-}
-
-function getCurrentContext() {
-	return execSync("kubectl config current-context").toString().trim();
-}
-
-function logContext() {
-	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
-}
-
-function log(str) {
-	var now = new Date();
-
-	console.log(now.toISOString(), str);
-}
 
 function checkOutdated() {
 	const path = `/tmp/check_outdated.txt`;
@@ -81,10 +68,6 @@ function gitStatus(path) {
 	} else {
 		return "behind";
 	}
-}
-
-function mapBuildArgs(args=[]) {
-	return args.map(arg => `--build-arg ${arg}`);
 }
 
 // public scripts
@@ -274,7 +257,6 @@ scripts.start = function(args) {
 	if (flags.build !== undefined) {
 		const buildArgs = [
 			`--app ${applicationName}`,
-			// `--build-arg SV_ENV=${env}`
 			`--env ${env}`
 		];
 
@@ -680,36 +662,8 @@ const validateContainer = function(container) {
 	}
 }
 
-const validatePath = function(path) {
-	if (fs.existsSync(path) === false) {
-		throw new Error(`Invalid path ${path}`);
-	}
-}
-
 /**
- * Read a YAML file
- * @param {string} path - Path to load the YAML from.
-*/
-const loadYaml = function(path) {
-	if (fs.existsSync(path) === false) {
-		return {};
-	}
-
-	const yaml = js_yaml.safeLoad(fs.readFileSync(path));
-	return yaml;
-}
-
-/**
- * Returns the settings yaml for an application
- * @param {string} app - Name of the application.
- * @returns {import("./definitions").SettingsDef}
-*/
-const loadSettingsYaml = function(app) {
-	return loadYaml(`/sv/applications/${app}/settings.yaml`)
-}
-
-/**
- * @param {string} filter - The pod or application you are filtering on
+ * @param {string} [filter] - The pod or application you are filtering on
  * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
  */
 function getCurrentPods(filter, container) {

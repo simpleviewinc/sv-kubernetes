@@ -12,7 +12,7 @@ const dockerfilePaths = [
 	`${__dirname}/applications/settings-test/containers/build-arg-secrets`
 ]
 
-describe.only(__filename, function() {
+describe(__filename, function() {
 	before(async function() {
 		for(let path of dockerfilePaths) {
 			await fs.promises.copyFile(`${__dirname}/Dockerfile`, `${path}/Dockerfile`);
