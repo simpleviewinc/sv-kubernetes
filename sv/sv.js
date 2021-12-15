@@ -35,7 +35,7 @@ function logContext() {
 
 function log(str) {
 	var now = new Date();
-	
+
 	console.log(now.toISOString(), str);
 }
 
@@ -45,13 +45,13 @@ function checkOutdated() {
 	if (!fs.existsSync(path)) {
 		execSilent(`touch ${path}`);
 	}
-	
+
 	const stats = fs.statSync(path);
 	if (stats.mtimeMs + allowedAge > Date.now()) {
 		// we have checked for updates already today, do nothing
 		return;
 	}
-	
+
 	execSilent("git fetch", { cwd : "/sv" });
 	const status = gitStatus("/sv");
 	if (status === "behind") {
@@ -60,7 +60,7 @@ function checkOutdated() {
 		console.log("See the change log at https://github.com/simpleviewinc/sv-kubernetes/blob/master/changelog.md for more info.");
 		console.log("-----------------");
 	}
-	
+
 	execSilent(`touch ${path}`);
 }
 
@@ -68,7 +68,7 @@ function gitStatus(path) {
 	const localCommit = execSilent(`git rev-parse @`, { cwd : path });
 	const remoteCommit = execSilent(`git rev-parse @{u}`, { cwd : path });
 	const baseCommit = execSilent(`git merge-base @ @{u}`, { cwd : path });
-	
+
 	// check the status of our remote working copy versus the remote to see if we have changes
 	if (localCommit === remoteCommit) {
 		return "equal";
@@ -91,14 +91,14 @@ scripts.build = function(args) {
 		{ name : "pushTag", type : String },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv : args.argv });
-	
+
 	if (flags.name === undefined) {
 		throw new Error(`Must specify '--name'`);
 	}
-	
+
 	let path;
 	let containerName;
-	
+
 	if (flags.app === undefined) {
 		path = `/sv/containers/${flags.name}`;
 		containerName = flags.name;
@@ -106,31 +106,31 @@ scripts.build = function(args) {
 		path = `/sv/applications/${flags.app}/containers/${flags.name}`;
 		containerName = `${flags.app}-${flags.name}`;
 	}
-	
+
 	validatePath(path);
-	
+
 	const commandArgs = [];
 	commandArgs.push(`-t ${containerName}:local`);
-	
+
 	if (flags.pushTag !== undefined) {
 		commandArgs.push(`-t ${flags.pushTag}`);
 	}
-	
+
 	if (flags.pushTag !== undefined) {
 		// if we have a pushTag attempt a pull so we can prime the docker cache, if the remote image doesn't exist, we ignore the error
 		exec(`cd ${path} && docker pull ${flags.pushTag} || true`);
 		commandArgs.push(`--cache-from ${flags.pushTag}`);
 	}
-	
+
 	if (flags["build-arg"] !== undefined) {
 		commandArgs.push(...mapBuildArgs(flags["build-arg"]));
 	}
-	
+
 	const commandArgString = commandArgs.join(" ");
 	log(`Starting build of ${containerName}`);
 	exec(`cd ${path} && docker build ${commandArgString} .`);
 	log(`Completed build of ${containerName}`);
-	
+
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
 	}
@@ -145,7 +145,7 @@ scripts.install = async function(args) {
 		{ name : "github", type : String },
 		{ name : "no-dependencies", type : Boolean }
 	], { argv : args.argv });
-	
+
 	if (github !== undefined) {
 		const match = github.match(/^(.*?):(.*)$/);
 		if (match === null || match.length !== 3) {
@@ -159,37 +159,37 @@ scripts.install = async function(args) {
 	if (name === undefined) {
 		throw new Error("Must specify an application.");
 	}
-	
+
 	if (["app", "container"].includes(type) === false) {
 		throw new Error("Type must be 'app' or 'container'");
 	}
-	
+
 	const resultType = {
 		app : "applications",
 		container : "containers"
 	}
-	
+
 	const path = `/sv/${resultType[type]}/${name}`;
-	
+
 	if (!fs.existsSync(path)) {
 		// initialize the repo from sv origin master branch
 		exec(`git clone --recurse-submodules git@github.com:simpleviewinc/${name}.git ${path}`);
 	}
-	
+
 	// execute from a specific path pipes the output via stdio inherit
 	const execPath = function(str) {
 		return exec(str, { cwd : path });
 	}
-	
+
 	// execute from a specific path but return the result to a variable rather than stdio
 	const execPathSilent = function(str) {
 		return execSilent(str, { cwd : path });
 	}
-	
+
 	const desiredRemoteBranch = `remotes/${remote}/${branch}`;
 	const desiredLocalBranch = remote === "origin" ? branch : `${remote}-${branch}`;
 	const localTracking = `${remote}/${branch}`;
-	
+
 	// if we are referencing another remote, we need to add it to the repository
 	if (remote !== "origin") {
 		try {
@@ -200,10 +200,10 @@ scripts.install = async function(args) {
 			execPath(`git remote add ${remote} git@github.com:${remote}/${name}.git`);
 		}
 	}
-	
+
 	// pull down the latest code from that remote
 	execPath(`git fetch --recurse-submodules ${remote}`);
-	
+
 	// check out local copy to see if we have untracked changes
 	const result = git_state.checkSync(path);
 	for(var i of ["dirty", "untracked"]) {
@@ -212,9 +212,9 @@ scripts.install = async function(args) {
 			return;
 		}
 	}
-	
+
 	const tracking = execPathSilent(`git rev-parse --abbrev-ref --symbolic-full-name @{u}`);
-	
+
 	if (localTracking !== tracking) {
 		console.log(`Repository ${path} is currently checked out to '${tracking}' this will switch it to '${localTracking}'`);
 		const result = await readP({ prompt : "Press [enter] to continue, or type 'no' to skip: " });
@@ -226,12 +226,12 @@ scripts.install = async function(args) {
 				// branch doesn't exist, add it
 				execPath(`git branch "${desiredLocalBranch}" --track "${desiredRemoteBranch}"`);
 			}
-			
+
 			execPath(`git checkout "${desiredLocalBranch}"`);
 			execPath(`git submodule update --init --recursive`);
 		}
 	}
-	
+
 	const status = gitStatus(path);
 	if (status !== "equal") {
 		console.log(`Repository ${path} can be updated, this will git pull those changes.`);
@@ -240,7 +240,7 @@ scripts.install = async function(args) {
 			execPath(`git pull --recurse-submodules`);
 		}
 	}
-	
+
 	if (type === "app" && !noDependencies) {
 		// if we are install an app, see if the app has dependencies and sv install those as well
 		const settings = loadSettingsYaml(name);
@@ -250,13 +250,13 @@ scripts.install = async function(args) {
 				if (dependency.type) {
 					argsArr.push(`--type=${dependency.type}`);
 				}
-				
+
 				if (dependency.branch) {
 					argsArr.push(`--branch=${dependency.branch}`);
 				}
-				
+
 				const argString = argsArr.join(" ");
-				
+
 				exec(`sv install ${dependency.name} ${argString}`);
 			}
 		}
@@ -269,10 +269,10 @@ scripts.start = function(args) {
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
 	var env = myArgs.shift();
-	
+
 	validateApp(applicationName);
 	validateEnv(env);
-	
+
 	var flags = commandLineArgs([
 		{ name : "build", type : Boolean },
 		{ name : "push", type : Boolean },
@@ -280,13 +280,13 @@ scripts.start = function(args) {
 		{ name : "tag", type : String },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
-	
+
 	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
-	
+
 	commandArgs.push(
 		deploymentName,
 		chartFolder,
@@ -297,22 +297,22 @@ scripts.start = function(args) {
 		`--set sv.containerPath=${containerFolder}`,
 		`-f /sv/internal/sv.json`
 	);
-	
+
 	var envFile = `${chartFolder}/values_${env}.yaml`;
 	if (fs.existsSync(envFile)) {
 		commandArgs.push(`-f ${envFile}`);
 	}
-	
+
 	const settings = loadSettingsYaml(applicationName);
 	// use the dockerBase from config or dynamically generate it, the env variable will be present in circleci
 	const dockerBase = settings.dockerBase || `gcr.io/${process.env.PROJECT_ID}`;
-	
+
 	for(let [key, val] of Object.entries(settings)) {
 		if (typeof val === "string") {
 			commandArgs.push(`--set sv.settings.${key}=${val}`);
 		}
 	}
-	
+
 	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
@@ -324,34 +324,34 @@ scripts.start = function(args) {
 			`--app ${applicationName}`,
 			`--build-arg SV_ENV=${env}`
 		];
-		
+
 		if (flags["build-arg"] !== undefined) {
 			buildArgs.push(...mapBuildArgs(flags["build-arg"]));
 		}
-		
+
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
 		const dirs =
 			settings[`buildOrder_${env}`] ||
 			settings.buildOrder ||
 			fs.readdirSync(containerFolder).filter(isDirectory)
 		;
-		
+
 		dirs.forEach(function(val, i) {
 			const myBuildArgs = [...buildArgs];
 			myBuildArgs.push(`--name ${val}`);
-			
+
 			if (flags.push === true) {
 				myBuildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
 			}
-			
+
 			const buildArgString = myBuildArgs.join(" ");
-			
+
 			exec(`sv build ${buildArgString}`);
 		});
-		
+
 		exec(`sv _buildSvInfo`);
 	}
-	
+
 	const secretFilesArray = [
 		{
 			encrypted : `${chartFolder}/secrets.yaml`,
@@ -362,7 +362,7 @@ scripts.start = function(args) {
 			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`
 		}
 	]
-	
+
 	function deleteSecrets() {
 		secretFilesArray.forEach(file => {
 			// ensure the file exists before attempting to delete it.
@@ -371,7 +371,7 @@ scripts.start = function(args) {
 			}
 		});
 	}
-	
+
 	// Load Secrets
 	secretFilesArray.forEach(file => {
 		// check if the encrypted file exists before loading
@@ -385,14 +385,14 @@ scripts.start = function(args) {
 			}
 		}
 	});
-	
+
 	// append flags we don't recognize to pass to upgrade
 	if (flags._unknown) {
 		commandArgs.push(...flags._unknown);
 	}
-	
+
 	const commandArgString = commandArgs.join(" ");
-	
+
 	try {
 		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
 		exec(`helm upgrade ${commandArgString}`);
@@ -406,7 +406,7 @@ scripts.stop = function(args) {
 	logContext();
 
 	var applicationName = args.argv[0];
-	
+
 	exec(`helm delete ${applicationName} --purge`);
 }
 
@@ -418,14 +418,14 @@ scripts.logs = function(args) {
 		// watch the pods to listen as the pods start/stop/restart
 		{ name : "watch", type : String }
 	], { argv : args.argv });
-	
+
 	if (flags.filter === undefined) {
 		throw new Error("Must specify an application/pod to retrieve logs from.");
 	}
 
 	if (flags.watch === undefined) {
 		var pods = getCurrentPods(flags.filter, flags.container);
-		
+
 		pods.forEach(function(pod) {
 			pod.containerNames.forEach(containerName => {
 				exec(`kubectl logs ${pod.name} -c ${containerName}`);
@@ -445,18 +445,18 @@ scripts.test = function(args) {
 	var flags = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true }
 	], { argv : args.argv });
-	
+
 	var names = [];
 	var pods = getCurrentPods(flags.name).filter(val => val.testCommand !== undefined);
-	
+
 	pods.forEach(function(val, i) {
 		if (names.includes(val.rootName) === true) {
 			// we have already tested this container
 			return;
 		}
-		
+
 		names.push(val.rootName);
-		
+
 		console.log(`Running tests on ${val.name}`);
 		try {
 			exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
@@ -545,12 +545,12 @@ scripts.describePod = function(args) {
 	if (podName === undefined) {
 		throw new Error("Must specify a pod to enter.");
 	}
-	
+
 	const pod = getCurrentPods(podName)[0];
 	if (pod === undefined) {
 		throw new Error(`${podName} not is not currently installed or running.`);
 	}
-	
+
 	console.log(`Describe Pod: ${pod.name}`);
 	exec(`kubectl describe pod/${pod.name}`);
 }
@@ -575,19 +575,19 @@ scripts.copyFrom = function(args) {
 
 scripts.script = function(args) {
 	const [applicationName, scriptName, ...flags] = args.argv;
-	
+
 	validateApp(applicationName);
-	
+
 	const appPath = `/sv/applications/${applicationName}`;
-	
+
 	const envVars = {
 		SV_APP_PATH : appPath,
 		SV_APP_NAME : applicationName
 	};
-	
+
 	const rootPath = `${appPath}/scripts/${scriptName}`;
 	const isJsFile = fs.existsSync(`${rootPath}.js`);
-	
+
 	const path = isJsFile ? rootPath + ".js" : rootPath;
 
 	const env = {
@@ -611,27 +611,27 @@ scripts.script = function(args) {
 scripts.restartPod = function(args) {
 	const podName = args.argv[0];
 	const pods = getCurrentPods(podName);
-	
+
 	if (pods.length > 1) {
 		throw new Error("Pod name returned more than 1 pod.");
 	}
-	
+
 	exec(`kubectl delete pod ${pods[0].name} --force --grace-period=0`);
 }
 
 scripts.editSecrets = function (args) {
 	const myArgs = args.argv.slice();
 	const applicationName = myArgs.shift();
-	
+
 	const flags = commandLineArgs([
 		{ name : "env", type : String }
 	], { argv : myArgs, stopAtFirstUnknown : true });
-	
+
 	validateApp(applicationName);
 	if (flags.env) {
 		validateEnv(flags.env)
 	}
-	
+
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
@@ -639,20 +639,20 @@ scripts.editSecrets = function (args) {
 	const secretsFlag = flags.env ? 'env' : 'all';
 	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
 	secretsTemplate = secretsTemplate.replace(/\$\$env\$\$/g, secretsFlag );
-	
+
 	const secretsFile = flags.env ? `${chartFolder}/secrets_${flags.env}.yaml` : `${chartFolder}/secrets.yaml`;
-	
+
 	// start the new secrets file from the secretsTemplate.yaml file.
 	if (!fs.existsSync(secretsFile)) {
 		fs.writeFileSync(secretsFile, secretsTemplate);
 	}
-	
+
 	const settings = loadSettingsYaml(applicationName);
-	
+
 	if (settings.secrets_key === undefined) {
 		throw new Error("You must have a 'secrets_key' variable in your settings.yaml.");
 	}
-	
+
 	exec(`EDITOR=nano kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
 }
 
@@ -660,7 +660,7 @@ scripts.debug = function(args) {
 	function reverse(str) {
 		console.log("\x1b[7m%s\x1b[0m", str);
 	}
-	
+
 	function block(title, fn) {
 		console.log("--------");
 		reverse(title);
@@ -672,7 +672,7 @@ scripts.debug = function(args) {
 		}
 		console.log("");
 	}
-	
+
 	block("Memory Utilized", () => exec(`sudo free -m`));
 	block("Kubernetes Version", () => exec(`kubectl version --short`));
 	block("Docker Version", () => exec(`docker -v`));
@@ -738,7 +738,7 @@ const loadSettingsYaml = function(app) {
 	if (fs.existsSync(path) === false) {
 		return {};
 	}
-	
+
 	const settings = js_yaml.safeLoad(fs.readFileSync(path));
 	return settings;
 }
@@ -753,7 +753,7 @@ function getCurrentPods(filter, container) {
 
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
 	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
-	
+
 	// simplify the return for downstream functions
 	let pods = originalPods.map(val => ({
 		name : val.metadata.name,
@@ -790,7 +790,7 @@ async function watchPods(filter, container) {
 		containerNames.forEach(containerName => {
 			const key = `${name}:${containerName}`;
 			names.push(key);
-			
+
 			if (_watched[key] === undefined) {
 				console.log(`Adding watcher for pod ${key}`);
 				var child = spawn(`kubectl`, ["logs", name, "-f", "-c", containerName], { stdio : "inherit" });
@@ -798,12 +798,12 @@ async function watchPods(filter, container) {
 					console.log(`pod closing ${key} ${code}`);
 					delete _watched[key];
 				});
-				
+
 				_watched[key] = child;
 			}
 		});
 	});
-	
+
 	for(var i in _watched) {
 		if (names.includes(i) === false) {
 			_watched[i].kill();
@@ -825,7 +825,7 @@ scripts._buildSvInfo = function(args) {
 		var items = val.split(",");
 		results.sv.ids[`${items[0]}:${items[1]}`] = items[2];
 	});
-	
+
 	fs.writeFileSync(`/sv/internal/sv.json`, JSON.stringify(results, null, "\t"));
 }
 
