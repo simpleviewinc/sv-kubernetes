@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+//@ts-check
 
 const fs = require("fs");
 const { execSync, spawn, fork } = require("child_process");
@@ -8,6 +9,8 @@ const commandLineArgs = require("command-line-args");
 const js_yaml = require("js-yaml");
 const git_state = require("git-state");
 const chalk = require('chalk');
+const lodash = require("lodash");
+const scriptsNew = require("./scripts");
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -15,7 +18,8 @@ var argv = process.argv.filter(function(val, i){ return i > 2; });
 
 const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
 
-var scripts = {};
+/** @type {Record<string, ({}: { argv: string[] }) => void>} */
+const scripts = { ...scriptsNew };
 
 var exec = function(command, options = {}) {
 	return execSync(command, Object.assign({ stdio : "inherit" }, options));
@@ -84,58 +88,6 @@ function mapBuildArgs(args=[]) {
 }
 
 // public scripts
-scripts.build = function(args) {
-	const flags = commandLineArgs([
-		{ name : "name", type : String },
-		{ name : "app", type : String },
-		{ name : "pushTag", type : String },
-		{ name : "build-arg", type : String, multiple: true }
-	], { argv : args.argv });
-
-	if (flags.name === undefined) {
-		throw new Error(`Must specify '--name'`);
-	}
-
-	let path;
-	let containerName;
-
-	if (flags.app === undefined) {
-		path = `/sv/containers/${flags.name}`;
-		containerName = flags.name;
-	} else {
-		path = `/sv/applications/${flags.app}/containers/${flags.name}`;
-		containerName = `${flags.app}-${flags.name}`;
-	}
-
-	validatePath(path);
-
-	const commandArgs = [];
-	commandArgs.push(`-t ${containerName}:local`);
-
-	if (flags.pushTag !== undefined) {
-		commandArgs.push(`-t ${flags.pushTag}`);
-	}
-
-	if (flags.pushTag !== undefined) {
-		// if we have a pushTag attempt a pull so we can prime the docker cache, if the remote image doesn't exist, we ignore the error
-		exec(`cd ${path} && docker pull ${flags.pushTag} || true`);
-		commandArgs.push(`--cache-from ${flags.pushTag}`);
-	}
-
-	if (flags["build-arg"] !== undefined) {
-		commandArgs.push(...mapBuildArgs(flags["build-arg"]));
-	}
-
-	const commandArgString = commandArgs.join(" ");
-	log(`Starting build of ${containerName}`);
-	exec(`cd ${path} && docker build ${commandArgString} .`);
-	log(`Completed build of ${containerName}`);
-
-	if (flags.pushTag !== undefined) {
-		exec(`cd ${path} && docker push ${flags.pushTag}`);
-	}
-}
-
 scripts.install = async function(args) {
 	let { name, type, branch, remote, "no-dependencies" : noDependencies, github } = commandLineArgs([
 		{ name : "name", type : String, defaultOption : true },
@@ -322,7 +274,8 @@ scripts.start = function(args) {
 	if (flags.build !== undefined) {
 		const buildArgs = [
 			`--app ${applicationName}`,
-			`--build-arg SV_ENV=${env}`
+			// `--build-arg SV_ENV=${env}`
+			`--env ${env}`
 		];
 
 		if (flags["build-arg"] !== undefined) {
@@ -592,7 +545,7 @@ scripts.script = function(args) {
 
 	const env = {
 		...process.env,
-		envVars
+		...envVars
 	};
 
 	if (isJsFile) {
@@ -733,14 +686,26 @@ const validatePath = function(path) {
 	}
 }
 
-const loadSettingsYaml = function(app) {
-	const path = `/sv/applications/${app}/settings.yaml`;
+/**
+ * Read a YAML file
+ * @param {string} path - Path to load the YAML from.
+*/
+const loadYaml = function(path) {
 	if (fs.existsSync(path) === false) {
 		return {};
 	}
 
-	const settings = js_yaml.safeLoad(fs.readFileSync(path));
-	return settings;
+	const yaml = js_yaml.safeLoad(fs.readFileSync(path));
+	return yaml;
+}
+
+/**
+ * Returns the settings yaml for an application
+ * @param {string} app - Name of the application.
+ * @returns {import("./definitions").SettingsDef}
+*/
+const loadSettingsYaml = function(app) {
+	return loadYaml(`/sv/applications/${app}/settings.yaml`)
 }
 
 /**
@@ -831,20 +796,20 @@ scripts._buildSvInfo = function(args) {
 
 if (process.argv.length < 3) {
 	console.log(fs.readFileSync(`/sv/docs/sv.md`).toString());
-	return;
+	process.exit();
 }
 
 if (process.argv.length === 4 && process.argv[3] === "--help") {
 	var docPath = `/sv/docs/sv_${scriptName}.md`;
 	if (fs.existsSync(docPath)) {
 		console.log(fs.readFileSync(docPath).toString());
-		return;
+		process.exit();
 	}
 }
 
 if (scripts[scriptName] === undefined) {
 	console.log(`Script '${scriptName}' doesn't exist.`);
-	return;
+	process.exit();
 }
 
 checkOutdated();
