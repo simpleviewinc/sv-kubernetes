@@ -58,13 +58,7 @@ function build({ argv }) {
 		commandArgs.push(`--cache-from ${flags.pushTag}`);
 	}
 
-	if (flags.env !== undefined) {
-		commandArgs.push(`--build-arg SV_ENV=${flags.env}`);
-	}
-
-	if (flags["build-arg"] !== undefined) {
-		commandArgs.push(...mapBuildArgs(flags["build-arg"]));
-	}
+	const buildArgs = {};
 
 	const settings = loadSettingsYaml(flags.app);
 	const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === flags.name)[0] : undefined;
@@ -93,12 +87,29 @@ function build({ argv }) {
 			const value = lodash.get(mergeData, arg.path);
 
 			if (value !== undefined) {
-				commandArgs.push(`--build-arg ${arg.name}='${value}'`);
+				buildArgs[arg.name] = value;
 			}
 		}
 	}
 
+	if (flags["build-arg"] !== undefined) {
+		for(let arg of flags["build-arg"]) {
+			const parts = arg.split("=");
+			buildArgs[parts[0]] = parts[1];
+		}
+	}
+
+
+	if (flags.env !== undefined) {
+		buildArgs.SV_ENV = flags.env;
+	}
+
+	for(let [key, value] of Object.entries(buildArgs)) {
+		commandArgs.push(`--build-arg ${key}='${value}'`);
+	}
+
 	const commandArgString = commandArgs.join(" ");
+
 	log(`Starting build of ${containerName}`);
 	exec(`cd ${path} && docker build ${commandArgString} .`);
 	log(`Completed build of ${containerName}`);

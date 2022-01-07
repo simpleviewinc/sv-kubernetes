@@ -74,6 +74,20 @@ describe(__filename, function() {
 				}
 			},
 			{
+				name : "build app container with settings defined build args overwritten by command line",
+				args : {
+					argv : ["--app=settings-test", "--name=test", "--build-arg=VAR1=overwrite"],
+					tag : "settings-test-test:local",
+					name : `${__dirname}/applications/settings-test/containers/test`,
+					vars : {
+						env : "",
+						var1 : "overwrite",
+						var2 : "key2Value",
+						var3 : ""
+					}
+				}
+			},
+			{
 				name : "build app container with settings defined build args and env",
 				args : {
 					argv : ["--app=settings-test", "--name=test", "--env=local"],
@@ -124,6 +138,20 @@ describe(__filename, function() {
 					vars : {
 						env : "",
 						var1 : "",
+						var2 : "",
+						var3 : ""
+					}
+				}
+			},
+			{
+				name : "should not allow overwrite of SV_ENV",
+				args : {
+					argv : ["--name=container-test", "--env=local", "--build-arg=VAR1=var1Value", "--build-arg=SV_ENV=dev"],
+					tag : "container-test:local",
+					name : `${__dirname}/containers/container-test`,
+					vars : {
+						env : "local",
+						var1 : "var1Value",
 						var2 : "",
 						var3 : ""
 					}
