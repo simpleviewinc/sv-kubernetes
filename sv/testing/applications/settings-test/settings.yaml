@@ -1,3 +1,4 @@
+secrets_key: gcp:projects/sv-shared-231700/locations/global/keyRings/kubernetes/cryptoKeys/sv-kubernetes-example
 buildArgs:
   - container: test
     args:

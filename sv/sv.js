@@ -6,10 +6,8 @@ const { execSync, spawn, fork } = require("child_process");
 const read = require("read");
 const util = require("util");
 const commandLineArgs = require("command-line-args");
-const js_yaml = require("js-yaml");
 const git_state = require("git-state");
 const chalk = require('chalk');
-const lodash = require("lodash");
 const scriptsNew = require("./scripts");
 
 const {
@@ -20,6 +18,8 @@ const {
 	logContext,
 	mapBuildArgs,
 } = require("./utils");
+
+const constants = require("./constants");
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -567,9 +567,8 @@ scripts.editSecrets = function (args) {
 		validateEnv(flags.env)
 	}
 
-	const appFolder = `/sv/applications/${applicationName}`;
+	const appFolder = `${constants.APPS_FOLDER}/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
-	const containerFolder = `${appFolder}/containers`;
 
 	const secretsFlag = flags.env ? 'env' : 'all';
 	let secretsTemplate = fs.readFileSync(`/sv/internal/secretsTemplate.yaml`).toString();
@@ -649,7 +648,8 @@ const validateEnv = function(env) {
 }
 
 const validateApp = function(app) {
-	const folder = `/sv/applications/${app}`;
+	const folder = `${constants.APPS_FOLDER}/${app}`;
+
 	if (fs.existsSync(folder) === false) {
 		throw new Error(`Invalid app ${app}`);
 	}
