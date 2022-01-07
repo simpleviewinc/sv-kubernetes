@@ -1,0 +1,15 @@
+buildArgs:
+  - container: test
+    args:
+      - name: VAR1
+        path: "values.key"
+      - name: VAR2
+        path: "values.key2"
+  - container: build-arg-secrets
+    args:
+      - name: VAR1
+        path: "values.key"
+      - name: VAR2
+        path: "secrets.SECRET_ENV_VAR"
+      - name: VAR3
+        path: "secrets_env.SECRET_ENV_SPECIFIC"

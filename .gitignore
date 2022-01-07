@@ -1,6 +1,6 @@
 .vagrant
-applications/
-containers/
+/applications/
+/containers/
 gits/
 test/
 internal/sv.json
