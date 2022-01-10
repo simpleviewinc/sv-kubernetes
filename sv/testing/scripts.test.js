@@ -61,7 +61,6 @@ describe(__filename, function() {
 			},
 			{
 				name : "build app container with env value and multiple build args",
-				only : true,
 				args : {
 					argv : ["--app=build-test", "--name=test", "--env=local", "--build-arg=VAR1=var1value", "--build-arg=VAR2=var2value", "--build-arg=VAR3=var3value"],
 					tag : "build-test-test:local",
