@@ -11,7 +11,6 @@ const {
 	loadYaml,
 	loadSettingsYaml,
 	log,
-	mapBuildArgs,
 	validatePath
 } = require("./utils");
 
@@ -98,7 +97,6 @@ function build({ argv }) {
 			buildArgs[parts[0]] = parts[1];
 		}
 	}
-
 
 	if (flags.env !== undefined) {
 		buildArgs.SV_ENV = flags.env;
