@@ -2,7 +2,7 @@
 /applications/
 /containers/
 gits/
-test/
+/test/
 internal/sv.json
 sv-kubernetes.sublime-workspace
 .idea
