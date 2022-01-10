@@ -60,6 +60,21 @@ describe(__filename, function() {
 				}
 			},
 			{
+				name : "build app container with env value and multiple build args",
+				only : true,
+				args : {
+					argv : ["--app=build-test", "--name=test", "--env=local", "--build-arg=VAR1=var1value", "--build-arg=VAR2=var2value", "--build-arg=VAR3=var3value"],
+					tag : "build-test-test:local",
+					name : `${__dirname}/applications/build-test/containers/test`,
+					vars : {
+						env : "local",
+						var1 : "var1value",
+						var2 : "var2value",
+						var3 : "var3value"
+					}
+				}
+			},
+			{
 				name : "build app container with settings defined build args and no env",
 				args : {
 					argv : ["--app=settings-test", "--name=test"],
