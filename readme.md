@@ -135,6 +135,34 @@ The recommended approach is to utilize a single repo which contains your applica
 	* branch - string - default 'master' - The branch to checkout
 	* type - string - default 'app' - Whether the repository is a app repo or a container repo.
 * secrets_key - string - The key used to encrypt the secrets for the project. All developers of the application need access to this key to build/run the application. *When using a GCP secret you must prefix with `gcp:`*
+* buildArgs - `BuildArgContainer[]` (see below) - Allow the passing of secrets and values to the Docker builder process.
+
+```
+interface BuildArgContainer {
+	/**
+	 * The name of container within the application that will receive the build args.
+	*/
+	container: string
+	/**
+	 * Array of arguments to pass to the container
+	 */
+	args: BuildArg[]
+}
+
+interface BuildArg {
+	/**
+	 * Name of the argument that the container will receive. Should correspond with an ARG name in your Dockerfile.
+	 */
+	name: string
+	/**
+	 * The path to populate the value for the argument.
+	 * Use "values.keyName" to reference something from the values files.
+	 * Use "secrets.keyName" to reference a secret.
+	 * Use "secrets_env.keyName" to reference a env-specific secret.
+	 */
+	path: string
+}
+```
 
 example:
 ```
@@ -149,6 +177,15 @@ dependencies:
     type: container
   - name: sv-kube-proxy
 secrets_key: gcp:projects/sv-shared-231700/locations/global/keyRings/kubernetes/cryptoKeys/default
+buildArgs:
+  - container: test
+    args:
+      - name: SomeKey
+        path: "values.key"
+      - name: ASecretKey
+        path: "secrets.someSecretKey"
+      - name: AwesomeEnvSecret
+        path: "secrets_env.someOtherKey"
 ```
 
 ## Chart Additional Capabilities
@@ -279,3 +316,18 @@ Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's
 		* sv-shared static ips - `10.0.0.10` and increment.
 		* crm static ips - `10.1.0.10` and increment.
 	* The IP address will be the same for all environments since each environment is on it's own VPC network allowing re-use of IP addresses. This also helps to simplify config.
+
+# Testing
+
+Run tests
+
+```
+cd /sv/sv
+sudo npm test
+```
+
+Edit secrets for the test application
+
+```
+sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env local
+```

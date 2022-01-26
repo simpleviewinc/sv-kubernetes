@@ -1,0 +1,3 @@
+mongo: true
+key: "keyValue"
+key2: "key2Value"
