@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 		v.customize ["modifyvm", :id, "--audio", "none"]
 		v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
 		v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-		
+
 		file_to_disk = File.realpath( "." ).to_s + "/extended-disk.vdi"
 
 		if ARGV[0] == "up" && ! File.exist?(file_to_disk)
@@ -31,4 +31,5 @@ Vagrant.configure("2") do |config|
 	end
 
 	config.vm.provision "file", source: "~/.ssh/github_key", destination: "/home/vagrant/.ssh/github_key"
+	config.vm.provision :shell, path: "bootstrap.sh"
 end
