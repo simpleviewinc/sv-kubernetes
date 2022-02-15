@@ -14,6 +14,7 @@ const {
 	exec,
 	execSilent,
 	getCurrentContext,
+	getCurrentPods,
 	loadSettingsYaml,
 	logContext,
 	mapBuildArgs,
@@ -660,44 +661,6 @@ const validateContainer = function(container) {
 	if (fs.existsSync(folder) === false) {
 		throw new Error(`Invalid container ${container}`);
 	}
-}
-
-/**
- * @param {string} [filter] - The pod or application you are filtering on
- * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
- */
-function getCurrentPods(filter, container) {
-	/** @type {import("./definitions").PodJson}*/
-	const all = JSON.parse(execSync(`kubectl get pods -o json`, { maxBuffer : 100 * 1024 * 1024 }));
-
-	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
-	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
-
-	// simplify the return for downstream functions
-	let pods = originalPods.map(val => ({
-		name : val.metadata.name,
-		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
-		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
-		ip : val.podIP,
-		containerNames : val.spec.containers.map(val => val.name),
-		status : val.status.phase
-	}));
-
-	// if we have a passed in filter, apply it
-	if (filter) {
-		pods = pods.filter(val => val.name.match(filter));
-	}
-
-	// if we have a passed in container, filter to pods which have that container
-	// also clean out the containerNames to only contain the specified container for easier downstream code
-	if (container !== undefined) {
-		pods = pods.filter(val => val.containerNames.includes(container));
-		pods.forEach(pod => {
-			pod.containerNames = [container];
-		});
-	}
-
-	return pods;
 }
 
 const _watched = {};

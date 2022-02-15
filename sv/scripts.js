@@ -8,6 +8,7 @@ const {
 	deepMerge,
 	exec,
 	execSilent,
+	getCurrentPods,
 	loadYaml,
 	loadSettingsYaml,
 	log,
@@ -117,4 +118,17 @@ function build({ argv }) {
 	}
 }
 
+function deleteEvicted({ argv }) {
+	const pods = getCurrentPods();
+
+	const evictedPods = pods.filter(val => val.raw.status.reason === "Evicted");
+
+	for(let pod of evictedPods) {
+		exec(`kubectl delete pod ${pod.name}`);
+	}
+
+	console.log(`${evictedPods.length} pods deleted.`);
+}
+
 module.exports.build = build;
+module.exports.deleteEvicted = deleteEvicted;

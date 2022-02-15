@@ -3,7 +3,8 @@ export interface PodJson {
 		{
 			metadata : {
 				name: string,
-				annotations : { [key: string]: string }
+				annotations : { [key: string]: string },
+				deletionTimestamp: string
 			},
 			podIP : string,
 			spec : {
@@ -14,7 +15,8 @@ export interface PodJson {
 				]
 			},
 			status : {
-				phase : string
+				phase : string,
+				reason : string
 			}
 		}
 	]
