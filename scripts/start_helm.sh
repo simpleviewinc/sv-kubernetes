@@ -8,6 +8,7 @@ helm plugin install https://github.com/rimusz/helm-tiller || true
 # install the binary necessary to run helm tiller run -- commands
 if [ ! -f /home/vagrant/.helm/plugins/helm-tiller/bin/tiller ]; then
 	docker create --name tiller helmpack/tiller:v2.17.0 /bin/sh
+	mkdir -p /home/vagrant/.helm/plugins/helm-tiller/bin
 	docker cp tiller:/tiller /home/vagrant/.helm/plugins/helm-tiller/bin/
 	docker rm -fv tiller
 fi
