@@ -22,7 +22,7 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 ## Installation
 
-Ensure you have followed the instructions at https://wiki.simpleviewtools.com/display/PRD/Environment+Setup to install the necessary software, setup git, setup github and your SSH keys.
+Ensure you have followed the instructions at https://simpleviewtools.atlassian.net/wiki/spaces/PRD/pages/32079956/Environment+Setup to install the necessary software, setup git, setup github and your SSH keys.
 
 Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`, see [this thread](https://discourse.devops.simpleviewtools.com/t/unable-to-setup-sv-kubernetes/68) for more info.
 
