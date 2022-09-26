@@ -4,8 +4,6 @@ kubectl_version="v1.21.14" # previous version v1.17.4
 current_kubectl_version=$(kubectl version --client --short 2> /dev/null || true)
 kubectl_version_expected=$"Client Version: $kubectl_version"
 
-export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
 if [ "$current_kubectl_version" != "$kubectl_version_expected" ]; then
 	apt-get update
 	apt-get install -y curl
