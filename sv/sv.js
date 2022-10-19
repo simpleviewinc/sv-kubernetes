@@ -293,12 +293,12 @@ scripts.start = function(args) {
 		{
 			encrypted : `${chartFolder}/secrets.yaml`,
 			decrypted : `${chartFolder}/templates/secrets.dec.yaml`,
-			svValue : "secrets_checksum"
+			svValue : "secretsChecksum"
 		},
 		{
 			encrypted : `${chartFolder}/secrets_${env}.yaml`,
 			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`,
-			svValue : "secrets_env_checksum"
+			svValue : "secretsEnvChecksum"
 		}
 	]
 
