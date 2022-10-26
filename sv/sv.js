@@ -430,7 +430,7 @@ scripts.switchContext = function (args) {
 
 	try {
 		if (flags.cluster !== "local") {
-			exec(`gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
+			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
 			exec(`kubectl config use-context ${getCurrentContext()}`);
 		} else {
 			exec(`kubectl config use-context minikube`);

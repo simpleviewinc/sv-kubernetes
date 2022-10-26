@@ -26,8 +26,6 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
-	export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
 	minikube start \
 		--vm-driver=none \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
