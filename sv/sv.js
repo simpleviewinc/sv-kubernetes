@@ -8,6 +8,7 @@ const util = require("util");
 const commandLineArgs = require("command-line-args");
 const git_state = require("git-state");
 const chalk = require('chalk');
+const crypto = require("crypto")
 const scriptsNew = require("./scripts");
 
 const {
@@ -291,11 +292,13 @@ scripts.start = function(args) {
 	const secretFilesArray = [
 		{
 			encrypted : `${chartFolder}/secrets.yaml`,
-			decrypted : `${chartFolder}/templates/secrets.dec.yaml`
+			decrypted : `${chartFolder}/templates/secrets.dec.yaml`,
+			svValue : "secretsChecksum"
 		},
 		{
 			encrypted : `${chartFolder}/secrets_${env}.yaml`,
-			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`
+			decrypted : `${chartFolder}/templates/secrets_${env}.dec.yaml`,
+			svValue : "secretsEnvChecksum"
 		}
 	]
 
@@ -310,6 +313,8 @@ scripts.start = function(args) {
 
 	// Load Secrets
 	secretFilesArray.forEach(file => {
+		let checksum;
+
 		// check if the encrypted file exists before loading
 		if (fs.existsSync(file.encrypted)) {
 			try {
@@ -319,7 +324,12 @@ scripts.start = function(args) {
 				deleteSecrets();
 				throw e;
 			}
+
+			// read the secrets file and md5 hash the contents
+			checksum = crypto.createHash("md5").update(fs.readFileSync(file.encrypted)).digest("hex");
 		}
+
+		commandArgs.push(`--set sv.${file.svValue}=${checksum ? checksum : ""}`);
 	});
 
 	// append flags we don't recognize to pass to upgrade
