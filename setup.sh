@@ -23,7 +23,7 @@ bash /sv/scripts/extend_disk.sh
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
 
-gcloud auth login --update-adc --no-launch-browser
+gcloud auth login --update-adc
 
 # build server config
 sv _buildSvInfo
