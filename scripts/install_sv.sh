@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive
 if [ "$node_version" != "$node_version_expected" ]; then
 	apt-get update
 	apt-get install -y git curl
-	
+
 	cd /tmp
 	curl -Lo node.tar.xz https://nodejs.org/dist/v12.14.1/node-v12.14.1-linux-x64.tar.xz
 	tar -xJf node.tar.xz
@@ -18,10 +18,6 @@ if [ "$node_version" != "$node_version_expected" ]; then
 	ln -sfn /usr/local/etc/node/bin/node /usr/bin/node
 	ln -sfn /usr/local/etc/node/bin/npm /usr/bin/npm
 fi
-
-apt-get install -y ntp
-timedatectl set-ntp off
-timedatectl set-ntp on
 
 mkdir -p /opt/sv
 cp /sv/sv/package.json /opt/sv/package.json
