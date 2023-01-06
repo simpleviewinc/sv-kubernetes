@@ -110,7 +110,7 @@ function build({ argv }) {
 	const commandArgString = commandArgs.join(" ");
 
 	log(`Starting build of ${containerName}`);
-	exec(`cd ${path} && DOCKER_BUILDKIT=1 docker build ${commandArgString} .`);
+	exec(`cd ${path} && DOCKER_BUILDKIT=1 BUILDKIT_PROGRESS=plain docker build ${commandArgString} .`);
 	log(`Completed build of ${containerName}`);
 
 	if (flags.pushTag !== undefined) {
