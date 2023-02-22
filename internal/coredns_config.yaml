@@ -17,7 +17,7 @@ data:
             ttl 30
         }
         prometheus :9153
-        forward . 8.8.8.8 8.8.4.4
+        forward . 8.8.8.8 1.1.1.1
         cache 30
         loop
         reload
