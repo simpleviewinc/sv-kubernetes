@@ -12,13 +12,16 @@ if [ "$docker_version" != "$docker_version_expected" ]; then
 		curl \
 		gnupg \
 		lsb-release
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	mkdir -m 0755 -p /etc/apt/keyrings
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	echo \
+		"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+		$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	apt-get update
-	apt-get install -y docker-ce=5:20.10.22~3-0~ubuntu-bionic docker-ce-cli=5:20.10.22~3-0~ubuntu-bionic containerd.io
+	apt-get install --allow-downgrades -y docker-ce=5:20.10.22~3-0~ubuntu-bionic docker-ce-cli=5:20.10.22~3-0~ubuntu-bionic containerd.io
 fi
 
 if [ "$docker_compose_version" != "$docker_compose_version_expected" ]; then
 	apt-get update
-	apt-get install -y docker-compose-plugin=2.5.0~ubuntu-bionic
+	apt-get install --allow-downgrades -y docker-compose-plugin=2.5.0~ubuntu-bionic
 fi

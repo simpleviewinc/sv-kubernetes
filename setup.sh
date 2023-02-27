@@ -9,6 +9,7 @@ apt-get update
 
 bash /sv/scripts/extend_disk.sh
 
+. /sv/scripts/install_misc.sh
 . /sv/scripts/install_dnsmasq.sh
 . /sv/scripts/install_github.sh
 . /sv/scripts/install_ntp.sh
