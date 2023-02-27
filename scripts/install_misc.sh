@@ -5,4 +5,5 @@ apt-get install -y \
 		ca-certificates \
 		curl \
 		gnupg \
-		lsb-release
+		lsb-release \
+		apt-transport-https
