@@ -90,7 +90,7 @@ Run `sudo sv` for documentation within the VM.
 
 ## Troubleshooting
 
-If you are having problems with an sv-kubernetes application or the system itself, please see the documentation [here](https://wiki.simpleviewtools.com/display/PRD/SV-Kubernetes).
+If you are having problems with an sv-kubernetes application or the system itself, please see the documentation [here](https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes#SV-Kubernetes-GeneralTroubleshooting).
 
 If the docs do not help then speak up in the #devops slack channel or the #devchannel Google chat room.
 
