@@ -1,5 +1,8 @@
 # sv-kubernetes changelog
 
+## 08/11/2021
+* Add new `sv dashboard` command.
+
 ## 9/29/2020
 * Minikube updated to 1.13.0 from 1.3.0
 * The vagrantfile will now allocate a 100gb disk to grant more space to applications than need to house databases.
