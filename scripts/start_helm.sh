@@ -1,9 +1,9 @@
 . /sv/scripts/errorHandler.sh
 
-helm init --upgrade --history-max=3
+# helm init --upgrade --history-max=3
 
 # install tiller for context switching [AUT-313]
-helm plugin install https://github.com/rimusz/helm-tiller || true
+# helm plugin install https://github.com/rimusz/helm-tiller || true
 
 # install the binary necessary to run helm tiller run -- commands
 if [ ! -f /home/vagrant/.helm/plugins/helm-tiller/bin/tiller ]; then

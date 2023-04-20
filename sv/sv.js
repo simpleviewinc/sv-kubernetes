@@ -416,8 +416,12 @@ scripts.test = function(args) {
 scripts.switchContext = function (args) {
 	let flags = commandLineArgs([
 		{ name : "project", type: String, alias : "p" },
-		{ name : "cluster", type: String, alias : "c" }
+		{ name : "cluster", type: String, alias : "c" },
+		{ name : "headless", type: Boolean, alias : "h"}
 	], { argv: args.argv });
+
+	// define headless cluster variable
+	let headlessCluster = `headless-${flags.cluster}`;
 
 	// must always pass a cluster
 	if (flags.cluster === undefined) {
@@ -429,7 +433,10 @@ scripts.switchContext = function (args) {
 	}
 
 	try {
-		if (flags.cluster !== "local") {
+		if (flags.cluster !== "local" && flags.headless === true) {
+			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${headlessCluster} --zone us-east1 --project sv-${flags.project}-231700`);
+			exec(`kubectl config use-context ${getCurrentContext()}`);
+		} else if (flags.cluster !== "local") {
 			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
 			exec(`kubectl config use-context ${getCurrentContext()}`);
 		} else {
