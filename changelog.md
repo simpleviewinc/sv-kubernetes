@@ -1,5 +1,9 @@
 # sv-kubernetes changelog
 
+## 05/03/2023
+* Minikube updated to 1.30.1 from 1.27.0
+* Kubectl upgraded to 1.27.1 from 1.21.4
+
 ## 9/29/2020
 * Minikube updated to 1.13.0 from 1.3.0
 * The vagrantfile will now allocate a 100gb disk to grant more space to applications than need to house databases.

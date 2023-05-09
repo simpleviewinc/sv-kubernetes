@@ -27,7 +27,7 @@ fi
 
 if [ "$minikube_start" == "true" ]; then
 	minikube start \
-		--vm-driver=none \
+		--driver=docker \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
 		--kubernetes-version="$kubernetes_version" \
 		--memory=2200mb \
