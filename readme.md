@@ -268,7 +268,7 @@ This section provides information on how to switch contexts to a dev/test cluste
 * See current context - `sudo kubectl config current-context`
 * Run a container to debug - `sudo docker run -it image:tag`
 * Run a container with a specific command - `sudo docker run -it image:tag /bin/bash`
-* Enter a running container - `sudo kubectl exec -it [podName] /bin/bash`
+* Enter a running container - `sudo kubectl exec -it [podName] -- /bin/bash`
 * Describe the nodes of a kubernetes cluster - `sudo kubectl describe nodes`
 * Describe pod for debugging pod boot errors - `sudo kubectl describe pod [podName]`
 

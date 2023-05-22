@@ -405,7 +405,7 @@ scripts.test = function(args) {
 
 		console.log(`Running tests on ${val.name}`);
 		try {
-			exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
+			exec(`kubectl exec -it ${val.name} -- ${val.testCommand}`);
 		} catch(e) {
 			// ensure that this process counts as failing, but allows us to continue running other tests
 			process.exitCode = 1;
