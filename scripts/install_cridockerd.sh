@@ -5,6 +5,9 @@ current_cridockerd_version=$(cri-dockerd --version 2> /dev/null || true)
 cridockerd_version_expected="cri-dockerd version: $cridockerd_version (23513f4c)"
 
 if [ "$current_cridockerd_version" != "$cridockerd_version_expected" ]; then
+	cp /sv/internal/cri-docker.service /etc/systemd/system/cri-docker.service
+	cp /sv/internal/cri-docker.socket /etc/systemd/system/cri-docker.socket
+
 	curl -Lo cri-dockerd.tgz https://github.com/Mirantis/cri-dockerd/releases/download/v$cridockerd_version/cri-dockerd-$cridockerd_version.amd64.tgz
 	tar -xf cri-dockerd.tgz
 	rm cri-dockerd.tgz
