@@ -23,6 +23,7 @@ bash /sv/scripts/extend_disk.sh
 . /sv/scripts/install_crontab.sh
 . /sv/scripts/install_crictl.sh
 . /sv/scripts/install_cridockerd.sh
+. /sv/scripts/install_containernetworkplugins.sh
 
 . /sv/scripts/start_minikube.sh
 . /sv/scripts/start_helm.sh
