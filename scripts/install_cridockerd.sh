@@ -8,6 +8,9 @@ if [ "$current_cridockerd_version" != "$cridockerd_version_expected" ]; then
 	cp /sv/internal/cri-docker.service /etc/systemd/system/cri-docker.service
 	cp /sv/internal/cri-docker.socket /etc/systemd/system/cri-docker.socket
 
+	apt-get update
+	apt-get install -y curl
+
 	curl -Lo cri-dockerd.tgz https://github.com/Mirantis/cri-dockerd/releases/download/v$cridockerd_version/cri-dockerd-$cridockerd_version.amd64.tgz
 	tar -xf cri-dockerd.tgz
 	rm cri-dockerd.tgz
