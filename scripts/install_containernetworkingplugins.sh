@@ -1,12 +1,6 @@
 . /sv/scripts/errorHandler.sh
 
 containernetworkplugins_version="v1.3.0" # previous none
-# current_containernetworkplugins_version=$(cni --version 2> /dev/null || true)
-# containernetworkplugins_version_expected="crictl version: $crictl_version"
-
-
-# CNI_PLUGIN_TAR="cni-plugins-linux-amd64-$CNI_PLUGIN_VERSION.tgz" # change arch if not on amd64
-# CNI_PLUGIN_INSTALL_DIR="/opt/cni/bin"
 
 apt-get update
 apt-get install -y curl
