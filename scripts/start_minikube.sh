@@ -26,6 +26,11 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
+	iptables -P INPUT ACCEPT
+	iptables -P FORWARD ACCEPT
+	iptables -P OUTPUT ACCEPT
+	iptables -F
+
 	minikube start \
 		--driver=none \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
