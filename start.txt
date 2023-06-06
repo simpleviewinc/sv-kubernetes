@@ -1,0 +1,10 @@
+minikube start \
+	--driver=docker \
+	--extra-config=apiserver.service-node-port-range=80-32767 \
+	--kubernetes-version="v1.26.5" \
+	--static-ip="192.168.49.2" \
+	--insecure-registry="192.168.49.2:5000" \
+	--mount \
+	--mount-string="/sv:/sv" \
+	--memory=2200mb \
+	--cpus 2
