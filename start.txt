@@ -2,9 +2,20 @@ minikube start \
 	--driver=docker \
 	--extra-config=apiserver.service-node-port-range=80-32767 \
 	--kubernetes-version="v1.26.5" \
+	--mount \
+	--mount-string="/sv:/sv" \
+	--memory="$(node -e "process.stdout.write(Math.round(require('os').totalmem() / 1024 / 1024 * .75).toString())")" \
+	--ports="443:443" \
+	--ports="80:80" \
+	--ports="12002:12002"
+
+minikube start \
+	--driver=docker \
+	--extra-config=apiserver.service-node-port-range=80-32767 \
+	--kubernetes-version="v1.26.5" \
 	--static-ip="192.168.49.2" \
 	--insecure-registry="192.168.49.2:5000" \
 	--mount \
 	--mount-string="/sv:/sv" \
-	--memory=2200mb \
+	--memory="max" \
 	--cpus 2

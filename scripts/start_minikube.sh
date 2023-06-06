@@ -1,13 +1,14 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/variables.sh
 
 running=$(minikube ip 2> /dev/null || true)
-running_expected="10.0.2.15"
-kubernetes_version="v1.26.5"
+# running_expected="10.0.2.15"
+# kubernetes_version="v1.26.5"
 kubernetes_expected="Server Version: $kubernetes_version"
 kubernetes_running=$(kubectl version --short | grep "Server Version" || true)
 minikube_start="false"
 
-if [ "$running" != "$running_expected" ]; then
+if [ "$running" != "$minikube_ip" ]; then
 	# not running start it up
 	minikube_start="true"
 elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
@@ -26,12 +27,24 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
-	minikube start \
+	# minikube start \
+	# 	--driver=docker \
+	# 	--extra-config=apiserver.service-node-port-range=80-32767 \
+	# 	--kubernetes-version="$kubernetes_version" \
+	# 	--memory=2200mb \
+	# 	--cpus 2
+
+	sudo -H -u vagrant minikube start \
 		--driver=docker \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
 		--kubernetes-version="$kubernetes_version" \
-		--memory=2200mb \
-		--cpus 2
+		--static-ip="$minikube_ip" \
+		--mount \
+		--mount-string="/sv:/sv" \
+		--memory="$(node /sv/internal/getMinikubeMem.js)" \
+		--ports="443:443" \
+		--ports="80:80" \
+		--ports="12002:12002"
 
 	# adds coredns so that external dns entries finish quickly
 	kubectl apply -f /sv/internal/coredns_config.yaml
