@@ -1,4 +1,4 @@
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/requireRoot.sh
 
-minikube delete --all --purge
+sudo -H -u vagrant minikube delete --all --purge

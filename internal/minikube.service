@@ -1,0 +1,16 @@
+[Unit]
+Description=minikube
+After=network-online.target firewalld.service docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/vagrant
+ExecStart=/usr/bin/minikube start
+ExecStop=/usr/bin/minikube stop
+User=vagrant
+Group=vagrant
+
+[Install]
+WantedBy=multi-user.target

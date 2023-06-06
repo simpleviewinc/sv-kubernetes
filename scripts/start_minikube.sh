@@ -2,7 +2,7 @@
 . /sv/scripts/variables.sh
 . /sv/scripts/requireRoot.sh
 
-running=$(minikube ip 2> /dev/null || true)
+running=$(sudo -H -u vagrant minikube ip 2> /dev/null || true)
 kubernetes_expected="Server Version: $kubectl_version"
 kubernetes_running=$(kubectl version -o json | jq .serverVersion.gitVersion || true)
 minikube_start="false"
@@ -21,7 +21,7 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 		# user has approved the restart, clear out their existing minikube
 		minikube_start="true"
 
-		. /sv/scripts/stop_minikube.sh
+		. /sv/scripts/delete_minikube.sh
 	fi
 fi
 

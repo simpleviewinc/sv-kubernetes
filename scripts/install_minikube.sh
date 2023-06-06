@@ -13,3 +13,7 @@ if [ "$current_minikube_version" != "$minikube_version_expected" ]; then
 	chmod +x minikube
 	mv minikube /usr/bin/
 fi
+
+cp /sv/internal/minikube.service /etc/systemd/system/minikube.service
+chmod 0644 /etc/systemd/system/minikube.service
+systemctl daemon-reload
