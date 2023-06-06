@@ -253,7 +253,12 @@ scripts.start = function(args) {
 	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
-	const dockerRegistry = env !== "local" ? `${dockerBase}/` : "";
+	let ip;
+	if (env === "local") {
+		ip = execSilent(`minikube ip`);
+	}
+
+	const dockerRegistry = env !== "local" ? `${dockerBase}/` : ``;
 	commandArgs.push(`--set sv.dockerRegistry=${dockerRegistry}`);
 
 	if (flags.build !== undefined) {
@@ -278,7 +283,7 @@ scripts.start = function(args) {
 			myBuildArgs.push(`--name ${val}`);
 
 			if (flags.push === true) {
-				myBuildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
+				myBuildArgs.push(`--pushTag=${dockerRegistry}${applicationName}-${val}:${tag}`);
 			}
 
 			const buildArgString = myBuildArgs.join(" ");

@@ -3,6 +3,12 @@ if [ `whoami` != "root" ]; then
 	exit 1
 fi
 
+echo $HOME
+
+if [ $HOME != "/root" ]; then
+	echo "Script must be executed as sudo -H bash /sv/setup.sh"
+fi
+
 . /sv/scripts/errorHandler.sh
 
 apt-get update
