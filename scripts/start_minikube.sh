@@ -2,7 +2,7 @@
 
 running=$(minikube ip 2> /dev/null || true)
 running_expected="10.0.2.15"
-kubernetes_version="v1.26.5"
+kubernetes_version="v1.27.2"
 kubernetes_expected="Server Version: $kubernetes_version"
 kubernetes_running=$(kubectl version --short | grep "Server Version" || true)
 minikube_start="false"
