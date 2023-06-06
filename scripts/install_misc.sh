@@ -6,4 +6,5 @@ apt-get install -y \
 		curl \
 		gnupg \
 		lsb-release \
-		apt-transport-https
+		apt-transport-https \
+		jq

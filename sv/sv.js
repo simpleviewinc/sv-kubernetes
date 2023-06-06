@@ -253,11 +253,6 @@ scripts.start = function(args) {
 	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
-	let ip;
-	if (env === "local") {
-		ip = execSilent(`minikube ip`);
-	}
-
 	const dockerRegistry = env !== "local" ? `${dockerBase}/` : ``;
 	commandArgs.push(`--set sv.dockerRegistry=${dockerRegistry}`);
 

@@ -9,6 +9,7 @@ const {
 	exec,
 	execSilent,
 	getCurrentPods,
+	getMinikubeDockerEnv,
 	loadYaml,
 	loadSettingsYaml,
 	log,
@@ -29,7 +30,6 @@ function build({ argv }) {
 	if (flags.name === undefined) {
 		throw new Error(`Must specify '--name'`);
 	}
-	const ip = execSilent(`minikube ip`);
 
 	let path;
 	let appPath;
@@ -48,11 +48,6 @@ function build({ argv }) {
 
 	const commandArgs = [];
 	commandArgs.push(`-t ${containerName}:local`);
-
-	// if (flags.env === "local") {
-	// 	const ip = execSilent("minikube ip");
-	// 	commandArgs.push(`-t ${ip}:5000/${containerName}:local`);
-	// }
 
 	if (flags.pushTag !== undefined) {
 		commandArgs.push(`-t ${flags.pushTag}`);
@@ -116,14 +111,14 @@ function build({ argv }) {
 	const commandArgString = commandArgs.join(" ");
 
 	log(`Starting build of ${containerName}`);
+
+	const commandEnv = flags.env === "local" ? {
+		...process.env,
+		...getMinikubeDockerEnv()
+	} : undefined;
+
 	exec(`cd ${path} && docker build ${commandArgString} .`, {
-		env: {
-			...process.env,
-			DOCKER_TLS_VERIFY: "1",
-			DOCKER_HOST: "tcp://192.168.49.2:2376",
-			DOCKER_CERT_PATH: "/home/vagrant/.minikube/certs",
-			MINIKUBE_ACTIVE_DOCKERD: "minikube"
-		}
+		env: commandEnv
 	});
 	log(`Completed build of ${containerName}`);
 

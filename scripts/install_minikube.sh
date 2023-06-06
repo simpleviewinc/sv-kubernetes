@@ -1,6 +1,6 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/variables.sh
 
-# minikube_version="v1.30.1" # previous v1.13.0
 current_minikube_version=$(minikube version 2> /dev/null || true)
 minikube_version_expected="minikube version: $minikube_version"
 

@@ -113,11 +113,32 @@ function log(str) {
 	return pods;
 }
 
+/**
+ * Returns the environment variables necessary for our docker build command to run using the minikube docker daemon.
+ * The minikube docker-env is supposed to support -o json but that's not working right now, so have to manually parse.
+ * */
+function getMinikubeDockerEnv() {
+	const result = execSilent(`minikube docker-env`);
+	const lines = result.split("\n");
+	const resultObj = {};
+	for (const line of lines) {
+		if (!line.startsWith("export ")) {
+			continue;
+		}
+
+		const matcher = line.match(/export (.*?)="(.*)"/);
+		resultObj[matcher[1]] = matcher[2];
+	}
+
+	return resultObj;
+}
+
 module.exports.deepMerge = deepMerge;
 module.exports.exec = exec;
 module.exports.execSilent = execSilent;
 module.exports.getCurrentContext = getCurrentContext;
 module.exports.getCurrentPods = getCurrentPods;
+module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;
 module.exports.log = log;

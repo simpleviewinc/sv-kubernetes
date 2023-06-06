@@ -1,5 +1,4 @@
-minikube delete --all --purge
-# rm -rf /etc/kubernetes/addons
-# rm -rf /root/.minikube
+. /sv/scripts/errorHandler.sh
+. /sv/scripts/requireVagrant.sh
 
-systemctl disable kubelet.service
+minikube delete --all --purge

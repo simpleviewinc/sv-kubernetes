@@ -1,15 +1,5 @@
-if [ `whoami` != "root" ]; then
-	echo "Script must be executed as root"
-	exit 1
-fi
-
-echo $HOME
-
-if [ $HOME != "/root" ]; then
-	echo "Script must be executed as sudo -H bash /sv/setup.sh"
-fi
-
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/requireRoot.sh
 
 apt-get update
 
@@ -29,7 +19,6 @@ bash /sv/scripts/extend_disk.sh
 . /sv/scripts/install_crontab.sh
 
 . /sv/scripts/start_minikube.sh
-. /sv/scripts/start_helm.sh
 
 gcloud auth login --update-adc
 
