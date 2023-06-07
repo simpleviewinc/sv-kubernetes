@@ -7,6 +7,9 @@ kubernetes_expected="Server Version: $kubectl_version"
 kubernetes_running=$(kubectl version -o json | jq .serverVersion.gitVersion || true)
 minikube_start="false"
 
+# add vagrant to the docker group so it can properly start minikube
+usermod -aG docker vagrant
+
 if [ "$running" != "$minikube_ip" ]; then
 	# not running start it up
 	minikube_start="true"
@@ -26,6 +29,8 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
+	# often users end up with root owned files in their /home/vagrant folder and this bombs minikube start
+	rm -rf /home/vagrant/.minikube
 	sudo -H -u vagrant minikube start \
 		--driver=docker \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
