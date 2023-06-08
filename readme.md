@@ -317,6 +317,21 @@ Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's
 		* crm static ips - `10.1.0.10` and increment.
 	* The IP address will be the same for all environments since each environment is on it's own VPC network allowing re-use of IP addresses. This also helps to simplify config.
 
+# sv-kubernetes project development
+
+sv-kubernetes uses `packer` to build a `.box` which is uploaded to Vagrant Cloud.
+
+Compile a new version
+
+```
+cd /folder/of/sv-kubernetes
+pack
+```
+
+When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
+
+Add `-debug` to the `pack.bat` to step through the packer process one command at a time.
+
 # Testing
 
 Run tests

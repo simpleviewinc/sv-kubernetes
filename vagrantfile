@@ -1,38 +1,49 @@
 Vagrant.configure("2") do |config|
-	config.vm.box = "bento/ubuntu-18.04"
-	config.vm.box_version = "201912.14.0"
-	config.vm.network :private_network, ip: "192.168.50.100"
-	config.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
-	config.vm.provider "virtualbox" do |v|
-		# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
-		mem = get_memory(4096, 0.25)
-		v.cpus = 2
-		v.customize ["modifyvm", :id, "--audio", "none"]
-		v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-		v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-		v.customize ["modifyvm", :id, "--memory", mem]
+	# main box used by consumers of sv-kubernetes
+	config.vm.define "primary", primary: true do |c|
+		c.vm.box = "owenallenaz/sv-kubernetes"
+		c.vm.box_version = "0.0.1"
+		c.vm.network "private_network", ip: "192.168.50.100"
+		c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
+		# c.vm.disk :disk, name: "main", size: "100GB", primary: true
+		c.vm.provider "virtualbox" do |v|
+			# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
+			mem = get_memory(4096, 0.25)
+			v.cpus = 2
+			v.customize ["modifyvm", :id, "--audio", "none"]
+			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+			v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+			v.customize ["modifyvm", :id, "--memory", mem]
 
-		file_to_disk = File.realpath( "." ).to_s + "/extended-disk.vdi"
-
-		if ARGV[0] == "up" && ! File.exist?(file_to_disk)
-			puts "Creating 100GB disk extension #{file_to_disk}."
-			v.customize [
-				'createhd',
-				'--filename', file_to_disk,
-				'--format', 'VDI',
-				'--size', 100 * 1024 # 100 GB
-			]
-			v.customize [
-				'storageattach', :id,
-				'--storagectl', 'SATA Controller',
-				'--port', 1, '--device', 0,
-				'--type', 'hdd', '--medium',
-				file_to_disk
-			]
+			file_to_disk = File.realpath( "." ).to_s + "/extended-disk.vdi"
+			if !File.exist?(file_to_disk)
+				v.customize [
+					'createhd',
+					'--filename', file_to_disk,
+					'--format', 'VDI',
+					'--size', 100 * 1024 # 100 GB
+				]
+				v.customize [
+					'storageattach', :id,
+					'--storagectl', 'SATA Controller',
+					'--port', 1, '--device', 0,
+					'--type', 'hdd', '--medium',
+					file_to_disk
+				]
+			end
 		end
+
+		c.vm.provision "file", source: "~/.ssh/github_key", destination: "/home/vagrant/.ssh/github_key"
+		c.vm.provision "shell", inline: "/bin/bash /sv/scripts/extend_disk.sh"
 	end
 
-	config.vm.provision "file", source: "~/.ssh/github_key", destination: "/home/vagrant/.ssh/github_key"
+	# development box used for working with packer to generate the base box
+	config.vm.define "base" do |c|
+		c.vm.box = "bento/ubuntu-18.04"
+		c.vm.box_version = "201912.14.0"
+		c.vm.network "private_network", ip: "192.168.50.101"
+		c.vm.synced_folder ".", "/sv"
+	end
 end
 
 # Determines amount of memory to allocate to Vagrant box, in mebibytes (MiB)
