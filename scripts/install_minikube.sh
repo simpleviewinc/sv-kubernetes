@@ -1,6 +1,6 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/variables.sh
 
-minikube_version="v1.27.0" # previous v1.13.0
 current_minikube_version=$(minikube version 2> /dev/null || true)
 minikube_version_expected="minikube version: $minikube_version"
 
@@ -13,3 +13,7 @@ if [ "$current_minikube_version" != "$minikube_version_expected" ]; then
 	chmod +x minikube
 	mv minikube /usr/bin/
 fi
+
+cp /sv/internal/minikube.service /etc/systemd/system/minikube.service
+chmod 0644 /etc/systemd/system/minikube.service
+systemctl daemon-reload

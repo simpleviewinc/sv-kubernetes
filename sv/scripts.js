@@ -9,6 +9,7 @@ const {
 	exec,
 	execSilent,
 	getCurrentPods,
+	getMinikubeDockerEnv,
 	loadYaml,
 	loadSettingsYaml,
 	log,
@@ -110,7 +111,15 @@ function build({ argv }) {
 	const commandArgString = commandArgs.join(" ");
 
 	log(`Starting build of ${containerName}`);
-	exec(`cd ${path} && docker build ${commandArgString} .`);
+
+	const commandEnv = flags.env === "local" ? {
+		...process.env,
+		...getMinikubeDockerEnv()
+	} : undefined;
+
+	exec(`cd ${path} && docker build ${commandArgString} .`, {
+		env: commandEnv
+	});
 	log(`Completed build of ${containerName}`);
 
 	if (flags.pushTag !== undefined) {

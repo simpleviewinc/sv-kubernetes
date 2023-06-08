@@ -45,6 +45,14 @@ sudo bash /sv/setup.sh
 
 Now minikube, kubernetes, docker and helm should be running and your box is setup to add applications and containers.
 
+## Update sv-kubernetes
+
+* If you need to persist data between updates, check with your team lead on the best mechanism for doing that.
+* (from host) git pull your sv-kubernetes folder to the latest master
+* (from host) vagrant destroy
+* (from host) vagrant up
+* (inside vm) sudo bash /sv/setup.sh
+
 ## Local Development
 
 Often in order to work your project you will want to install and start the following applications.
@@ -316,6 +324,21 @@ Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's
 		* sv-shared static ips - `10.0.0.10` and increment.
 		* crm static ips - `10.1.0.10` and increment.
 	* The IP address will be the same for all environments since each environment is on it's own VPC network allowing re-use of IP addresses. This also helps to simplify config.
+
+# sv-kubernetes project development
+
+sv-kubernetes uses `packer` to build a `.box` which is uploaded to Vagrant Cloud.
+
+Compile a new version
+
+```
+cd /folder/of/sv-kubernetes
+pack
+```
+
+When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
+
+Add `-debug` to the `pack.bat` to step through the packer process one command at a time.
 
 # Testing
 

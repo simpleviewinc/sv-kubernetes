@@ -253,7 +253,7 @@ scripts.start = function(args) {
 	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
 
-	const dockerRegistry = env !== "local" ? `${dockerBase}/` : "";
+	const dockerRegistry = env !== "local" ? `${dockerBase}/` : ``;
 	commandArgs.push(`--set sv.dockerRegistry=${dockerRegistry}`);
 
 	if (flags.build !== undefined) {
@@ -278,7 +278,7 @@ scripts.start = function(args) {
 			myBuildArgs.push(`--name ${val}`);
 
 			if (flags.push === true) {
-				myBuildArgs.push(`--pushTag=${dockerBase}/${applicationName}-${val}:${tag}`);
+				myBuildArgs.push(`--pushTag=${dockerRegistry}${applicationName}-${val}:${tag}`);
 			}
 
 			const buildArgString = myBuildArgs.join(" ");
@@ -405,7 +405,7 @@ scripts.test = function(args) {
 
 		console.log(`Running tests on ${val.name}`);
 		try {
-			exec(`kubectl exec -it ${val.name} ${val.testCommand}`);
+			exec(`kubectl exec -it ${val.name} -- ${val.testCommand}`);
 		} catch(e) {
 			// ensure that this process counts as failing, but allows us to continue running other tests
 			process.exitCode = 1;

@@ -1,13 +1,13 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/variables.sh
+. /sv/scripts/requireRoot.sh
 
-running=$(minikube ip 2> /dev/null || true)
-running_expected="10.0.2.15"
-kubernetes_version="v1.21.14"
-kubernetes_expected="Server Version: $kubernetes_version"
-kubernetes_running=$(kubectl version --short | grep "Server Version" || true)
+running=$(sudo -H -u vagrant minikube ip 2> /dev/null || true)
+kubernetes_expected="Server Version: $kubectl_version"
+kubernetes_running=$(kubectl version -o json | jq .serverVersion.gitVersion || true)
 minikube_start="false"
 
-if [ "$running" != "$running_expected" ]; then
+if [ "$running" != "$minikube_ip" ]; then
 	# not running start it up
 	minikube_start="true"
 elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
@@ -21,20 +21,27 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 		# user has approved the restart, clear out their existing minikube
 		minikube_start="true"
 
-		. /sv/scripts/stop_minikube.sh
+		. /sv/scripts/delete_minikube.sh
 	fi
 fi
 
 if [ "$minikube_start" == "true" ]; then
-	minikube start \
-		--vm-driver=none \
+	# often users end up with root owned files in their /home/vagrant folder and this bombs minikube start
+	rm -rf /home/vagrant/.minikube
+	sudo -H -u vagrant minikube start \
+		--driver=docker \
 		--extra-config=apiserver.service-node-port-range=80-32767 \
-		--kubernetes-version="$kubernetes_version" \
-		--memory=2200mb \
-		--cpus 2
-
-	# adds coredns so that external dns entries finish quickly
-	kubectl apply -f /sv/internal/coredns_config.yaml
-
-	systemctl enable kubelet.service
+		--kubernetes-version="$kubectl_version" \
+		--static-ip="$minikube_ip" \
+		--mount \
+		--mount-string="/sv:/sv" \
+		--memory="$(node /sv/internal/getMinikubeMem.js)" \
+		--ports="443:443" \
+		--ports="80:80" \
+		--ports="12002:12002"
 fi
+
+# adds coredns so that external dns entries finish quickly
+kubectl apply -f /sv/internal/coredns_config.yaml
+
+. /sv/scripts/start_helm.sh
