@@ -45,6 +45,14 @@ sudo bash /sv/setup.sh
 
 Now minikube, kubernetes, docker and helm should be running and your box is setup to add applications and containers.
 
+## Update sv-kubernetes
+
+* If you need to persist data between updates, check with your team lead on the best mechanism for doing that.
+* (from host) git pull your sv-kubernetes folder to the latest master
+* (from host) vagrant destroy
+* (from host) vagrant up
+* (inside vm) sudo bash /sv/setup.sh
+
 ## Local Development
 
 Often in order to work your project you will want to install and start the following applications.
