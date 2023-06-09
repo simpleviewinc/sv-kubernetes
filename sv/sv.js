@@ -19,6 +19,7 @@ const {
 	loadSettingsYaml,
 	logContext,
 	mapBuildArgs,
+	getDockerEnv,
 } = require("./utils");
 
 const constants = require("./constants");
@@ -705,7 +706,9 @@ async function watchPods(filter, container) {
 
 // stores the state of the docker registry in a local file, exposing to to sv start
 scripts._buildSvInfo = function(args) {
-	var test = execSync(`docker image list --format "{{.Repository}},{{.Tag}},{{.ID}}" --filter "dangling=false"`);
+	var test = execSync(`docker image list --format "{{.Repository}},{{.Tag}},{{.ID}}" --filter "dangling=false"`, {
+		env: getDockerEnv()
+	});
 	var results = {
 		sv : {
 			ids : {}

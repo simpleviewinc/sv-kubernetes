@@ -9,11 +9,11 @@ const {
 	exec,
 	execSilent,
 	getCurrentPods,
-	getMinikubeDockerEnv,
 	loadYaml,
 	loadSettingsYaml,
 	log,
-	validatePath
+	validatePath,
+	getDockerEnv
 } = require("./utils");
 
 const constants = require("./constants");
@@ -112,13 +112,8 @@ function build({ argv }) {
 
 	log(`Starting build of ${containerName}`);
 
-	const commandEnv = flags.env === "local" ? {
-		...process.env,
-		...getMinikubeDockerEnv()
-	} : undefined;
-
 	exec(`cd ${path} && docker build ${commandArgString} .`, {
-		env: commandEnv
+		env: getDockerEnv()
 	});
 	log(`Completed build of ${containerName}`);
 

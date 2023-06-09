@@ -133,11 +133,30 @@ function getMinikubeDockerEnv() {
 	return resultObj;
 }
 
+function _isMinikubeEnv() {
+	try {
+		execSilent("which minikube");
+	} catch {
+		return false;
+	}
+
+	return true;
+}
+const isMinikubeEnv = lodash.memoize(_isMinikubeEnv);
+
+function getDockerEnv() {
+	return isMinikubeEnv() ? {
+		...process.env,
+		...getMinikubeDockerEnv()
+	} : process.env;
+}
+
 module.exports.deepMerge = deepMerge;
 module.exports.exec = exec;
 module.exports.execSilent = execSilent;
 module.exports.getCurrentContext = getCurrentContext;
 module.exports.getCurrentPods = getCurrentPods;
+module.exports.getDockerEnv = getDockerEnv;
 module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;
