@@ -12,4 +12,5 @@ if [ "$current_go_version" != "$expected_go_version" ]; then
 	tar -C /usr/local -xzf go.tar.gz
 	ln -s /usr/local/go/bin/go /usr/bin/go
 	ln -s /usr/local/go/bin/gofmt /usr/bin/gofmt
+	rm -rf /tmp/go.tar.gz
 fi

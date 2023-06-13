@@ -21,4 +21,5 @@ if [ "$current_cridockerd_version" != "$cridockerd_version_expected" ]; then
 	systemctl daemon-reload
 	systemctl enable cri-docker.service
 	systemctl enable --now cri-docker.socket
+	rm -rf /tmp/cri-dockerd
 fi
