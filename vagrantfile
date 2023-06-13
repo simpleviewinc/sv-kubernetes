@@ -43,6 +43,12 @@ Vagrant.configure("2") do |config|
 		c.vm.box_version = "201912.14.0"
 		c.vm.network "private_network", ip: "192.168.50.101"
 		c.vm.synced_folder ".", "/sv"
+		c.vm.provider "virtualbox" do |v|
+			# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
+			mem = get_memory(4096, 0.25)
+			v.cpus = 2
+			v.customize ["modifyvm", :id, "--memory", mem]
+		end
 	end
 end
 
