@@ -3,8 +3,8 @@
 . /sv/scripts/requireRoot.sh
 
 running=$(sudo -H -u vagrant minikube ip 2> /dev/null || true)
-kubernetes_expected="Server Version: $kubectl_version"
-kubernetes_running=$(kubectl version -o json | jq .serverVersion.gitVersion || true)
+kubernetes_expected="$kubectl_version"
+kubernetes_running=$(kubectl version -o json | jq -r .serverVersion.gitVersion || true)
 minikube_start="false"
 
 if [ "$running" != "$minikube_ip" ]; then
