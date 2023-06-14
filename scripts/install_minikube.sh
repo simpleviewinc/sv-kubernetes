@@ -1,8 +1,8 @@
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/variables.sh
 
-current_minikube_version=$(minikube version 2> /dev/null || true)
-minikube_version_expected="minikube version: $minikube_version"
+current_minikube_version=$(minikube version -o json | jq -r .minikubeVersion || true)
+minikube_version_expected="$minikube_version"
 
 if [ "$current_minikube_version" != "$minikube_version_expected" ]; then
 	apt-get update
@@ -17,3 +17,4 @@ fi
 cp /sv/internal/minikube.service /etc/systemd/system/minikube.service
 chmod 0644 /etc/systemd/system/minikube.service
 systemctl daemon-reload
+systemctl enable minikube

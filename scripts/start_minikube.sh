@@ -2,7 +2,7 @@
 . /sv/scripts/variables.sh
 . /sv/scripts/requireRoot.sh
 
-running=$(sudo -H -u vagrant minikube ip 2> /dev/null || true)
+running=$(minikube ip 2> /dev/null || true)
 kubernetes_expected="$kubectl_version"
 kubernetes_running=$(kubectl version -o json | jq -r .serverVersion.gitVersion || true)
 minikube_start="false"
@@ -26,19 +26,7 @@ elif [ "$kubernetes_running" != "$kubernetes_expected" ]; then
 fi
 
 if [ "$minikube_start" == "true" ]; then
-	# often users end up with root owned files in their /home/vagrant folder and this bombs minikube start
-	rm -rf /home/vagrant/.minikube
-	sudo -H -u vagrant minikube start \
-		--driver=docker \
-		--extra-config=apiserver.service-node-port-range=80-32767 \
-		--kubernetes-version="$kubectl_version" \
-		--static-ip="$minikube_ip" \
-		--mount \
-		--mount-string="/sv:/sv" \
-		--memory="$(node /sv/internal/getMinikubeMem.js)" \
-		--ports="443:443" \
-		--ports="80:80" \
-		--ports="12002:12002"
+	. /sv/scripts/start_minikube_command.sh
 fi
 
 # adds coredns so that external dns entries finish quickly

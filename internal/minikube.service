@@ -6,11 +6,11 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/home/vagrant
-ExecStart=/usr/bin/minikube start
+WorkingDirectory=/root
+ExecStart=/usr/bin/bash /sv/scripts/start_minikube_command.sh
 ExecStop=/usr/bin/minikube stop
-User=vagrant
-Group=vagrant
+User=root
+Group=root
 
 [Install]
 WantedBy=multi-user.target
