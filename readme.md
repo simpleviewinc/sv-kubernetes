@@ -35,7 +35,7 @@ vagrant up
 
 SSH into the box at IP address: 192.168.50.100
 
-Username: vagrant
+Username: root
 Password: vagrant
 
 ```

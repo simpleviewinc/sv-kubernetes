@@ -1,7 +1,7 @@
 source "vagrant" "sv-kubernetes" {
 	communicator = "ssh"
-	source_path = "bento/ubuntu-18.04"
-	box_version = "201912.14.0"
+	source_path = "bento/ubuntu-22.04"
+	box_version = "202206.03.0"
 	provider = "virtualbox"
 }
 
@@ -25,7 +25,7 @@ build {
 	provisioner "shell" {
 		inline = [
 			"sudo cp -r /tmp/sv /sv",
-			"sudo bash /sv/scripts/provision.sh"
+			"sudo -H bash /sv/scripts/provision.sh"
 		]
 	}
 }
