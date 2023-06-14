@@ -6,7 +6,6 @@ Vagrant.configure("2") do |config|
 		c.vm.network "private_network", ip: "192.168.50.100"
 		c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
 		c.ssh.username = "root"
-		# c.vm.disk :disk, name: "main", size: "100GB", primary: true
 		c.vm.provider "virtualbox" do |v|
 			# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
 			mem = get_memory(4096, 0.25)
