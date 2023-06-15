@@ -17,13 +17,13 @@ if [ -f /etc/disk_added_date ]
 then
    exit 0
 fi
- 
+
 fdisk -u /dev/sdb <<EOF
 n
 p
 1
- 
- 
+
+
 t
 8e
 w
@@ -33,16 +33,16 @@ EOF
 # n - creates new partition
 # p - selects type primary
 # 1 - selects the first partition
-# [enter] - accepts defaults 
+# [enter] - accepts defaults
 # [enter] - accepts defaults
 # t - change partition id
 # 8e - change Hex Code of partion for `Linux LVM`
 # w - write changes
- 
+
 # the following extends the newly formatted partion onto our main disk
 pvcreate /dev/sdb1
-vgextend vagrant-vg /dev/sdb1
-lvextend -l +100%FREE /dev/mapper/vagrant--vg-root
-resize2fs /dev/mapper/vagrant--vg-root
- 
+vgextend ubuntu-vg /dev/sdb1
+lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
+resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+
 date > /etc/disk_added_date

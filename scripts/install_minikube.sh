@@ -17,4 +17,3 @@ fi
 cp /sv/internal/minikube.service /etc/systemd/system/minikube.service
 chmod 0644 /etc/systemd/system/minikube.service
 systemctl daemon-reload
-systemctl enable minikube

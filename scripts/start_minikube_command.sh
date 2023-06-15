@@ -1,6 +1,6 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/requireRoot.sh
 . /sv/scripts/variables.sh
+. /sv/scripts/requireRoot.sh
 
 # the singular command to start minikube, this is executed by the custom minikube service
 minikube start \
