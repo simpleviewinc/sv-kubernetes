@@ -35,8 +35,8 @@ vagrant up
 
 SSH into the box at IP address: 192.168.50.100
 
-Username: root
-Password: vagrant
+Username: **root**
+Password: **vagrant**
 
 ```
 # ssh putty session (192.168.50.100)
@@ -334,6 +334,13 @@ Compile a new version
 ```
 cd /folder/of/sv-kubernetes
 pack
+```
+
+Once compiled if you want to try it, update your vagrantfile so that primary has version "0" for it's box. Then run add_box so that it adds the newly packed version of the box to your vagrants box list.
+
+```
+cd /folder/of/sv-kubernetes
+add_box
 ```
 
 When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
