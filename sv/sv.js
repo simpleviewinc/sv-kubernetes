@@ -634,9 +634,7 @@ scripts.debug = function(args) {
 }
 
 scripts.fixDate = function() {
-	exec(`service ntp stop`);
-	exec(`sudo ntpd -gq`);
-	exec(`service ntp start`);
+	exec(`systemctl restart systemd-timesyncd`);
 }
 
 /**
