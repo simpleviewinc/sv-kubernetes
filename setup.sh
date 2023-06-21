@@ -9,3 +9,5 @@ gcloud auth login --update-adc
 
 # build server config
 sv _buildSvInfo
+
+sv fixDate
