@@ -5,6 +5,7 @@ apt-get update
 
 . /sv/scripts/setup_root.sh
 . /sv/scripts/install_misc.sh
+. /sv/scripts/install_ntp.sh
 . /sv/scripts/install_dnsmasq.sh
 . /sv/scripts/install_sv.sh
 . /sv/scripts/install_minikube.sh
@@ -14,3 +15,5 @@ apt-get update
 . /sv/scripts/install_helm.sh
 . /sv/scripts/install_kubesec.sh
 . /sv/scripts/install_crontab.sh
+
+apt-get clean
