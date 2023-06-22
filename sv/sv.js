@@ -538,7 +538,7 @@ scripts.script = function(args) {
 	const path = isJsFile ? rootPath + ".js" : rootPath;
 
 	const env = {
-		...process.env,
+		...getDockerEnv(),
 		...envVars
 	};
 
@@ -550,7 +550,7 @@ scripts.script = function(args) {
 		const script = `${path} ${flags.join(" ")}`;
 
 		exec(script, {
-			env : Object.assign({}, process.env, envVars)
+			env
 		});
 	}
 }
