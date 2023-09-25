@@ -1,4 +1,4 @@
-. /sv/scripts/errorHandler.sh
+. /scripts/errorHandler.sh
 
 kubectl_version="v1.21.14" # previous version v1.17.4
 current_kubectl_version=$(kubectl version --client --short 2> /dev/null || true)

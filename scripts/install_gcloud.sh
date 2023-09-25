@@ -1,4 +1,4 @@
-. /sv/scripts/errorHandler.sh
+. /scripts/errorHandler.sh
 
 gcloud_version=$((gcloud -v | grep "Google Cloud SDK") 2> /dev/null || true)
 gcloud_version_expected=$"Google Cloud SDK 403.0.0" # previous version 254.0.0

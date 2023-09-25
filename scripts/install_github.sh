@@ -1,4 +1,4 @@
-folder="/sv/internal/github"
+folder="/internal/github"
 
 mkdir -p /root/.ssh
 cp /home/vagrant/.ssh/github_key /root/.ssh/github_key

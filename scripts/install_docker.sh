@@ -1,4 +1,4 @@
-. /sv/scripts/errorHandler.sh
+. /scripts/errorHandler.sh
 
 docker_version=$(docker --version 2> /dev/null || true)
 docker_version_expected="Docker version 20.10.22, build aa7e414"

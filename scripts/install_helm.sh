@@ -1,4 +1,4 @@
-. /sv/scripts/errorHandler.sh
+. /scripts/errorHandler.sh
 
 helm_version=$(helm version --client --short 2> /dev/null || true)
 helm_version_expected="Client: v2.17.0+ga690bad"

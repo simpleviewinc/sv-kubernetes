@@ -1,7 +1,7 @@
-. /sv/scripts/errorHandler.sh
+. ./scripts/errorHandler.sh
 
 apt-get install dnsmasq
-cp /sv/internal/dnsmasq.conf /etc/dnsmasq.conf
+cp /internal/dnsmasq.conf /etc/dnsmasq.conf
 /etc/init.d/dnsmasq restart
 
 # on initial boot the file is a symlink, so we can't chattr that, so we only want to chattr it if it's a file

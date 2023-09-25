@@ -1,4 +1,4 @@
-. /sv/scripts/errorHandler.sh
+. /scripts/errorHandler.sh
 
 apt-get install -y ntp
 timedatectl set-ntp off
