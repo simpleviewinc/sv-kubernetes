@@ -3,6 +3,7 @@ Usage: sudo sv [command]
 Commands:
 	build           Build a container and tag it
 	copyFrom        Copy a file from a running container
+	deleteEvicted   Delete all pods which are in a failed state from the cluster
 	editSecrets     Edit/Create secret files
 	enterPod        Enter a running container
 	getContext      Get the current Kubernetes Context
@@ -15,5 +16,6 @@ Commands:
 	stop            Stop a Helm chart
 	switchContext   Switch between Kubernetes Contexts
 	test            Execute tests within running containers
+	topPods         Display the memory and cpu req and usage for all pods
 
 Run 'sudo sv [command] --help' for more information on that command

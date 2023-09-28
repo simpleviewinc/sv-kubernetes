@@ -16,6 +16,7 @@ const {
 	execSilent,
 	getCurrentContext,
 	getCurrentPods,
+	getCurrentPodsV2,
 	loadSettingsYaml,
 	logContext,
 	mapBuildArgs,

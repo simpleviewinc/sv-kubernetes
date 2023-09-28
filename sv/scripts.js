@@ -13,7 +13,8 @@ const {
 	loadSettingsYaml,
 	log,
 	validatePath,
-	getDockerEnv
+	getDockerEnv,
+	getCurrentPodsV2
 } = require("./utils");
 
 const constants = require("./constants");
@@ -134,5 +135,54 @@ function deleteEvicted({ argv }) {
 	console.log(`${evictedPods.length} pods deleted.`);
 }
 
+/**
+ * Get the current cpu, memory for all pods on the cluster
+ */
+function topPods() {
+	const pods = getCurrentPodsV2({ allNamespaces: true });
+	const podIndex = lodash.keyBy(pods, "name");
+
+	const topResult = execSilent("kubectl top pods --all-namespaces --no-headers --containers").toString();
+	const rows = topResult.split("\n").map(val => {
+		// the data comes in whitespace separated, and thus splits it apart
+		const parts = val.split(/\s+/);
+		return {
+			namespace: parts[0],
+			podName: parts[1],
+			container: parts[2],
+			cpu: parts[3],
+			memory: parts[4]
+		}
+	});
+
+	const cleaned = rows.map(row => {
+		// find our pod reference so we can get the requests
+		const pod = podIndex[row.podName];
+		const container = pod.containers.filter(val => val.name === row.container)[0];
+
+		return {
+			name: row.podName,
+			container: container.name,
+			node: pod.nodeName,
+			namespace: pod.namespace,
+			cpuUsed: row.cpu,
+			cpuRequest: container.resources.requests.cpu,
+			memoryUsed: row.memory,
+			memoryRequest: container.resources.requests.memory
+		}
+	});
+
+	// This generates a single string with all of the files with one space sepearating every term
+	const entryString = cleaned.map(val => {
+		return Object.values(val).join(" ");
+	}).join("\n");
+
+	fs.writeFileSync("/tmp/topPods.txt", entryString);
+
+	// column will convert our one-space separated output into neatly formatted linux column output
+	exec(`column -t --table-columns "POD,CONTAINER,NODE,NAMESPACE,CPU(USED),CPU(REQ),MEM(USED),MEM(REQ)" /tmp/topPods.txt`);
+}
+
 module.exports.build = build;
 module.exports.deleteEvicted = deleteEvicted;
+module.exports.topPods = topPods;

@@ -75,42 +75,78 @@ function log(str) {
 }
 
 /**
- * @param {string} [filter] - The pod or application you are filtering on
- * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
+ *
+ * @param {import("./definitions").GetCurrentPodsArgs} [args]
  */
- function getCurrentPods(filter, container) {
+function getCurrentPodsV2(args = {}) {
 	/** @type {import("./definitions").PodJson}*/
-	const all = JSON.parse(execSync(`kubectl get pods -o json`, { maxBuffer : 100 * 1024 * 1024 }).toString());
+	const all = JSON.parse(execSync(`kubectl get pods -o json ${args.allNamespaces ? "--all-namespaces": ""}`, { maxBuffer : 100 * 1024 * 1024 }).toString());
 
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
 	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
 
 	// simplify the return for downstream functions
+	/** @type {import("./definitions").PodResult[]} */
 	let pods = originalPods.map(val => ({
 		name : val.metadata.name,
 		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
 		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
-		ip : val.podIP,
+		nodeName: val.spec.nodeName,
+		namespace: val.metadata.namespace,
+		ip : val.status.podIP,
+		containers: val.spec.containers.map(val => {
+			const cpuRequest = lodash.get(val, "resources.requests.cpu");
+			const memoryRequest = lodash.get(val, "resources.requests.memory");
+
+			const resources = {
+				requests: {
+					cpu: cpuRequest !== undefined ? cpuRequest : "0",
+					memory: memoryRequest !== undefined ? memoryRequest : "0"
+				}
+			}
+
+			return {
+				name: val.name,
+				resources
+			}
+		}),
 		containerNames : val.spec.containers.map(val => val.name),
 		status : val.status.phase,
 		raw : val
 	}));
 
+	// If we have want a specific name
+	if (args.name) {
+		pods = pods.filter(val => val.name.match(args.name));
+	}
+
 	// if we have a passed in filter, apply it
-	if (filter) {
-		pods = pods.filter(val => val.name.match(filter));
+	if (args.filter) {
+		pods = pods.filter(args.filter);
 	}
 
 	// if we have a passed in container, filter to pods which have that container
 	// also clean out the containerNames to only contain the specified container for easier downstream code
-	if (container !== undefined) {
-		pods = pods.filter(val => val.containerNames.includes(container));
+	if (args.container !== undefined) {
+		pods = pods.filter(val => val.containerNames.includes(args.container));
 		pods.forEach(pod => {
-			pod.containerNames = [container];
+			pod.containerNames = [args.container];
 		});
 	}
 
 	return pods;
+}
+
+/**
+ * @deprecated Keeping until we can refactor other calls to use the newer syntax
+ * @param {string} [filter] - The pod or application you are filtering on
+ * @param {string} [container] - The name of the container, if passed will only returns pods with that container and containerNames will only contain this container
+ */
+function getCurrentPods(filter, container) {
+	return getCurrentPodsV2({
+		name: filter,
+		container
+	})
 }
 
 /**
@@ -156,6 +192,7 @@ module.exports.exec = exec;
 module.exports.execSilent = execSilent;
 module.exports.getCurrentContext = getCurrentContext;
 module.exports.getCurrentPods = getCurrentPods;
+module.exports.getCurrentPodsV2 = getCurrentPodsV2;
 module.exports.getDockerEnv = getDockerEnv;
 module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.loadSettingsYaml = loadSettingsYaml;

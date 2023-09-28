@@ -1,25 +1,61 @@
-export interface PodJson {
-	items: [
-		{
-			metadata : {
-				name: string,
-				annotations : { [key: string]: string },
-				deletionTimestamp: string
-			},
-			podIP : string,
-			spec : {
-				containers : [
-					{
-						name: string
+export interface GetCurrentPodsArgs {
+	allNamespaces?:boolean
+	name?: string
+	filter?: (val: PodResult) => boolean
+	container?: string
+}
+
+export interface PodRaw {
+	metadata: {
+		name: string
+		namespace: string
+		annotations: { [key: string]: string }
+		deletionTimestamp: string
+	}
+	spec: {
+		nodeName: string
+		containers: [
+			{
+				name: string
+				resources?: {
+					requests?: {
+						cpu?: string
+						memory?: string
 					}
-				]
-			},
-			status : {
-				phase : string,
-				reason : string
+				}
+			}
+		]
+	}
+	status: {
+		podIP: string
+		phase: string
+		reason: string
+	}
+}
+
+export interface PodJson {
+	items: PodRaw[]
+}
+
+export interface PodResult {
+	name: string
+	testCommand: string
+	rootName: string
+	nodeName: string
+	namespace: string
+	ip: string
+	containers: {
+		name: string
+		resources: {
+			requests: {
+				cpu: string
+				memory: string
 			}
 		}
-	]
+	}[]
+	containerNames: string[]
+	status: string
+	raw: PodRaw
 }
 
 interface Dependency {
