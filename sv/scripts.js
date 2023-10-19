@@ -183,6 +183,13 @@ function topPods() {
 	exec(`column -t --table-columns "POD,CONTAINER,NODE,NAMESPACE,CPU(USED),CPU(REQ),MEM(USED),MEM(REQ)" /tmp/topPods.txt`);
 }
 
+function minikubeSystemPrune() {
+	exec(`docker system prune`, {
+		env: getDockerEnv()
+	});
+}
+
 module.exports.build = build;
+module.exports.minikubeSystemPrune = minikubeSystemPrune;
 module.exports.deleteEvicted = deleteEvicted;
 module.exports.topPods = topPods;
