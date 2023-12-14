@@ -1,4 +1,5 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/platform_lookup.sh
 . /sv/scripts/requireRoot.sh
 
 apt-get update
@@ -13,6 +14,7 @@ apt-get update
 . /sv/scripts/install_kubectl.sh
 . /sv/scripts/install_docker.sh
 . /sv/scripts/install_helm.sh
+. /sv/scripts/install_go.sh
 . /sv/scripts/install_kubesec.sh
 . /sv/scripts/install_crontab.sh
 
