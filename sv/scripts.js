@@ -113,7 +113,7 @@ function build({ argv }) {
 
 	log(`Starting build of ${containerName}`);
 
-	exec(`cd ${path} && docker buildx build ${commandArgString} .`, {
+	exec(`cd ${path} && docker build ${commandArgString} .`, {
 		env: getDockerEnv()
 	});
 	log(`Completed build of ${containerName}`);

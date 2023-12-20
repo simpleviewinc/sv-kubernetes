@@ -1,4 +1,4 @@
-kubectl_version="v1.26.5"
+kubectl_version="v1.26.3"
 minikube_version="v1.30.1"
 minikube_ip="192.168.49.2"
 go_version="1.20.5"
