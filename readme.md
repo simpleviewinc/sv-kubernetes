@@ -90,7 +90,7 @@ Run `sudo sv` for documentation within the VM.
 
 ## Troubleshooting
 
-If you are having problems with an sv-kubernetes application or the system itself, please see the documentation [here](https://wiki.simpleviewtools.com/display/PRD/SV-Kubernetes).
+If you are having problems with an sv-kubernetes application or the system itself, please see the documentation [here](https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes).
 
 If the docs do not help then speak up in the #devops slack channel or the #devchannel Google chat room.
 
@@ -243,7 +243,7 @@ The following are the recommended best practices for keeping your team notified 
 
 ## Running commands on Dev/Test Clusters
 This section provides information on how to switch contexts to a dev/test cluster.
-* Acquire access to the cluster by following the documentation [here] (https://wiki.simpleviewtools.com/display/DEVOPS/Acquiring+Access+to+Kubernetes+Cluster)
+* Acquire access to the cluster by following the documentation [here] (https://simpleviewtools.atlassian.net/wiki/spaces/DEVOPS/pages/29655629/Acquiring+Access+to+Kubernetes+Cluster)
 * Ensure you are running the latest version of `sv-kubernetes`
 * Ensure you are gcloud authenticated by running this command in sv-kubernetes `sudo gcloud auth login`
 * When on a non-local cluster, commands that alter the clusters state, such as `start` or `stop` must run through `helm tiller`.
