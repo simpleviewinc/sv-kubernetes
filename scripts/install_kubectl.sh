@@ -1,5 +1,4 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
 . /sv/scripts/variables.sh
 
 current_kubectl_version=$(kubectl version --client -o json | jq -r .clientVersion.gitVersion 2> /dev/null || true)

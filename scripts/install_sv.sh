@@ -1,5 +1,5 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
+. /sv/scripts/variables.sh
 
 node_version=$(node --version 2> /dev/null || true)
 node_version_expected=v12.14.1

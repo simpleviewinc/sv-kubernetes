@@ -1,5 +1,4 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
 . /sv/scripts/variables.sh
 
 current_crictl_version=$(crictl --version 2> /dev/null || true)

@@ -1,5 +1,4 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
 . /sv/scripts/variables.sh
 
 # get the version, take the first line that takes CNI dummy plugin vx.x.x and use sed to extract just the version

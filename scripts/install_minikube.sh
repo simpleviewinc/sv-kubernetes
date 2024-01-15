@@ -1,5 +1,4 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
 . /sv/scripts/variables.sh
 
 current_minikube_version=$(minikube version -o json | jq -r .minikubeVersion || true)

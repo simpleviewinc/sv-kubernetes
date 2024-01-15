@@ -1,5 +1,4 @@
 . /sv/scripts/errorHandler.sh
-. /sv/scripts/platform_lookup.sh
 . /sv/scripts/requireRoot.sh
 
 apt-get update
