@@ -8,3 +8,7 @@ crictl_version="v1.27.0"
 docker_version="20.10.22"
 docker_build_hash="3a2c30b"
 docker_compose_version="2.5.0"
+node_version="v20.11.0"
+
+# allocate the platform for the installers
+. /sv/scripts/platform_lookup.sh

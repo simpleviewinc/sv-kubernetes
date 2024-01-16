@@ -1,6 +1,8 @@
-
-cd /tmp
-curl -Lo kubesec https://github.com/shyiko/kubesec/releases/download/0.9.2/kubesec-0.9.2-linux-amd64
-	chmod a+x kubesec
-	mv kubesec /usr/local/bin/
-echo kubesec_version=$(kubesec --version)
+export GOPATH=${HOME}/go
+# install the module
+GO111MODULE="on" go install github.com/willyguggenheim/kubesec@a0b81f5
+# copy it into our bin
+cp $GOPATH/bin/kubesec /usr/local/bin/
+chmod a+x /usr/local/bin/kubesec
+# remove content used to compile it
+rm -rf $GOPATH

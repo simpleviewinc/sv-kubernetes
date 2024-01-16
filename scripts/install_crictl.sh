@@ -6,7 +6,7 @@ crictl_version_expected="crictl version $crictl_version"
 
 if [ "$current_crictl_version" != "$crictl_version_expected" ]; then
 	cd /tmp
-	curl -Lo crictl.tar.gz  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.27.0/crictl-$crictl_version-linux-amd64.tar.gz
+	curl -Lo crictl.tar.gz  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.27.0/crictl-$crictl_version-linux-${PLATFORM}.tar.gz
 	tar zxvf crictl.tar.gz -C /bin
 	rm -f crictl.tar.gz
 fi
