@@ -15,4 +15,6 @@ minikube start \
 	--memory="$(node /sv/internal/getMinikubeMem.js)" \
 	--ports="443:443" \
 	--ports="80:80" \
-	--ports="12002:12002"
+	--ports="12002:12002" \
+	--ports="30000:30000" \
+	--ports="30001:30001"
