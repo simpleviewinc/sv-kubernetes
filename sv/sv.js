@@ -355,7 +355,7 @@ scripts.stop = function(args) {
 
 	var applicationName = args.argv[0];
 
-	exec(`helm delete ${applicationName} --purge`);
+	exec(`helm uninstall ${applicationName}`);
 }
 
 scripts.logs = function(args) {
