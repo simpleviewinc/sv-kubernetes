@@ -22,7 +22,7 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 ## Installation
 
-Ensure you have followed the instructions at https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes to install the necessary software, setup git, setup github and your SSH keys.
+Ensure you have followed the (Environment Setup instructions)[https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup] to install the necessary software, setup git, setup github and your SSH keys.
 
 Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`, see [this thread](https://discourse.devops.simpleviewtools.com/t/unable-to-setup-sv-kubernetes/68) for more info.
 
@@ -37,6 +37,8 @@ SSH into the box at IP address: 192.168.50.100
 
 Username: **root**
 Password: **vagrant**
+
+**Note: prior installations used `vagrant` as the username, do not do that! You must use `root`.**
 
 ```
 # ssh putty session (192.168.50.100)
