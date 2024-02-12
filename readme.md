@@ -22,26 +22,104 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 ## Installation
 
-Ensure you have followed the [Environment Setup instructions](https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup) to install the necessary software, setup git, setup github and your SSH keys.
+### Windows Users
+
+Ensure you have followed the [Environment Setup instructions] to install the necessary software, setup git, setup github and your SSH keys.
+
+### Apple Silicon Users
+
+Follow the ***GitHub Setup*** section of the [Environment Setup instructions]
+
+This installation was performed using [Homebrew](https://brew.sh/) to install
+packages.
+
+#### Dependencies
+
+- [QEMU](https://www.qemu.org/download/#macos): `8.1.3_2`
+- [Vagrant](https://developer.hashicorp.com/vagrant/install#macOS): `2.4.0`
+- [Vagrant QEMU plugin](https://github.com/ppggff/vagrant-qemu?tab=readme-ov-file#usage): `0.3.5`
+
+Below is an example of how to force-install specific versions using Homebrew
+(example for QEMU 8.1.3_2)
+
+```bash
+brew install wget
+wget https://raw.githubusercontent.com/Homebrew/homebrew-core/676c6922d79d24cc0794dd22250e3ea1167f2cd9/Formula/q/qemu.rb
+brew install ./qemu.rb
+rm qemu.rb
+```
+
+#### Network alias
+
+At the time of writing, MacOS on Apple Silicon does not seem to support `tap`
+and/or `host-only` interfaces. To be able to reach our VM we need to define an
+alias on the loopback interface and forward ports we need to reach from the
+host in the Vagrantfile.
+
+To manually add the alias use `sudo ifconfig lo0 alias 192.168.50.100`
+
+To remove the alias use `sudo ifconfig lo0 -alias 192.168.50.100`
+
+We can automate this process at startup for conveniency by running the command
+below as `root`. It will initialize a launch script that creates the
+`192.168.50.100` alias on the loopback interface.
+
+```bash
+# As ROOT
+cat <<-'EOF' > /Library/LaunchDaemons/com.simpleviewinc.ifconfig.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.simpleviewinc.ifconfig</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/sbin/ifconfig</string>
+      <string>lo0</string>
+      <string>alias</string>
+      <string>192.168.50.100</string>
+    </array>
+</dict>
+</plist>
+EOF
+
+launchctl enable system/com.simpleviewinc.ifconfig
+```
+
+### Post-installation
 
 Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
 
 Open a command prompt as Admin and `cd` to the folder which you checked out this repository.
 
-```
-# windows cmd
+```bash
 vagrant up
 ```
+
+> **IMPORTANT NOTE FOR MacOS USERS**
+> At the time of writing, Vagrant qemu plugin only supports SMB for mouting
+> bidirectional shared folders and thus will ask for your MacOS credentials to
+> create it. It'll ask your password first to run sudo commands and will then
+> ask User+Password to mount the folder  
+
+> The command `vagrant destroy` also asks for sudo password to remove the SMB
+> mount  
 
 SSH into the box at IP address: 192.168.50.100
 
 Username: **root**
 Password: **vagrant**
 
-**Note: prior installations used `vagrant` as the username, do not do that! You must use `root`.**
+> Note: prior installations used `vagrant` as the username, do not do that! You must use `root`
 
-```
-# ssh putty session (192.168.50.100)
+> Note: alternatively, you can run `vagrant ssh` in a terminal to connect to your VM
+
+
+```bash
+# VM SSH session
 sudo bash /sv/setup.sh
 ```
 
@@ -349,6 +427,8 @@ When having problems compiling, you can run `vagrant up base`, shell in to 192.1
 
 Add `-debug` to the `pack.bat` to step through the packer process one command at a time.
 
+> NOTE: On non-Windows system run `pack.sh` and `add_box.sh` respectively
+
 # Testing
 
 Run tests
@@ -363,3 +443,6 @@ Edit secrets for the test application
 ```
 sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env local
 ```
+
+
+[Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup

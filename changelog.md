@@ -1,5 +1,12 @@
 # sv-kubernetes changelog
 
+## 2/14/2024
+
+* Minikube updated to `1.32.0`
+  * The previous combination of Minikube and Kubectl versions
+    prevented the cluster to start on ARM64 system
+* Make `sv-kubernetes` compatible with Apple Silicon (ARM64)
+
 ## 6/8/2023
 * Minikube updated to `1.30.1`.
 * Kubectl updated to `1.26.5`.

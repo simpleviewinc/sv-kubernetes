@@ -1,38 +1,73 @@
+base_boxes = Hash[]
+base_boxes.default         = "bento/ubuntu-22.04"
+base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
+
+primary_boxes = Hash[]
+primary_boxes.default         = "owenallenaz/sv-kubernetes"
+primary_boxes[:arm_mac_qemu]  = "owenallenaz/sv-kubernetes-arm64"
+
 Vagrant.configure("2") do |config|
+
+	arch = `uname -m`.chomp
+	arm = arch == 'arm64' || arch == 'aarch64'
+	apple_silicon = Vagrant::Util::Platform.darwin? && (arm || (`sysctl -n machdep.cpu.brand_string`.chomp.start_with? 'Apple M'))
+
+	# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
+	mem = get_memory(4096, 0.25)
+
+	# The time in seconds that Vagrant will wait for the machine to boot and be accessible.
+	config.vm.boot_timeout = 600
+
 	# main box used by consumers of sv-kubernetes
 	config.vm.define "primary", primary: true do |c|
-		c.vm.box = "owenallenaz/sv-kubernetes"
+		c.vm.box = primary_boxes.default
 		c.vm.box_version = "0.0.5"
-		c.vm.box_architecture = "amd64"
 		c.vm.hostname = "sv-kube"
-		c.vm.network "private_network", ip: "192.168.50.100"
-		c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
 		c.ssh.username = "root"
 		c.ssh.password = "vagrant"
-		c.vm.provider "virtualbox" do |v|
-			# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
-			mem = get_memory(4096, 0.25)
-			v.cpus = 2
-			v.customize ["modifyvm", :id, "--audio", "none"]
-			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-			v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-			v.customize ["modifyvm", :id, "--memory", mem]
 
-			file_to_disk = File.realpath( "." ).to_s + "/extended-disk.vdi"
-			if !File.exist?(file_to_disk)
-				v.customize [
-					'createhd',
-					'--filename', file_to_disk,
-					'--format', 'VDI',
-					'--size', 100 * 1024 # 100 GB
-				]
-				v.customize [
-					'storageattach', :id,
-					'--storagectl', 'SATA Controller',
-					'--port', 1, '--device', 0,
-					'--type', 'hdd', '--medium',
-					file_to_disk
-				]
+		if !apple_silicon
+			c.vm.box_architecture = "amd64"
+			c.vm.network "private_network", ip: "192.168.50.100"
+			c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
+
+			c.vm.provider "virtualbox" do |v|
+				v.cpus = 2
+				v.customize ["modifyvm", :id, "--audio", "none"]
+				v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+				v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+				v.customize ["modifyvm", :id, "--memory", mem]
+
+				file_to_disk = File.realpath( "." ).to_s + "/extended-disk.vdi"
+				if !File.exist?(file_to_disk)
+					c.vm.customize [
+						'createhd',
+						'--filename', file_to_disk,
+						'--format', 'VDI',
+						'--size', 100 * 1024 # 100 GB
+					]
+					c.vm.customize [
+						'storageattach', :id,
+						'--storagectl', 'SATA Controller',
+						'--port', 1, '--device', 0,
+						'--type', 'hdd', '--medium',
+						file_to_disk
+					]
+				end
+			end
+		else
+			c.vm.synced_folder '.', '/sv', type: 'smb', smb_host: Addrinfo.ip(`hostname`.strip).ip_address
+			c.vm.network 'forwarded_port', guest: 8000, host: 8000
+			c.vm.network 'forwarded_port', guest: 8443, host: 8443
+			c.vm.network 'forwarded_port', guest:  443, host:  443
+			c.vm.network 'forwarded_port', guest:   22, host: 2223, id: 'ssh'
+
+			c.vm.provider "qemu" do |qe, override|
+				override.vm.box = primary_boxes[:arm_mac_qemu]
+
+				qe.memory = mem
+				qe.smp = 2
+				qe.ssh_port = 2223
 			end
 		end
 
@@ -42,15 +77,30 @@ Vagrant.configure("2") do |config|
 
 	# development box used for working with packer to generate the base box
 	config.vm.define "base", autostart: false do |c|
-		c.vm.box = "bento/ubuntu-22.04"
+		c.vm.box = base_boxes.default
 		c.vm.box_version = "202206.03.0"
-		c.vm.network "private_network", ip: "192.168.50.101"
-		c.vm.synced_folder ".", "/sv"
-		c.vm.provider "virtualbox" do |v|
-			# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
-			mem = get_memory(4096, 0.25)
-			v.cpus = 2
-			v.customize ["modifyvm", :id, "--memory", mem]
+		c.ssh.insert_key = false
+
+		if !apple_silicon
+			c.vm.network "private_network", ip: "192.168.50.101"
+			c.vm.synced_folder ".", "/sv"
+
+			c.vm.provider "virtualbox" do |v|
+				v.cpus = 2
+				v.customize ["modifyvm", :id, "--memory", mem]
+			end
+		else
+			c.vm.synced_folder ".", "/sv", type: 'rsync'
+			c.vm.network 'forwarded_port', guest:   22, host: 2222, id: 'ssh'
+
+			c.vm.provider "qemu" do |qe, override|
+				override.vm.box = base_boxes[:arm_mac_qemu]
+				override.vm.box_version = "20230712"
+
+				qe.memory = mem
+				qe.smp = 2
+				qe.ssh_port = 2222
+			end
 		end
 	end
 end
@@ -68,4 +118,3 @@ def get_memory(mem_min, mem_ratio)
 
 	[ (total_mem * mem_ratio).round, mem_min ].max
 end
-

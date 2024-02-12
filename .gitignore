@@ -10,4 +10,4 @@ sv-kubernetes.sublime-workspace
 node_modules
 extended-disk.vdi
 packer.exe
-/output-sv-kubernetes
+/output-*/
