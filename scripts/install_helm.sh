@@ -1,9 +1,9 @@
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/variables.sh
 
-helm_version_current=$(helm version --client --short 2> /dev/null || true)
+helm_version_current=$(helm version --template='{{.Version}}' 2> /dev/null || true)
 
-if ! [[ "$helm_version_current" =~ $helm_version ]]; then
+if [[ "$helm_version_current" != $helm_version ]]; then
 	apt-get update
 	apt-get install -y curl
 
@@ -14,3 +14,7 @@ if ! [[ "$helm_version_current" =~ $helm_version ]]; then
 	mv linux-${PLATFORM}/helm /usr/bin/helm
 	rm -rf linux-${PLATFORM}
 fi
+
+# AUT-2125 | AUT-2126
+# Install 2to3 helm plugin for migration purposes
+helm plugin install https://github.com/helm/helm-2to3.git 2> /dev/null || true
