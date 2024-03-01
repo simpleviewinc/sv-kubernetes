@@ -202,8 +202,8 @@ scripts.install = async function(args) {
 	}
 }
 
-scripts.start = function(args) {
-	logContext();
+scripts.start = async function(args) {
+	await logContext();
 
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
@@ -350,8 +350,8 @@ scripts.start = function(args) {
 	}
 }
 
-scripts.stop = function(args) {
-	logContext();
+scripts.stop = async function(args) {
+	await logContext();
 
 	var applicationName = args.argv[0];
 
@@ -443,7 +443,7 @@ scripts.switchContext = function (args) {
 };
 
 scripts.getContext = function (args) {
-	logContext();
+	logContext(false);
 }
 
 scripts.listProjects = function() {
