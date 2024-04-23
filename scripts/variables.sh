@@ -7,7 +7,7 @@ cni_version="v1.3.0"
 crictl_version="v1.27.0"
 docker_version="20.10.22"
 docker_build_hash="3a2c30b"
-docker_compose_version="2.5.0"
+docker_compose_version="2.24.7"
 node_version="v16.20.2"
 
 # allocate the platform for the installers
