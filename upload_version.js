@@ -1,3 +1,4 @@
+//@ts-check
 const crypto = require("crypto");
 const streamp = require("stream/promises");
 const fs = require("fs");
@@ -20,7 +21,19 @@ const headers = {
 	"Content-Type": "application/json"
 }
 
-async function postToVagrant({ method, path, body }) {
+/**
+ *
+ * @param {object} args
+ * @param {string} args.method
+ * @param {string} args.path
+ * @param {object} [args.body]
+ * @returns {Promise<any>}
+ */
+async function postToVagrant({
+	method,
+	path,
+	body
+}) {
 	const result = await fetch(`https://app.vagrantup.com${path}`, {
 		method,
 		headers,
@@ -34,7 +47,8 @@ async function postToVagrant({ method, path, body }) {
 }
 
 async function run() {
-	const exists = postToVagrant({
+	console.log("Check if the box exists");
+	const exists = await postToVagrant({
 		method: "GET",
 		path: `/api/v2/box/${user}/${box}/version/${version}/provider/${provider}/${arch}`
 	});
@@ -49,6 +63,7 @@ async function run() {
 	await streamp.pipeline(readBox, hasher);
 	const result = hasher.digest("hex");
 
+	console.log("Adding version...");
 	await postToVagrant({
 		method: "POST",
 		path: `/api/v2/box/${user}/${box}/versions`,
@@ -59,6 +74,7 @@ async function run() {
 		}
 	});
 
+	console.log("Adding provider...");
 	await postToVagrant({
 		method: "POST",
 		path: `/api/v2/box/${user}/${box}/version/${version}/providers`,
@@ -73,17 +89,20 @@ async function run() {
 		}
 	});
 
+	console.log("Getting upload_path to post the box to...");
 	const downloadResult = await postToVagrant({
 		method: "GET",
 		path: `/api/v2/box/${user}/${box}/version/${version}/provider/${provider}/${arch}/upload`
 	});
 
 	const stats = fs.statSync(boxPath);
+	console.log("Uploading the file to Vagrant cloud, this may take a while...")
 	const uploadResult = await fetch(downloadResult.upload_path, {
 		method: "PUT",
 		headers: {
-			"Content-Length": stats.size
+			"Content-Length": stats.size.toString()
 		},
+		//@ts-expect-error - It doesn't like this, but it works so I'm not sure why a ReadableStream is valid in the interface
 		body: fs.createReadStream(boxPath),
 		duplex: "half"
 	});

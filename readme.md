@@ -20,7 +20,7 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 * Allow developers within Simpleview to more easily move from product to product by providing a familiar working environment across departments. The containers will still be fully managed by the individual teams, and the tools those teams used will be determined by those teams.
 * Be the platform where we can build a microservice system based on the concept of making all APIs externalizable similar to the initiatve put in place at Amazon via [this memo](https://apievangelist.com/2012/01/12/the-secret-to-amazons-success-internal-apis/).
 
-## Installation
+## Install Dependencies
 
 ### Windows Users
 
@@ -89,7 +89,7 @@ EOF
 launchctl enable system/com.simpleviewinc.ifconfig
 ```
 
-### Post-installation
+## Installation
 
 Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
 
@@ -103,10 +103,10 @@ vagrant up
 > At the time of writing, Vagrant qemu plugin only supports SMB for mouting
 > bidirectional shared folders and thus will ask for your MacOS credentials to
 > create it. It'll ask your password first to run sudo commands and will then
-> ask User+Password to mount the folder  
+> ask User+Password to mount the folder
 
 > The command `vagrant destroy` also asks for sudo password to remove the SMB
-> mount  
+> mount
 
 SSH into the box at IP address: 192.168.50.100
 
@@ -413,14 +413,14 @@ Compile a new version
 
 ```
 cd /folder/of/sv-kubernetes
-pack
+node pack.js
 ```
 
 Once compiled if you want to try it, update your vagrantfile so that primary has version "0" for it's box. Then run add_box so that it adds the newly packed version of the box to your vagrants box list.
 
 ```
 cd /folder/of/sv-kubernetes
-add_box
+node add_box.js
 ```
 
 When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
