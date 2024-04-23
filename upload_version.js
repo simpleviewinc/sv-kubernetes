@@ -83,8 +83,7 @@ async function run() {
 				checksum: result,
 				checksum_type: "sha512",
 				name: provider,
-				architecture: "amd64",
-				default_architecture: true
+				architecture: arch
 			}
 		}
 	});
