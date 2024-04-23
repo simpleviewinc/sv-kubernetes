@@ -4,9 +4,14 @@ const fs = require("fs");
 
 const user = "owenallenaz";
 const box = "sv-kubernetes";
-const version = "0.0.6";
+const version = process.argv[2];
+
+if (version === undefined) {
+	throw new Error("Must specify a version, node create_version.js x.y.z");
+}
+
 const token = process.env.HASHICORP_TOKEN;
-const provider = "virtualbox";
+const provider = process.arch === "x64" ? "virtualbox" : "qemu";
 const arch = process.arch === "x64" ? "amd64" : "arm64";
 const boxPath = `${__dirname}/output-sv-kubernetes/package.box`;
 
@@ -74,7 +79,7 @@ async function run() {
 	});
 
 	const stats = fs.statSync(boxPath);
-	const huh = await fetch(downloadResult.upload_path, {
+	const uploadResult = await fetch(downloadResult.upload_path, {
 		method: "PUT",
 		headers: {
 			"Content-Length": stats.size
@@ -83,7 +88,7 @@ async function run() {
 		duplex: "half"
 	});
 
-	console.log(await huh.text());
+	console.log(await uploadResult.text());
 }
 
 run();
