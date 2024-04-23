@@ -425,10 +425,6 @@ node add_box.js
 
 When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
 
-Add `-debug` to the `pack.bat` to step through the packer process one command at a time.
-
-> NOTE: On non-Windows system run `pack.sh` and `add_box.sh` respectively
-
 # Testing
 
 Run tests
