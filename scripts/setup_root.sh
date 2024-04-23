@@ -9,16 +9,6 @@ sysctl fs.protected_regular=0
 echo -e "vagrant\nvagrant" | passwd root
 
 # Override SSH Config
-cat <<-'EOF' > /etc/ssh/sshd_config
-Include /etc/ssh/sshd_config.d/*.conf
-PasswordAuthentication yes
-KbdInteractiveAuthentication no
-UsePAM yes
-X11Forwarding yes
-PrintMotd no
-AcceptEnv LANG LC_*
-Subsystem	sftp	/usr/lib/openssh/sftp-server
-PermitRootLogin yes
-EOF
+cp /sv/internal/sshd_config /etc/ssh/sshd_config
 
 service sshd restart
