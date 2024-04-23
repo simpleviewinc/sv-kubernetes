@@ -1,22 +1,15 @@
-base_boxes = Hash[]
-base_boxes.default         = "bento/ubuntu-22.04"
-base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
+amd_base_image = "bento/ubuntu-22.04"
+amd_base_version = "202206.03.0"
+amd_version = "0.0.6"
 
-primary_boxes = Hash[]
-primary_boxes.default         = "owenallenaz/sv-kubernetes"
-primary_boxes[:arm_mac_qemu]  = "owenallenaz/sv-kubernetes-arm64"
+arm_base_image = "perk/ubuntu-2204-arm64"
+arm_base_version = "20230712"
+arm_version = "0.0.6"
 
 Vagrant.configure("2") do |config|
-
 	arch = `uname -m`.chomp
 	arm = arch == 'arm64' || arch == 'aarch64'
 	apple_silicon = Vagrant::Util::Platform.darwin? && (arm || (`sysctl -n machdep.cpu.brand_string`.chomp.start_with? 'Apple M'))
-
-        # Get local IP address for SMB
-        LOCAL_IP = Socket.ip_address_list
-                         .select( &:ipv4_private? )
-                         .find {|ip| !IPAddr.new("192.168.50.1/24").include?(IPAddr.new(ip.ip_address))}
-                         .ip_address
 
 	# Sets the memory to either 4096MiB or total mem / 4, whichever is larger
 	mem = get_memory(4096, 0.25)
@@ -26,13 +19,13 @@ Vagrant.configure("2") do |config|
 
 	# main box used by consumers of sv-kubernetes
 	config.vm.define "primary", primary: true do |c|
-		c.vm.box = primary_boxes.default
-		c.vm.box_version = "0.0.5"
+		c.vm.box = "owenallenaz/sv-kubernetes"
 		c.vm.hostname = "sv-kube"
 		c.ssh.username = "root"
 		c.ssh.password = "vagrant"
 
 		if !apple_silicon
+			c.vm.box_version = amd_version
 			c.vm.box_architecture = "amd64"
 			c.vm.network "private_network", ip: "192.168.50.100"
 			c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
@@ -62,18 +55,25 @@ Vagrant.configure("2") do |config|
 				end
 			end
 		else
+			c.vm.box_version = arm_version
+			c.vm.box_architecture = "arm64"
+
+			# Get local IP address for SMB
+			LOCAL_IP = Socket.ip_address_list
+				.select( &:ipv4_private? )
+				.find {|ip| !IPAddr.new("192.168.50.1/24").include?(IPAddr.new(ip.ip_address))}
+				.ip_address
+
 			c.vm.synced_folder '.', '/sv', type: 'smb', smb_host: LOCAL_IP
 			c.vm.network 'forwarded_port', guest: 8000, host: 8000
 			c.vm.network 'forwarded_port', guest: 8443, host: 8443
 			c.vm.network 'forwarded_port', guest:  443, host:  443
 			c.vm.network 'forwarded_port', guest:   22, host: 2223, id: 'ssh'
 
-			c.vm.provider "qemu" do |qe, override|
-				override.vm.box = primary_boxes[:arm_mac_qemu]
-
-				qe.memory = mem
-				qe.smp = 2
-				qe.ssh_port = 2223
+			c.vm.provider "qemu" do |v|
+				v.memory = mem
+				v.smp = 2
+				v.ssh_port = 2223
 			end
 		end
 
@@ -83,11 +83,9 @@ Vagrant.configure("2") do |config|
 
 	# development box used for working with packer to generate the base box
 	config.vm.define "base", autostart: false do |c|
-		c.vm.box = base_boxes.default
-		c.vm.box_version = "202206.03.0"
-		c.ssh.insert_key = false
-
 		if !apple_silicon
+			c.vm.box = amd_base_image
+			c.vm.box_version = amd_base_version
 			c.vm.network "private_network", ip: "192.168.50.101"
 			c.vm.synced_folder ".", "/sv"
 
@@ -96,16 +94,17 @@ Vagrant.configure("2") do |config|
 				v.customize ["modifyvm", :id, "--memory", mem]
 			end
 		else
+			c.vm.box = arm_base_image
+			c.vm.box_version = arm_base_version
+			c.ssh.insert_key = false
+
 			c.vm.synced_folder ".", "/sv", type: 'rsync'
 			c.vm.network 'forwarded_port', guest:   22, host: 2222, id: 'ssh'
 
-			c.vm.provider "qemu" do |qe, override|
-				override.vm.box = base_boxes[:arm_mac_qemu]
-				override.vm.box_version = "20230712"
-
-				qe.memory = mem
-				qe.smp = 2
-				qe.ssh_port = 2222
+			c.vm.provider "qemu" do |v|
+				v.memory = mem
+				v.smp = 2
+				v.ssh_port = 2222
 			end
 		end
 	end
