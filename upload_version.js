@@ -12,7 +12,7 @@ if (version === undefined) {
 }
 
 const token = process.env.HASHICORP_TOKEN;
-const provider = process.arch === "x64" ? "virtualbox" : "qemu";
+const provider = process.arch === "x64" ? "virtualbox" : "libvirt";
 const arch = process.arch === "x64" ? "amd64" : "arm64";
 const boxPath = `${__dirname}/output-sv-kubernetes/package.box`;
 

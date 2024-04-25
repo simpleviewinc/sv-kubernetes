@@ -4,7 +4,7 @@ amd_version = "0.0.7"
 
 arm_base_image = "perk/ubuntu-2204-arm64"
 arm_base_version = "20230712"
-arm_version = "0.0.6"
+arm_version = "0.0.7"
 
 Vagrant.configure("2") do |config|
 	arch = `uname -m`.chomp
@@ -55,6 +55,10 @@ Vagrant.configure("2") do |config|
 				end
 			end
 		else
+			c.trigger.before :up, :provision do |trigger|
+				trigger.run = {inline: "sudo ifconfig lo0 alias 192.168.50.100"}
+			end
+
 			c.vm.box_version = arm_version
 			c.vm.box_architecture = "arm64"
 
@@ -64,7 +68,7 @@ Vagrant.configure("2") do |config|
 				.find {|ip| !IPAddr.new("192.168.50.1/24").include?(IPAddr.new(ip.ip_address))}
 				.ip_address
 
-			c.vm.synced_folder '.', '/sv', type: 'smb', smb_host: LOCAL_IP
+			c.vm.synced_folder '.', '/sv', type: 'smb', smb_id: 'sv-kubernetes', smb_host: LOCAL_IP
 			c.vm.network 'forwarded_port', guest: 8000, host: 8000
 			c.vm.network 'forwarded_port', guest: 8443, host: 8443
 			c.vm.network 'forwarded_port', guest:  443, host:  443
@@ -73,6 +77,7 @@ Vagrant.configure("2") do |config|
 			c.vm.provider "qemu" do |v|
 				v.memory = mem
 				v.smp = 2
+				v.extra_netdev_args = "net=192.168.50.96/29,dhcpstart=192.168.50.100"
 				v.ssh_port = 2223
 			end
 		end
@@ -94,6 +99,10 @@ Vagrant.configure("2") do |config|
 				v.customize ["modifyvm", :id, "--memory", mem]
 			end
 		else
+			c.trigger.before :up, :provision do |trigger|
+				trigger.run = {inline: "sudo ifconfig lo0 alias 192.168.50.101"}
+			end
+
 			c.vm.box = arm_base_image
 			c.vm.box_version = arm_base_version
 			c.ssh.insert_key = false
@@ -104,6 +113,7 @@ Vagrant.configure("2") do |config|
 			c.vm.provider "qemu" do |v|
 				v.memory = mem
 				v.smp = 2
+				v.extra_netdev_args = "net=192.168.50.96/29,dhcpstart=192.168.50.101"
 				v.ssh_port = 2222
 			end
 		end

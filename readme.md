@@ -56,50 +56,12 @@ and/or `host-only` interfaces. To be able to reach our VM we need to define an
 alias on the loopback interface and forward ports we need to reach from the
 host in the Vagrantfile.
 
-To manually add the alias use `sudo ifconfig lo0 alias 192.168.50.100`
+This is automatically performed when running `vagrant up` or `vagrant provision`
+and will ask for `sudo` password if needed.
 
-To remove the alias use `sudo ifconfig lo0 -alias 192.168.50.100`
 
-We can automate this process at startup for conveniency by running the command
-below as `root`. It will initialize a launch script that creates the
-`192.168.50.100` alias on the loopback interface.
+#### SMB sync-folder
 
-```bash
-# As ROOT
-cat <<-'EOF' > /Library/LaunchDaemons/com.simpleviewinc.ifconfig.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.simpleviewinc.ifconfig</string>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>ProgramArguments</key>
-    <array>
-      <string>/sbin/ifconfig</string>
-      <string>lo0</string>
-      <string>alias</string>
-      <string>192.168.50.100</string>
-    </array>
-</dict>
-</plist>
-EOF
-
-launchctl enable system/com.simpleviewinc.ifconfig
-```
-
-## Installation
-
-Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
-
-Open a command prompt as Admin and `cd` to the folder which you checked out this repository.
-
-```bash
-vagrant up
-```
-
-> **IMPORTANT NOTE FOR MacOS USERS**
 > At the time of writing, Vagrant qemu plugin only supports SMB for mouting
 > bidirectional shared folders and thus will ask for your MacOS credentials to
 > create it. It'll ask your password first to run sudo commands and will then
@@ -107,6 +69,24 @@ vagrant up
 
 > The command `vagrant destroy` also asks for sudo password to remove the SMB
 > mount
+
+Follow Vagrant documentation to [setup SMB on MacOS]
+
+Due to issues between Git and SMB, it is recommended to run Git commands on
+your local folder rather than within the VM.
+
+
+## Installation
+
+Clone the repo to your local computer. Ensure your git client is setup properly
+to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
+
+Open a command prompt as Admin and `cd` to the folder which you checked out this
+repository.
+
+```bash
+vagrant up
+```
 
 SSH into the box at IP address: 192.168.50.100
 
@@ -134,6 +114,9 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 * (inside vm) sudo bash /sv/setup.sh
 
 ## Local Development
+
+> For Apple Silicon users, directly clone the repos in your local folder
+> as `sv install` command would not succeed inside the VM
 
 Often in order to work your project you will want to install and start the following applications.
 
@@ -442,3 +425,4 @@ sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env 
 
 
 [Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup
+[setup SMB on MacOS]: https://developer.hashicorp.com/vagrant/docs/synced-folders/smb#macos-host
