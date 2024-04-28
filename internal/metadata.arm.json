@@ -1,0 +1,4 @@
+{
+	"format":"qcow2",
+	"provider":"libvirt"
+}

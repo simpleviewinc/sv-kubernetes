@@ -20,16 +20,71 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 * Allow developers within Simpleview to more easily move from product to product by providing a familiar working environment across departments. The containers will still be fully managed by the individual teams, and the tools those teams used will be determined by those teams.
 * Be the platform where we can build a microservice system based on the concept of making all APIs externalizable similar to the initiatve put in place at Amazon via [this memo](https://apievangelist.com/2012/01/12/the-secret-to-amazons-success-internal-apis/).
 
+## Install Dependencies
+
+### Windows Users
+
+Ensure you have followed the [Environment Setup instructions] to install the necessary software, setup git, setup github and your SSH keys.
+
+### Apple Silicon Users
+
+Follow the ***GitHub Setup*** section of the [Environment Setup instructions]
+
+This installation was performed using [Homebrew](https://brew.sh/) to install
+packages.
+
+#### Dependencies
+
+- [QEMU](https://www.qemu.org/download/#macos): `8.1.3_2`
+- [Vagrant](https://developer.hashicorp.com/vagrant/install#macOS): `2.4.0`
+- [Vagrant QEMU plugin](https://github.com/ppggff/vagrant-qemu?tab=readme-ov-file#usage): `0.3.5`
+
+Below is an example of how to force-install specific versions using Homebrew
+(example for QEMU 8.1.3_2)
+
+```bash
+brew install wget
+wget https://raw.githubusercontent.com/Homebrew/homebrew-core/676c6922d79d24cc0794dd22250e3ea1167f2cd9/Formula/q/qemu.rb
+brew install ./qemu.rb
+rm qemu.rb
+```
+
+#### Network alias
+
+At the time of writing, MacOS on Apple Silicon does not seem to support `tap`
+and/or `host-only` interfaces. To be able to reach our VM we need to define an
+alias on the loopback interface and forward ports we need to reach from the
+host in the Vagrantfile.
+
+This is automatically performed when running `vagrant up` or `vagrant provision`
+and will ask for `sudo` password if needed.
+
+
+#### SMB sync-folder
+
+> At the time of writing, Vagrant qemu plugin only supports SMB for mouting
+> bidirectional shared folders and thus will ask for your MacOS credentials to
+> create it. It'll ask your password first to run sudo commands and will then
+> ask User+Password to mount the folder
+
+> The command `vagrant destroy` also asks for sudo password to remove the SMB
+> mount
+
+Follow Vagrant documentation to [setup SMB on MacOS]
+
+Due to issues between Git and SMB, it is recommended to run Git commands on
+your local folder rather than within the VM.
+
+
 ## Installation
 
-Ensure you have followed the [Environment Setup instructions](https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup) to install the necessary software, setup git, setup github and your SSH keys.
+Clone the repo to your local computer. Ensure your git client is setup properly
+to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
 
-Clone the repo to your local computer. Ensure your git client is setup properly to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
+Open a command prompt as Admin and `cd` to the folder which you checked out this
+repository.
 
-Open a command prompt as Admin and `cd` to the folder which you checked out this repository.
-
-```
-# windows cmd
+```bash
 vagrant up
 ```
 
@@ -38,10 +93,13 @@ SSH into the box at IP address: 192.168.50.100
 Username: **root**
 Password: **vagrant**
 
-**Note: prior installations used `vagrant` as the username, do not do that! You must use `root`.**
+> Note: prior installations used `vagrant` as the username, do not do that! You must use `root`
 
-```
-# ssh putty session (192.168.50.100)
+> Note: alternatively, you can run `vagrant ssh` in a terminal to connect to your VM
+
+
+```bash
+# VM SSH session
 sudo bash /sv/setup.sh
 ```
 
@@ -56,6 +114,9 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 * (inside vm) sudo bash /sv/setup.sh
 
 ## Local Development
+
+> For Apple Silicon users, directly clone the repos in your local folder
+> as `sv install` command would not succeed inside the VM
 
 Often in order to work your project you will want to install and start the following applications.
 
@@ -335,19 +396,17 @@ Compile a new version
 
 ```
 cd /folder/of/sv-kubernetes
-pack
+node pack.js
 ```
 
 Once compiled if you want to try it, update your vagrantfile so that primary has version "0" for it's box. Then run add_box so that it adds the newly packed version of the box to your vagrants box list.
 
 ```
 cd /folder/of/sv-kubernetes
-add_box
+node add_box.js
 ```
 
 When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
-
-Add `-debug` to the `pack.bat` to step through the packer process one command at a time.
 
 # Testing
 
@@ -363,3 +422,7 @@ Edit secrets for the test application
 ```
 sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env local
 ```
+
+
+[Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup
+[setup SMB on MacOS]: https://developer.hashicorp.com/vagrant/docs/synced-folders/smb#macos-host
