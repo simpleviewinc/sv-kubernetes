@@ -9,6 +9,7 @@ docker_version="23.0.6"
 docker_build_hash="3a2c30b"
 docker_compose_version="2.24.7"
 node_version="v16.20.2"
+helm_version="v3.14.0"
 
 # allocate the platform for the installers
 . /sv/scripts/platform_lookup.sh

@@ -9,9 +9,10 @@
 		"lodash": "4.17.11",
 		"mocha": "8.4.0",
 		"read": "1.0.7",
-		"request": "2.88.0"
+		"request": "2.88.0",
+		"sinon": "17.0.1"
 	},
-	"scripts" : {
+	"scripts": {
 		"test": "/node_modules/.bin/mocha testing --require testing/rootHooks.js"
 	}
 }
