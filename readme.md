@@ -78,43 +78,8 @@ your local folder rather than within the VM.
 
 #### Troubleshooting
 
-##### Vagrant Backing Image
-
-The way we are able to build a Vagrant box for ARM64 is using a backing image
-setting which needs to be present in the `boxes` directory to be able to run our
-custom image.
-
-Run `vagrant up base` and `vagrant up` to download both boxes.
-
-Run `vagrant destroy` to clean up.
-
-Run the command below to make sure the path is aligned with current user.
-
-```bash
-qemu-img rebase -u -F qcow2 -b ~/.vagrant.d/boxes/perk-VAGRANTSLASH-ubuntu-2204-arm64/20230712/arm64/libvirt/box.img ~/.vagrant.d/boxes/owenallenaz-VAGRANTSLASH-sv-kubernetes/0.0.7/arm64/libvirt/box.img
-```
-
-##### Port Already in Use
-
-While running `vagrant up`, if you come across a port already in use error, it
-could mean that there is still a QEMU process running in the background. Run the
-following command to clear the QEMU processes.
-
-```bash
-killall qemu-system-aarch64
-```
-
-##### SMB Mount Error Permission Denied
-
-If you see this error, make sure you've restarted your MacBook after enabling
-SMB share folders.
-
-##### Missing Containers Dependencies
-
-In case you're trying to run a project that has containers dependencies, you
-need to manually clone them into the `containers/` folder before starting your
-app.
-
+For common errors that can occur running SV Kubernetes on an ARM system, see the
+[General Troubleshooting] section in Confluence.
 
 ## Installation
 
@@ -466,3 +431,4 @@ sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env 
 
 [Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup
 [setup SMB on MacOS]: https://developer.hashicorp.com/vagrant/docs/synced-folders/smb#macos-host
+[General Troubleshooting]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes
