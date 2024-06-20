@@ -61,13 +61,15 @@ Vagrant.configure("2") do |config|
 			c.vm.provider "qemu" do |v|
 				v.memory = mem
 				v.smp = 2
-				v.extra_netdev_args = "net=192.168.50.96/29,dhcpstart=192.168.50.100"
 				v.ssh_port = 2223
 			end
 		end
 
 		c.vm.provision "file", source: "~/.ssh/github_key", destination: "/root/.ssh/github_key"
-		c.vm.provision "shell", inline: "/bin/bash /sv/scripts/extend_disk.sh"
+
+		if !apple_silicon
+			c.vm.provision "shell", inline: "/bin/bash /sv/scripts/extend_disk.sh"
+		end
 	end
 
 	# development box used for working with packer to generate the base box

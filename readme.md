@@ -76,6 +76,11 @@ Due to issues between Git and SMB, it is recommended to run Git commands on
 your local folder rather than within the VM.
 
 
+#### Troubleshooting
+
+For common errors that can occur running SV Kubernetes on an ARM system, see the
+[General Troubleshooting] section in Confluence.
+
 ## Installation
 
 Clone the repo to your local computer. Ensure your git client is setup properly
@@ -426,3 +431,4 @@ sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env 
 
 [Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup
 [setup SMB on MacOS]: https://developer.hashicorp.com/vagrant/docs/synced-folders/smb#macos-host
+[General Troubleshooting]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes
