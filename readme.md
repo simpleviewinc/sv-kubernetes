@@ -120,8 +120,12 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 
 ## Local Development
 
-> For Apple Silicon users, directly clone the repos in your local folder
-> as `sv install` command would not succeed inside the VM
+> Apple Silicon users: The sv install command will not succeed inside the VM. For
+> this reason, manually create a ~/sv-kubernetes/applications/ directory, and
+> then directly clone the repos for any desired applications inside of it. Keep
+> in mind that this also applies to dependencies such as sv-geo-client (required
+> for sv-geo), which would need to be directly cloned into ~/sv-kubernetes/containers/.
+> More information about dependencies can be found here: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes.
 
 Often in order to work your project you will want to install and start the following applications.
 
