@@ -113,6 +113,20 @@ Now minikube, kubernetes, docker and helm should be running and your box is setu
 * (from host) vagrant up
 * (inside vm) sudo bash /sv/setup.sh
 
+For CMS to preserve their Mongo DB data between updates, SSH into your
+VM, backup the data to the mounted `/sv` directory, then restore data
+after the update and SV setup.
+
+```bash
+# Backup data (inside VM)
+/sv/scripts/backup_mongodb_data.sh
+```
+
+```bash
+# Restore data (inside VM)
+/sv/scripts/restore_mongodb_data.sh
+```
+
 ## Local Development
 
 > For Apple Silicon users, directly clone the repos in your local folder

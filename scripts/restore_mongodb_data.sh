@@ -6,10 +6,10 @@
 # therefore cannot be restored to the remote folder.
 ##
 
-MONGODB_DATA_DIR=${MONGODB_DATA_DIR:-/var/lib/cms-mongo-local-mongodb-data}
+MONGODB_DATA_DIR=${MONGODB_DATA_DIR:-/var/lib/docker/volumes/minikube/_data/lib/cms-mongo-local-mongodb-data}
 LOCAL_DATA_DIR=/sv/mongodb_data_local
 
-MONGODB_DEPLOYED=$(kubectl get deployment cms-mongo-local)
+MONGODB_DEPLOYED=$(kubectl get deployment cms-mongo-local-mongo)
 MONGODB_STATUS=$?
 
 if [[ "${MONGODB_STATUS}" -eq 0 ]]

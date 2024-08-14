@@ -11,3 +11,4 @@ node_modules
 extended-disk.vdi
 packer.exe
 /output-sv-kubernetes
+/mongodb_data_local
