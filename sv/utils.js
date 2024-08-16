@@ -146,7 +146,8 @@ function getCurrentPodsV2(args = {}) {
 	if (args.container !== undefined) {
 		pods = pods.filter(val => val.containerNames.includes(args.container));
 		pods.forEach(pod => {
-			pod.containerNames = [args.container];
+			pod.containerNames = pod.containerNames.filter(val => val === args.container);
+			pod.runningContainerNames = pod.runningContainerNames.filter(val => val === args.container);
 		});
 	}
 
