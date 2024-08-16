@@ -85,6 +85,15 @@ function getCurrentPodsV2(args = {}) {
 	// pods which are scheduled for deletion, we can effectively ignore for logging purposes
 	const originalPods = all.items.filter(val => val.metadata.deletionTimestamp === undefined);
 
+	/**
+	 * @param {import("./definitions").ContainerStatus[]} statuses
+	*/
+	function getRunningContainers(statuses) {
+		return statuses
+			.filter(val => val.state.running !== undefined)
+			.map(val => val.name)
+	}
+
 	// simplify the return for downstream functions
 	/** @type {import("./definitions").PodResult[]} */
 	let pods = originalPods.map(val => ({
@@ -113,6 +122,10 @@ function getCurrentPodsV2(args = {}) {
 		containerNames : [
 			...val.spec.containers.map(val => val.name),
 			...(val.spec.initContainers ?? []).map(val => val.name)
+		],
+		runningContainerNames: [
+			...getRunningContainers(val.status.containerStatuses ?? []),
+			...getRunningContainers(val.status.initContainerStatuses ?? [])
 		],
 		status : val.status.phase,
 		raw : val

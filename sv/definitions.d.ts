@@ -15,6 +15,20 @@ export interface Container {
 	}
 }
 
+export interface ContainerStatus {
+	name: string
+	state: {
+		terminated?: ContainerState
+		running?: ContainerState
+	}
+}
+
+export interface ContainerState {
+	startedAt: string
+	reason?: string
+	exitCode?: number
+}
+
 export interface PodRaw {
 	metadata: {
 		name: string
@@ -25,12 +39,14 @@ export interface PodRaw {
 	spec: {
 		nodeName: string
 		containers: Container[]
-		initContainers: Container[]
+		initContainers?: Container[]
 	}
 	status: {
 		podIP: string
 		phase: string
 		reason: string
+		containerStatuses: ContainerStatus[]
+		initContainerStatuses?: ContainerStatus[]
 	}
 }
 
@@ -55,6 +71,7 @@ export interface PodResult {
 		}
 	}[]
 	containerNames: string[]
+	runningContainerNames: string[]
 	status: string
 	raw: PodRaw
 }

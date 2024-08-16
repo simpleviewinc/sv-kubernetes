@@ -678,8 +678,8 @@ async function watchPods(filter, container) {
 	const pods = getCurrentPods(filter, container);
 	const names = [];
 
-	pods.forEach(({ name, containerNames }) => {
-		containerNames.forEach(containerName => {
+	pods.forEach(({ name, runningContainerNames }) => {
+		runningContainerNames.forEach(containerName => {
 			const key = `${name}:${containerName}`;
 			names.push(key);
 
