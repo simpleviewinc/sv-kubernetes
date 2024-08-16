@@ -110,7 +110,10 @@ function getCurrentPodsV2(args = {}) {
 				resources
 			}
 		}),
-		containerNames : val.spec.containers.map(val => val.name),
+		containerNames : [
+			...val.spec.containers.map(val => val.name),
+			...(val.spec.initContainers ?? []).map(val => val.name)
+		],
 		status : val.status.phase,
 		raw : val
 	}));

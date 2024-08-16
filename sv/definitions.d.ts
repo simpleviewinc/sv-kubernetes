@@ -5,6 +5,16 @@ export interface GetCurrentPodsArgs {
 	container?: string
 }
 
+export interface Container {
+	name: string
+	resources?: {
+		requests?: {
+			cpu?: string
+			memory?: string
+		}
+	}
+}
+
 export interface PodRaw {
 	metadata: {
 		name: string
@@ -14,17 +24,8 @@ export interface PodRaw {
 	}
 	spec: {
 		nodeName: string
-		containers: [
-			{
-				name: string
-				resources?: {
-					requests?: {
-						cpu?: string
-						memory?: string
-					}
-				}
-			}
-		]
+		containers: Container[]
+		initContainers: Container[]
 	}
 	status: {
 		podIP: string
