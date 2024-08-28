@@ -21,3 +21,10 @@ apt-get install --allow-downgrades -y \
 	docker-ce-cli=5:$docker_version-1~$ubuntu_release \
 	docker-compose-plugin=$docker_compose_version-1~$ubuntu_release \
 	containerd.io
+
+# Add override to Docker service to prevent directory not found issue (see AUT-2327)
+mkdir -p /etc/systemd/system/docker.service.d/
+cat <<-'EOF' > /etc/systemd/system/docker.service.d/override.conf
+[Service]
+ExecStartPre=/bin/sleep 30
+EOF
