@@ -99,7 +99,6 @@ Vagrant.configure("2") do |config|
 			c.vm.provider "qemu" do |v|
 				v.memory = mem
 				v.smp = 2
-				v.extra_netdev_args = "net=192.168.50.96/29,dhcpstart=192.168.50.101"
 				v.ssh_port = 2222
 			end
 		end

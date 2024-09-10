@@ -2,6 +2,15 @@
 . /sv/scripts/variables.sh
 . /sv/scripts/requireRoot.sh
 
+# For ARM64 platform: wait for SMB folder to be fully mounted (see AUT-2327)
+if [[ "${PLATFORM}" == "arm64" ]]; then
+	echo -n "Waiting for SMB folder to be mounted... "
+	until [ -n "$(mount | grep '/sv-kubernetes on /sv type cifs')" ]; do
+		sleep 5
+	done
+	echo "OK"
+fi
+
 # the singular command to start minikube, this is executed by the custom minikube service
 minikube start \
 	--force \
