@@ -4,7 +4,7 @@ amd_version = "0.0.7"
 
 arm_base_image = "perk/ubuntu-2204-arm64"
 arm_base_version = "20230712"
-arm_version = "0.0.7"
+arm_version = "0.0.8"
 
 Vagrant.configure("2") do |config|
 	arch = `uname -m`.chomp
