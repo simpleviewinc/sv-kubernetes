@@ -26,60 +26,32 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 Ensure you have followed the [Environment Setup instructions] to install the necessary software, setup git, setup github and your SSH keys.
 
+
 ### Apple Silicon Users
 
 Follow the ***GitHub Setup*** section of the [Environment Setup instructions]
 
-This installation was performed using [Homebrew](https://brew.sh/) to install
-packages.
 
 #### Dependencies
 
-- [QEMU](https://www.qemu.org/download/#macos): `8.1.3_2`
-- [Vagrant](https://developer.hashicorp.com/vagrant/install#macOS): `2.4.0`
-- [Vagrant QEMU plugin](https://github.com/ppggff/vagrant-qemu?tab=readme-ov-file#usage): `0.3.5`
-
-Below is an example of how to force-install specific versions using Homebrew
-(example for QEMU 8.1.3_2)
-
-```bash
-brew install wget
-wget https://raw.githubusercontent.com/Homebrew/homebrew-core/676c6922d79d24cc0794dd22250e3ea1167f2cd9/Formula/q/qemu.rb
-brew install ./qemu.rb
-rm qemu.rb
-```
-
-#### Network alias
-
-At the time of writing, MacOS on Apple Silicon does not seem to support `tap`
-and/or `host-only` interfaces. To be able to reach our VM we need to define an
-alias on the loopback interface and forward ports we need to reach from the
-host in the Vagrantfile.
-
-This is automatically performed when running `vagrant up` or `vagrant provision`
-and will ask for `sudo` password if needed.
+- [VMWare Fusion Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion): [`13.6.2`](https://downloads2.broadcom.com/?file=VMware-Fusion-13.6.2-24409261_universal.dmg&oid=34930889&id=LrGAYhO4D1YUk1hQuC3ZMpbcIeFAD1fLDq8RMqJPB2HzbSl8IIXXBd4NiTeSfbbD&verify=1735664056-UQ%2BE3Wvr65yzHNT4%2BRnt90upKaU%2BRDfxxcHRyO450kY%3D)
+- [Vagrant](https://developer.hashicorp.com/vagrant/install#macOS): [`2.4.3`](https://releases.hashicorp.com/vagrant/2.4.3/vagrant_2.4.3_darwin_arm64.dmg)
+- [Vagrant VMWare Desktop plugin](https://developer.hashicorp.com/vagrant/docs/providers/vmware/installation): `3.0.4`
+- [Vagrant VMWare Utility](https://developer.hashicorp.com/vagrant/install/vmware): [`1.0.23`](https://releases.hashicorp.com/vagrant-vmware-utility/1.0.23/vagrant-vmware-utility_1.0.23_darwin_arm64.dmg)
 
 
-#### SMB sync-folder
+#### How-To extend virtual hard-drive
 
-> At the time of writing, Vagrant qemu plugin only supports SMB for mouting
-> bidirectional shared folders and thus will ask for your MacOS credentials to
-> create it. It'll ask your password first to run sudo commands and will then
-> ask User+Password to mount the folder
+Follow the steps below, if you ever need to extend the main disk of
+your VMWare machine
 
-> The command `vagrant destroy` also asks for sudo password to remove the SMB
-> mount
+1. Make sure the VM is stopped `vagrant halt`
+2. Retrieve and set VM path `export BOX_PATH=$(cat .vagrant/machines/primary/vmware_desktop/id)`
+3. Extend disk to the desired size `/Applications/VMware\ Fusion.app/Contents/Library/vmware-vdiskmanager -x 200Gb "${BOX_PATH%/*}/disk-cl2.vmdk"`
+4. Start the VM `vagrant up`
+5. Connect to the VM `vagrant ssh`
+6. Run script to extend partition `bash /sv/scripts/extend_disk.sh`
 
-Follow Vagrant documentation to [setup SMB on MacOS]
-
-Due to issues between Git and SMB, it is recommended to run Git commands on
-your local folder rather than within the VM.
-
-
-#### Troubleshooting
-
-For common errors that can occur running SV Kubernetes on an ARM system, see the
-[General Troubleshooting] section in Confluence.
 
 ## Installation
 
@@ -405,14 +377,14 @@ Compile a new version
 
 ```
 cd /folder/of/sv-kubernetes
-node pack.js
+node packer/pack.js
 ```
 
 Once compiled if you want to try it, update your vagrantfile so that primary has version "0" for it's box. Then run add_box so that it adds the newly packed version of the box to your vagrants box list.
 
 ```
 cd /folder/of/sv-kubernetes
-node add_box.js
+node packer/add_box.js
 ```
 
 When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.

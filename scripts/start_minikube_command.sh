@@ -2,10 +2,10 @@
 . /sv/scripts/variables.sh
 . /sv/scripts/requireRoot.sh
 
-# For ARM64 platform: wait for SMB folder to be fully mounted (see AUT-2327)
+# For ARM64 platform: wait for Shared folder to be fully mounted (see AUT-2327)
 if [[ "${PLATFORM}" == "arm64" ]]; then
-	echo -n "Waiting for SMB folder to be mounted... "
-	until [ -n "$(mount | grep '/sv-kubernetes on /sv type cifs')" ]; do
+	echo -n "Waiting for Shared folder to be mounted... "
+	until [ -n "$(mount | grep 'vmhgfs-fuse on /sv type fuse.vmhgfs-fuse')" ]; do
 		sleep 5
 	done
 	echo "OK"
