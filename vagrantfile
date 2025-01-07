@@ -109,7 +109,7 @@ end
 def get_memory(mem_min, mem_ratio)
 	total_mem = nil
 	if Vagrant::Util::Platform.windows?
-		total_mem = `wmic OS get TotalVisibleMemorySize`.split("\n")[2].to_i / 1024
+		total_mem = `node get_mem.js`.to_i
 	elsif Vagrant::Util::Platform.darwin? # mac
 		total_mem = `sysctl -n hw.memsize`.strip().to_i / ( 1024 * 1024 )
 	else # linux
