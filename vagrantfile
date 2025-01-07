@@ -4,7 +4,7 @@ amd_version = "0.0.7"
 
 arm_base_image = "bento/ubuntu-22.04-arm64"
 arm_base_version = "202401.31.0"
-arm_version = "0.0.9"
+arm_version = "0.0.1"
 
 Vagrant.configure("2") do |config|
 	arch = `uname -m`.chomp
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
 
 	# main box used by consumers of sv-kubernetes
 	config.vm.define "primary", primary: true do |c|
-		c.vm.box = "owenallenaz/sv-kubernetes"
+		c.vm.box = !apple_silicon ? "owenallenaz/sv-kubernetes" : "Simpleview-ORG/sv-kubernetes"
 		c.vm.box_version = !apple_silicon ? amd_version : arm_version
 		c.vm.hostname = "sv-kube"
 		c.vm.synced_folder ".", "/sv", owner: "root", group: "root"

@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const streamp = require("stream/promises");
 const fs = require("fs");
 
-const user = "owenallenaz";
+const user = "Simpleview-ORG";
 const box = "sv-kubernetes";
 const version = process.argv[2];
 
@@ -53,7 +53,7 @@ async function run() {
 		path: `/api/v2/box/${user}/${box}/version/${version}/provider/${provider}/${arch}`
 	});
 
-	if (exists.success !== false) {
+	if (!exists.errors) {
 		console.log("Box already exists.");
 		return;
 	}
