@@ -2,9 +2,9 @@ amd_base_image = "bento/ubuntu-22.04"
 amd_base_version = "202206.03.0"
 amd_version = "0.0.7"
 
-arm_base_image = "perk/ubuntu-2204-arm64"
-arm_base_version = "20230712"
-arm_version = "0.0.8"
+arm_base_image = "bento/ubuntu-22.04-arm64"
+arm_base_version = "202401.31.0"
+arm_version = "0.0.9"
 
 Vagrant.configure("2") do |config|
 	arch = `uname -m`.chomp
@@ -20,17 +20,17 @@ Vagrant.configure("2") do |config|
 	# main box used by consumers of sv-kubernetes
 	config.vm.define "primary", primary: true do |c|
 		c.vm.box = "owenallenaz/sv-kubernetes"
+		c.vm.box_version = !apple_silicon ? amd_version : arm_version
 		c.vm.hostname = "sv-kube"
+		c.vm.synced_folder ".", "/sv", owner: "root", group: "root"
+
+		# Apple Silicon Only: Disable auto-config after first provisioning to avoid start-up error with interface reboot
+		c.vm.network "private_network", ip: "192.168.50.100", auto_config: (apple_silicon and provisioned?) ? false : true
+
 		c.ssh.username = "root"
 		c.ssh.password = "vagrant"
 
 		if !apple_silicon
-			c.vm.box_version = amd_version
-			c.vm.box_architecture = "amd64"
-			c.vm.network "private_network", ip: "192.168.50.100"
-			c.vm.synced_folder ".", "/sv", owner: "root", group: "root", mount_options:["fmode=777,dmode=777"]
-			c.vm.disk :disk, size: "200GB", primary: true
-
 			c.vm.provider "virtualbox" do |v|
 				v.cpus = 2
 				v.customize ["modifyvm", :id, "--audio", "none"]
@@ -38,68 +38,36 @@ Vagrant.configure("2") do |config|
 				v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 				v.customize ["modifyvm", :id, "--memory", mem]
 			end
+
+			c.vm.disk :disk, size: "200GB", primary: true
+			c.vm.provision "shell", inline: "/bin/bash /sv/scripts/extend_disk.sh"
 		else
-			c.trigger.before :up, :provision do |trigger|
-				trigger.run = {inline: "sudo ifconfig lo0 alias 192.168.50.100"}
-			end
-
-			c.vm.box_version = arm_version
-			c.vm.box_architecture = "arm64"
-
-			# Get local IP address for SMB
-			LOCAL_IP = Socket.ip_address_list
-				.select( &:ipv4_private? )
-				.find {|ip| !IPAddr.new("192.168.50.1/24").include?(IPAddr.new(ip.ip_address))}
-				.ip_address
-
-			c.vm.synced_folder '.', '/sv', type: 'smb', smb_id: 'sv-kubernetes', smb_host: LOCAL_IP
-			c.vm.network 'forwarded_port', guest: 8000, host: 8000
-			c.vm.network 'forwarded_port', guest: 8443, host: 8443
-			c.vm.network 'forwarded_port', guest:  443, host:  443
-			c.vm.network 'forwarded_port', guest:   22, host: 2223, id: 'ssh'
-
-			c.vm.provider "qemu" do |v|
+			c.vm.provider "vmware_desktop" do |v|
+				v.cpus = 2
 				v.memory = mem
-				v.smp = 2
-				v.ssh_port = 2223
+				v.linked_clone = false
 			end
 		end
 
 		c.vm.provision "file", source: "~/.ssh/github_key", destination: "/root/.ssh/github_key"
-
-		if !apple_silicon
-			c.vm.provision "shell", inline: "/bin/bash /sv/scripts/extend_disk.sh"
-		end
 	end
 
 	# development box used for working with packer to generate the base box
 	config.vm.define "base", autostart: false do |c|
-		if !apple_silicon
-			c.vm.box = amd_base_image
-			c.vm.box_version = amd_base_version
-			c.vm.network "private_network", ip: "192.168.50.101"
-			c.vm.synced_folder ".", "/sv"
+		c.vm.box = !apple_silicon ? amd_base_image : arm_base_image
+		c.vm.box_version = !apple_silicon ? amd_base_version : arm_base_version
+		c.vm.network "private_network", ip: "192.168.50.101"
+		c.vm.synced_folder ".", "/sv"
 
+		if !apple_silicon
 			c.vm.provider "virtualbox" do |v|
 				v.cpus = 2
 				v.customize ["modifyvm", :id, "--memory", mem]
 			end
 		else
-			c.trigger.before :up, :provision do |trigger|
-				trigger.run = {inline: "sudo ifconfig lo0 alias 192.168.50.101"}
-			end
-
-			c.vm.box = arm_base_image
-			c.vm.box_version = arm_base_version
-			c.ssh.insert_key = false
-
-			c.vm.synced_folder ".", "/sv", type: 'rsync'
-			c.vm.network 'forwarded_port', guest:   22, host: 2222, id: 'ssh'
-
-			c.vm.provider "qemu" do |v|
+			c.vm.provider "vmware_desktop" do |v|
+				v.cpus = 2
 				v.memory = mem
-				v.smp = 2
-				v.ssh_port = 2222
 			end
 		end
 	end
@@ -117,4 +85,9 @@ def get_memory(mem_min, mem_ratio)
 	end
 
 	[ (total_mem * mem_ratio).round, mem_min ].max
+end
+
+# Determines if a vagrant VM has already been provisioned
+def provisioned?(vm_name='primary', provider='vmware_fusion')
+	File.exist?(".vagrant/machines/#{vm_name}/#{provider}/action_provision")
 end
