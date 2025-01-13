@@ -21,6 +21,7 @@ const {
 	logContext,
 	mapBuildArgs,
 	getDockerEnv,
+	isWslEnv,
 } = require("./utils");
 
 const constants = require("./constants");
@@ -225,6 +226,7 @@ scripts.start = function(args) {
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
+	const externalContainerFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes/applications/${applicationName}/containers` : containerFolder;
 
 	commandArgs.push(
 		deploymentName,
@@ -233,7 +235,7 @@ scripts.start = function(args) {
 		`--set sv.deploymentName=${deploymentName}`,
 		`--set sv.env=${env}`,
 		`--set sv.applicationPath=${appFolder}`,
-		`--set sv.containerPath=${containerFolder}`,
+		`--set sv.containerPath=${externalContainerFolder}`,
 		`-f /sv/internal/sv.json`
 	);
 
@@ -355,7 +357,7 @@ scripts.stop = function(args) {
 
 	var applicationName = args.argv[0];
 
-	exec(`helm delete ${applicationName} --purge`);
+	exec(`helm uninstall ${applicationName}`);
 }
 
 scripts.logs = function(args) {
@@ -434,6 +436,8 @@ scripts.switchContext = function (args) {
 		if (flags.cluster !== "local") {
 			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
 			exec(`kubectl config use-context ${getCurrentContext()}`);
+		} else if (isWslEnv()) {
+			exec(`kubectl config use-context docker-desktop`);
 		} else {
 			exec(`kubectl config use-context minikube`);
 		}
