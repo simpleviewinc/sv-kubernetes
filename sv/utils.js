@@ -217,6 +217,7 @@ module.exports.getCurrentPods = getCurrentPods;
 module.exports.getCurrentPodsV2 = getCurrentPodsV2;
 module.exports.getDockerEnv = getDockerEnv;
 module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
+module.exports.isMinikubeEnv = isMinikubeEnv;
 module.exports.isWslEnv = isWslEnv;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;

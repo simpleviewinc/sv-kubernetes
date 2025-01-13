@@ -22,6 +22,7 @@ const {
 	mapBuildArgs,
 	getDockerEnv,
 	isWslEnv,
+	isMinikubeEnv,
 } = require("./utils");
 
 const constants = require("./constants");
@@ -236,7 +237,7 @@ scripts.start = function(args) {
 		`--set sv.env=${env}`,
 		`--set sv.applicationPath=${appFolder}`,
 		`--set sv.containerPath=${externalContainerFolder}`,
-		`--set sv.isWSL=${isWslEnv()}`,
+		`--set sv.canHostPort=${isMinikubeEnv()}`,
 		`-f /sv/internal/sv.json`
 	);
 
