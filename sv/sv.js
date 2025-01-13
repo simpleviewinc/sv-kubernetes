@@ -238,6 +238,8 @@ scripts.start = function(args) {
 		`--set sv.applicationPath=${appFolder}`,
 		`--set sv.containerPath=${externalContainerFolder}`,
 		`--set sv.canHostPort=${isMinikubeEnv()}`,
+		`--set sv.isWsl=${isWslEnv()}`,
+		`--set sv.isMinikube=${isMinikubeEnv()}`,
 		`-f /sv/internal/sv.json`
 	);
 
