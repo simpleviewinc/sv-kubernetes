@@ -10,16 +10,13 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 
 ## Install WSL
 
-If you do not have the WSL installed on your machine run the following in a command prompt in Admin mode:
+You need to configure the WSL on your machine.
 
-```
-wsl --install
-```
-
-1. After running `wsl --install` the very first time it will ask to reboot your computer.
-2. After reboot, browse to C:\sv-kubernetes\scripts\wsl_regedit.bat and right-click and select `Run as Administrator`.
-3. Next in a command prompt, not as admin, run `wsl` and it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
-4. `exit` - Your wsl installation should be complete.
+1. Open a CMD prompt as Admin, and run `wsl --install`, this will install all necessary components for you to run the wsl.
+2. After running `wsl --install` the very first time it will ask to reboot your computer.
+3. After reboot, browse to C:\sv-kubernetes\scripts\wsl_regedit.bat and right-click and select `Run as Administrator`.
+4. Next in a command prompt, not as admin, run `wsl` and it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
+5. `exit` - Your wsl installation should be complete.
 
 ### Reinitializing your WSL distribution
 
@@ -40,7 +37,7 @@ If you want to reset your WSL distribution, run the following commands.
 * In the settings gear in the top-right:
     * Ensure that the `Use the WSL 2 based engine` is checked.
     * Resources -> WSL Ingration -> Ensure `Enabled integration with my default WSL distro` is checked.
-    * Kubernetes -> Ensure `Enable Kubernetes` is checked.
+    * Kubernetes -> Ensure `Enable Kubernetes` is checked. If not checked, check it and click Apply & Restart.
 
 At the bottom of the screen in docker desktop you should see `Engine Running` and `Kubernetes Running`.
 
@@ -58,3 +55,12 @@ From here install and start the repos you desire:
 
 * `sv install REPO`
 * `sv start REPO local --build`
+
+## Debugging
+
+* Is Docker Desktop running?
+    * Start it, ensure that it says Engine Running and Kubernetes Running in the bottom left. If it doesn't, check the Docker Engine installations steps above.
+* Is the WSL using the proper IP address?
+    * In windows command prompt run `ipconfig`. There should be an entry for `Ethernet adapter vEthernet (WSL (Hyper-V firewall))` and it's IPv4 Address must be `192.168.50.100`. If it is not, then you need to ensure you ran the `wsl_regedit.bat` called out in the WSL install steps. Re-run that script as Admin, and then reboot.
+* `Error: 0x80370102 The virtual machine could not be started because a required feature is not installed`
+    * Open powershell as admin and run `bcdedit /set hypervisorlaunchtype Auto`.
