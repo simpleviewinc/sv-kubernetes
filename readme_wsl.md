@@ -64,3 +64,5 @@ From here install and start the repos you desire:
     * In windows command prompt run `ipconfig`. There should be an entry for `Ethernet adapter vEthernet (WSL (Hyper-V firewall))` and it's IPv4 Address must be `192.168.50.100`. If it is not, then you need to ensure you ran the `wsl_regedit.bat` called out in the WSL install steps. Re-run that script as Admin, and then reboot.
 * `Error: 0x80370102 The virtual machine could not be started because a required feature is not installed`
     * Open powershell as admin and run `bcdedit /set hypervisorlaunchtype Auto`.
+* `hostPort` entries are failing because a low port cannot be used.
+    * When use hostPort you can also declare the service as of `type: LoadBalancer` and do not declare an IP address. It will still be accessible at the main `192.168.50.100:PORT`.
