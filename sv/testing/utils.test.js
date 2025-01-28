@@ -1,5 +1,8 @@
 const assert = require("assert");
+const sinon = require('sinon');
+
 const { testArray } = require("@simpleview/mochalib");
+const { Readable, PassThrough } = require('stream');
 
 const utils = require("../utils");
 
@@ -95,6 +98,104 @@ describe(__filename, function() {
 		testArray(tests, function(test) {
 			const result = utils.mapBuildArgs(test.args);
 			assert.deepStrictEqual(result, test.result);
+		});
+	});
+
+	describe("confirmContextCommand", function() {
+		beforeEach(() => {
+			sinon.stub(process, 'exit');
+			sinon.stub(console, 'log');
+			process.env.BYPASS_SV_COMMAND_CONTROL = "no";
+		});
+
+		afterEach(() => {
+			process.exit.restore();
+			console.log.restore();
+		});
+
+		const tests = [
+			{
+				name : "Skip command confirmation in local context (minikube)",
+				args : {
+					context: "minikube",
+					result: true
+				}
+			},
+			{
+				name : "Skip command confirmation in local context (desktop)",
+				args : {
+					context: "docker-context",
+					result: true
+				}
+			},
+			{
+				name : "Bypass command confirmation (CI/CD)",
+				args : {
+					bypassCommandControl: "yes",
+					context: "test_context",
+					result: true
+				}
+			},
+			{
+				name : "Disable context command confirmation",
+				args : {
+					confirmActions: false,
+					context: "test_context",
+					result: true
+				}
+			},
+			{
+				name : "Confirm action with [Enter]",
+				args : {
+					context: "test_context",
+					result: ''
+				}
+			},
+			{
+				name : "Cancel action with [Ctrl-C]",
+				args : {
+					context: "test_context",
+					streamData: "\x03",
+					exit_code: 1,
+					error_log: "\ncanceled"
+				}
+			},
+			{
+				name : "Cancel action with unexpected data",
+				args : {
+					context: "test_context",
+					streamData: "unexpected_data\n",
+					exit_code: 1,
+					error_log: "unexpected data",
+					result: "unexpected_data"
+				}
+			}
+		];
+
+		testArray(tests, async function(test) {
+			if (test.bypassCommandControl !== undefined) {
+				process.env.BYPASS_SV_COMMAND_CONTROL = test.bypassCommandControl;
+			}
+
+			const readableStream = Readable.from(test.streamData || "\n");
+			const result = await utils.confirmContextCommand(
+				test.context,
+				test.confirmActions,
+				{input: readableStream, output: new PassThrough(), terminal: true}
+			);
+			assert.strictEqual(result, test.result);
+
+			if (test.exit_code !== undefined) {
+				assert(process.exit.isSinonProxy);
+				sinon.assert.called(process.exit);
+				assert.strictEqual(process.exit.args[0][0], test.exit_code);
+			}
+
+			if (test.error_log !== undefined) {
+				assert(console.log.isSinonProxy);
+				sinon.assert.called(console.log);
+				sinon.assert.calledWith(console.log, test.error_log);
+			}
 		});
 	});
 });

@@ -26,7 +26,9 @@ const {
 	mapBuildArgs,
 	getDockerEnv,
 	isWslEnv,
-	isMinikubeEnv,
+	isDesktopEnv,
+	isArmEnv,
+	isMinikubeEnv
 } = require("./utils");
 
 const constants = require("./constants");
@@ -208,8 +210,8 @@ scripts.install = async function(args) {
 	}
 }
 
-scripts.start = function(args) {
-	logContext();
+scripts.start = async function(args) {
+	await logContext();
 
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
@@ -228,7 +230,14 @@ scripts.start = function(args) {
 
 	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
-	const rootKubeFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes` : `/sv`;
+
+	const rootKubeFolder = !isDesktopEnv()
+		? `/sv`
+		: (!isArmEnv()
+			? `/run/desktop/mnt/host/c/sv-kubernetes`
+			: `/Users/Shared/sv-kubernetes`
+		);
+
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
@@ -247,7 +256,9 @@ scripts.start = function(args) {
 		`--set sv.rootContainerPath=${rootContainersFolder}`,
 		`--set sv.rootPath=${rootKubeFolder}`,
 		`--set sv.canHostPort=${isMinikubeEnv()}`,
-		`--set sv.isWsl=${isWslEnv()}`,
+		`--set sv.isWsl=${isDesktopEnv() && !isArmEnv()}`,
+		`--set sv.isDesktop=${isDesktopEnv()}`,
+		`--set sv.isArm=${isArmEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
 		`--set sv.refreshToken=$(cat /sv/internal/refresh_token 2>/dev/null)`,
 		`--set sv.userInfo.email=$(cat /sv/internal/user_info.json 2>/dev/null | jq -r .email)`,
@@ -382,8 +393,8 @@ scripts.start = function(args) {
 	}
 }
 
-scripts.stop = function(args) {
-	logContext();
+scripts.stop = async function(args) {
+	await logContext();
 
 	var applicationName = args.argv[0];
 
@@ -466,7 +477,7 @@ scripts.switchContext = function (args) {
 		if (flags.cluster !== "local") {
 			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
 			exec(`kubectl config use-context ${getCurrentContext()}`);
-		} else if (isWslEnv()) {
+		} else if (isDesktopEnv()) {
 			exec(`kubectl config use-context docker-desktop`);
 		} else {
 			exec(`kubectl config use-context minikube`);
@@ -477,7 +488,7 @@ scripts.switchContext = function (args) {
 };
 
 scripts.getContext = function (args) {
-	logContext();
+	logContext(false);
 }
 
 scripts.listProjects = function() {
