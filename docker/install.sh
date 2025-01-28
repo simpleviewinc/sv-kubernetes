@@ -16,6 +16,7 @@ docker run -d \
 	--name sv-kubernetes \
 	--hostname sv-kube \
 	--network host \
+	-v ${SV_KUBERNETES_PATH}/internal/gcloud:/root/.config/gcloud \
 	-v ~/.kube/config:/.kube/config \
 	-v ~/.ssh/github_key:/root/.ssh/github_key:ro \
 	-v ${SV_KUBERNETES_PATH}:/sv \

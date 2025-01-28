@@ -11,7 +11,10 @@ COPY internal/ /sv/internal/
 COPY scripts/install_misc.sh /sv/scripts/install_misc.sh
 RUN bash /sv/scripts/install_misc.sh && \
     cp /sv/internal/ssl/*.crt /usr/local/share/ca-certificates/ && \
-    update-ca-certificates
+    update-ca-certificates && \
+    apt-get update && \
+    apt-get install -y nano && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Github
 COPY scripts/install_github.sh /sv/scripts/install_github.sh
