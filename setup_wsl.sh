@@ -13,7 +13,6 @@ cp /home/vagrant/.bashrc /root/.bashrc
 . /sv/scripts/install_github.sh
 . /sv/scripts/install_gcloud.sh
 . /sv/scripts/install_kubectl.sh
-. /sv/scripts/install_kubesec.sh
 . /sv/scripts/install_helm.sh
 . /sv/scripts/install_kubesec.sh
 
