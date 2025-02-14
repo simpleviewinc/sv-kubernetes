@@ -228,6 +228,7 @@ scripts.start = function(args) {
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
 	const externalContainerFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes/applications/${applicationName}/containers` : containerFolder;
+	const rootContainersFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes/containers` : `/sv/containers`;
 
 	commandArgs.push(
 		deploymentName,
@@ -237,6 +238,7 @@ scripts.start = function(args) {
 		`--set sv.env=${env}`,
 		`--set sv.applicationPath=${appFolder}`,
 		`--set sv.containerPath=${externalContainerFolder}`,
+		`--set sv.rootContainerPath=${rootContainersFolder}`,
 		`--set sv.canHostPort=${isMinikubeEnv()}`,
 		`--set sv.isWsl=${isWslEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
