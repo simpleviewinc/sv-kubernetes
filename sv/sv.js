@@ -277,6 +277,17 @@ scripts.start = function(args) {
 		}
 
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
+
+		// Build dependencies containers
+		if (settings.dependencies) {
+			for(var [key, dependency] of Object.entries(settings.dependencies)) {
+				if (dependency.type === "container" && (dependency[`buildOnStart_${env}`] || dependency.buildOnStart)) {
+					exec(`sv build --name=${dependency.name} --env=${env}`);
+				}
+			}
+		}
+
+		// Build application containers
 		const dirs =
 			settings[`buildOrder_${env}`] ||
 			settings.buildOrder ||

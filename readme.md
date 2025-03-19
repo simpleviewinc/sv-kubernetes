@@ -186,6 +186,8 @@ The recommended approach is to utilize a single repo which contains your applica
 	* name - string - required - Name of the repository
 	* branch - string - default 'master' - The branch to checkout
 	* type - string - default 'app' - Whether the repository is a app repo or a container repo.
+	* buildOnStart - boolean - default `false` - Whether to build dependencies of type `container` before starting an app on all environments.
+	* buildOnStart_`env` - boolean - default `false` - Whether to build dependencies of type `container` before starting an app on a specific `env` (live, qa, staging, dev, local...).
 * secrets_key - string - The key used to encrypt the secrets for the project. All developers of the application need access to this key to build/run the application. *When using a GCP secret you must prefix with `gcp:`*
 * buildArgs - `BuildArgContainer[]` (see below) - Allow the passing of secrets and values to the Docker builder process.
 
