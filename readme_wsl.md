@@ -14,7 +14,7 @@ You need to configure the WSL on your machine.
 
 1. Copy the `.wslconfig` from `sv-kubernetes/internal/.wslconfig` to `C:\Users\YOUR_NAME\.wslconfig`.
 2. Open a CMD prompt as Admin, and run `wsl --install`, this will install all necessary components for you to run the wsl.
-3. After running `wsl --install` the very first time it will ask to reboot your computer.
+3. After running `wsl --install Ubuntu` the very first time it will ask to reboot your computer.
 4. After reboot, browse to C:\sv-kubernetes\scripts\wsl_regedit.bat and right-click and select `Run as Administrator`.
 5. Next in a command prompt, not as admin, run `wsl` and it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
 6. `exit` - Your wsl installation should be complete.
