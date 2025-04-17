@@ -7,17 +7,20 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 * Ability to run CMD prompt as Admin and install software as Admin.
 * sv-kubernetes github repo checked out to C:/sv-kubernetes
 * A `github_key` stored at `C:\Users\your.username\.ssh\github_key`
+* Enabled Virtual Machine Platform and Windows Subsystem Linux.
 
 ## Install WSL
 
 You need to configure the WSL on your machine.
 
 1. Copy the `.wslconfig` from `sv-kubernetes/internal/.wslconfig` to `C:\Users\YOUR_NAME\.wslconfig`.
-2. Open a CMD prompt as Admin, and run `wsl --install`, this will install all necessary components for you to run the wsl.
-3. After running `wsl --install Ubuntu` the very first time it will ask to reboot your computer.
-4. After reboot, browse to C:\sv-kubernetes\scripts\wsl_regedit.bat and right-click and select `Run as Administrator`.
-5. Next in a command prompt, not as admin, run `wsl` and it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
-6. `exit` - Your wsl installation should be complete.
+2. Browse to `C:\sv-kubernetes\scripts\wsl_regedit.bat` and right-click and select `Run as Administrator`.
+3. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
+    * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
+4. Open a CMD prompt as Admin:
+    * Run `wsl --set-default Ubuntu`.
+    * Run `wsl --install Ubuntu` it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
+7. `exit` - Your wsl installation should be complete.
 
 ### Reinitializing your WSL distribution
 
