@@ -177,7 +177,7 @@ The recommended approach is to utilize a single repo which contains your applica
 
 * version - string - The semver that will be appended to your compiled containers.
 * dockerBase - string - The root of the docker registry which your container and tag are appended. E.g. `gcr.io/sv-shared-231700`.
-* buildOrder - array of string - The build order of the containers. Needed when doing multi-part docker builds that utilize a shared container.
+* buildOrder - array of string - The build order of the containers. Needed when doing multi-part docker builds that utilize a shared container. If you want to specify a container from the `/sv/containers/` folder, specify the container name as `external/name`.
 * buildOrder_live - array of string - Build order for live, overwrites buildOrder if specified.
 * buildOrder_qa - array of string - Build order for qa, overwrites buildOrder if specified.
 * buildOrder_dev - array of string - Build order for dev, overwrites buildOrder if specified.
@@ -186,8 +186,6 @@ The recommended approach is to utilize a single repo which contains your applica
 	* name - string - required - Name of the repository
 	* branch - string - default 'master' - The branch to checkout
 	* type - string - default 'app' - Whether the repository is a app repo or a container repo.
-	* buildOnStart - boolean - default `false` - Whether to build dependencies of type `container` before starting an app on all environments.
-	* buildOnStart_`env` - boolean - default `false` - Whether to build dependencies of type `container` before starting an app on a specific `env` (live, qa, staging, dev, local...).
 * secrets_key - string - The key used to encrypt the secrets for the project. All developers of the application need access to this key to build/run the application. *When using a GCP secret you must prefix with `gcp:`*
 * buildArgs - `BuildArgContainer[]` (see below) - Allow the passing of secrets and values to the Docker builder process.
 
