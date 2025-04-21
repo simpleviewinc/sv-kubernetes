@@ -277,6 +277,8 @@ scripts.start = function(args) {
 		}
 
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
+
+		// Build application containers
 		const dirs =
 			settings[`buildOrder_${env}`] ||
 			settings.buildOrder ||
@@ -284,6 +286,12 @@ scripts.start = function(args) {
 		;
 
 		dirs.forEach(function(val, i) {
+			if (val.startsWith("external/")) {
+				const containerName = val.replace(/external\//, "");
+				exec(`sv build --name=${containerName} --env=${env}`);
+				return;
+			}
+
 			const myBuildArgs = [...buildArgs];
 			myBuildArgs.push(`--name ${val}`);
 
