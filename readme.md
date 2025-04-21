@@ -253,6 +253,8 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* deploymentName - The sv system boots the app as "app" in all non-test environments, but in test it named with the name of the branch so "crm-pull-5". In cases where this value needs to be none, you can use `{{ .Values.sv.deploymentName }}` and it will work in all envs.
 	* tag - When loading in non-local environments the tag for containers is `env`. On local it's just `local`. In pull requests it is `pull-NUM`. Best practice is to utilize `{{ .Values.sv.tag}}` to get the value of the tag in all environments.
 	* dockerRegistry - The dockerRegistry prefix will be set to either `""` or `settings.dockerBase/` to allow you to prefix your image urls in all envs.
+	* secretsChecksum - A hash of the primary secrets file, recommended to add `secretsChecksum: "{{ .Values.sv.secretsChecksum }}"` in the `annotations` in a deployment that consumes secrets.
+	* secretsEnvChecksum - A hash of the env-specific secrets file, recommended to add `secretsEnvChecksum: "{{ .Values.sv.secretsEnvChecksum }}"` in the `annotations` in a deployment that consumes secrets.
 
 Best Practices:
 
