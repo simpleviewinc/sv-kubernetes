@@ -35,7 +35,7 @@ If you want to reset your WSL distribution, run the following commands.
 
 ## Install Docker Engine
 
-[Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. When prompted choose `WSL 2 instead of Hyper-V`.
+[Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. Run the installer as administrator. When prompted choose `WSL 2 instead of Hyper-V`.
 
 * After installation, `windows key`, search for docker, and start docker desktop.
 * In the settings gear in the top-right:
