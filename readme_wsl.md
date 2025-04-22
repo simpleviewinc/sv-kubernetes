@@ -47,7 +47,7 @@ At the bottom of the screen in docker desktop you should see `Engine Running` an
 
 ## Setup WSL instance
 
-Once all software is properly installed run
+Once all software is properly installed run in non-admin CMD prompt:
 
 * `wsl -u root` - Always access the wsl as root from now on.
 * `bash /mnt/c/sv-kubernetes/setup_wsl.sh` and follow the prompts
