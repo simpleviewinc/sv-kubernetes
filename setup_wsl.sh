@@ -4,6 +4,7 @@ ln -sfn /home/vagrant/.kube/config /root/.kube/config
 chmod 600 /home/vagrant/.kube/config
 chmod 600 /root/.kube/config
 cp /home/vagrant/.bashrc /root/.bashrc
+cp /sv/internal/wsl.conf /etc/wsl.conf
 
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/requireRoot.sh
