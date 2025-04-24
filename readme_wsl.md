@@ -18,9 +18,9 @@ You need to configure the WSL on your machine.
 3. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 4. Open a CMD prompt as Admin:
-    * Run `wsl --set-default Ubuntu`.
     * Run `wsl --install Ubuntu` it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
-7. `exit` - Your wsl installation should be complete.
+7.Run  `exit` - Your wsl installation should be complete.
+8. Run `wsl --set-default Ubuntu`.
 
 ### Reinitializing your WSL distribution
 
@@ -35,7 +35,7 @@ If you want to reset your WSL distribution, run the following commands.
 
 ## Install Docker Engine
 
-[Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. When prompted choose `WSL 2 instead of Hyper-V`.
+[Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. Run the installer as administrator. When prompted choose `WSL 2 instead of Hyper-V`.
 
 * After installation, `windows key`, search for docker, and start docker desktop.
 * In the settings gear in the top-right:
@@ -47,7 +47,7 @@ At the bottom of the screen in docker desktop you should see `Engine Running` an
 
 ## Setup WSL instance
 
-Once all software is properly installed run
+Once all software is properly installed run in non-admin CMD prompt:
 
 * `wsl -u root` - Always access the wsl as root from now on.
 * `bash /mnt/c/sv-kubernetes/setup_wsl.sh` and follow the prompts
