@@ -11,6 +11,7 @@ Commands:
 	install               Install a application or container to your local machine
 	listProjects          List available projects for use with switchContext
 	logs                  Getting logging information for a set of pods
+	logFailed             Output the logs for all failed container/initContainers running on the cluster
 	script                Executes a script from an application repo
 	start                 Start an Helm chart
 	stop                  Stop a Helm chart

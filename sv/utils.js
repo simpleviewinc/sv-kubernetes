@@ -96,40 +96,49 @@ function getCurrentPodsV2(args = {}) {
 
 	// simplify the return for downstream functions
 	/** @type {import("./definitions").PodResult[]} */
-	let pods = originalPods.map(val => ({
-		name : val.metadata.name,
-		testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
-		rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
-		nodeName: val.spec.nodeName,
-		namespace: val.metadata.namespace,
-		ip : val.status.podIP,
-		containers: val.spec.containers.map(val => {
-			const cpuRequest = lodash.get(val, "resources.requests.cpu");
-			const memoryRequest = lodash.get(val, "resources.requests.memory");
+	let pods = originalPods.map(val => {
+		const allStatuses = [
+			...(val.status.initContainerStatuses ?? []),
+			...(val.status.containerStatuses ?? [])
+		];
 
-			const resources = {
-				requests: {
-					cpu: cpuRequest !== undefined ? cpuRequest : "0",
-					memory: memoryRequest !== undefined ? memoryRequest : "0"
+		return {
+			name : val.metadata.name,
+			testCommand : val.metadata.annotations !== undefined && val.metadata.annotations["sv-test-command"] ? val.metadata.annotations["sv-test-command"] : undefined,
+			rootName : val.metadata.name.replace(/-[^\-]+-[^\-]+$/, ""),
+			nodeName: val.spec.nodeName,
+			namespace: val.metadata.namespace,
+			ip : val.status.podIP,
+			containers: val.spec.containers.map(val => {
+				const cpuRequest = lodash.get(val, "resources.requests.cpu");
+				const memoryRequest = lodash.get(val, "resources.requests.memory");
+
+				const resources = {
+					requests: {
+						cpu: cpuRequest !== undefined ? cpuRequest : "0",
+						memory: memoryRequest !== undefined ? memoryRequest : "0"
+					}
 				}
-			}
 
-			return {
-				name: val.name,
-				resources
-			}
-		}),
-		containerNames : [
-			...val.spec.containers.map(val => val.name),
-			...(val.spec.initContainers ?? []).map(val => val.name)
-		],
-		runningContainerNames: [
-			...getRunningContainers(val.status.containerStatuses ?? []),
-			...getRunningContainers(val.status.initContainerStatuses ?? [])
-		],
-		status : val.status.phase,
-		raw : val
-	}));
+				return {
+					name: val.name,
+					resources
+				}
+			}),
+			containerNames : [
+				...val.spec.containers.map(val => val.name),
+				...(val.spec.initContainers ?? []).map(val => val.name)
+			],
+			runningContainerNames: getRunningContainers(allStatuses),
+			errorContainerNames: allStatuses.filter(val => {
+				return val.ready === false && val.imageID !== ""
+			}).map(val => {
+				return val.name
+			}),
+			status : val.status.phase,
+			raw : val
+		}
+	});
 
 	// If we have want a specific name
 	if (args.name) {

@@ -189,7 +189,18 @@ function minikubeSystemPrune() {
 	});
 }
 
+function logFailed() {
+	const pods = getCurrentPodsV2();
+	for (const pod of pods) {
+		for (const container of pod.errorContainerNames) {
+			console.log(`---POD: ${pod.name} CONTAINER: ${container} ---`);
+			exec(`kubectl logs ${pod.name} -c ${container}`);
+		}
+	}
+}
+
 module.exports.build = build;
 module.exports.minikubeSystemPrune = minikubeSystemPrune;
 module.exports.deleteEvicted = deleteEvicted;
 module.exports.topPods = topPods;
+module.exports.logFailed = logFailed;

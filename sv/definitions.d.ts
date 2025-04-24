@@ -17,6 +17,11 @@ export interface Container {
 
 export interface ContainerStatus {
 	name: string
+	imageID: string
+	ready: boolean
+	lastState: {
+		terminated?: ContainerState
+	}
 	state: {
 		terminated?: ContainerState
 		running?: ContainerState
@@ -72,6 +77,7 @@ export interface PodResult {
 	}[]
 	containerNames: string[]
 	runningContainerNames: string[]
+	errorContainerNames: string[]
 	status: string
 	raw: PodRaw
 }
