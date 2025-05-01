@@ -22,17 +22,6 @@ You need to configure the WSL on your machine.
 7.Run  `exit` - Your wsl installation should be complete.
 8. Run `wsl --set-default Ubuntu`.
 
-### Reinitializing your WSL distribution
-
-If you want to reset your WSL distribution, run the following commands.
-
-* `wsl --list` - determine the current installation that you want to reset. Do not reset your docker-desktop instance.
-* `wsl --unregister InstallationName`
-* `wsl --install Ubuntu`
-* `wsl --set-default Ubuntu`
-* `wsl` - Set username and password to `vagrant` and you should be good to go. `exit`.
-* Proceed to the Setup WSL Instance section.
-
 ## Install Docker Engine
 
 [Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. Run the installer as administrator. When prompted choose `WSL 2 instead of Hyper-V`.
@@ -70,3 +59,14 @@ From here install and start the repos you desire:
     * Open powershell as admin and run `bcdedit /set hypervisorlaunchtype Auto`.
 * `hostPort` entries are failing because a low port cannot be used.
     * When use hostPort you can also declare the service as of `type: LoadBalancer` and do not declare an IP address. It will still be accessible at the main `192.168.50.100:PORT`.
+
+### Reinitializing your WSL distribution
+
+If you want to reset your WSL distribution, run the following commands.
+
+* `wsl --list` - determine the current installation that you want to reset. Do not reset your docker-desktop instance.
+* `wsl --unregister InstallationName`
+* `wsl --install Ubuntu`
+* `wsl --set-default Ubuntu`
+* `wsl` - Set username and password to `vagrant` and you should be good to go. `exit`.
+* Proceed to the Setup WSL Instance section.
