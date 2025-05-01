@@ -6,6 +6,7 @@ gits/
 internal/sv.json
 internal/refresh_token
 internal/user_info.json
+internal/gcloud
 sv-kubernetes.sublime-workspace
 .idea
 .DS_Store
