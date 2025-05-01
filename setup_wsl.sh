@@ -1,6 +1,8 @@
 ln -sfn /mnt/c/sv-kubernetes /sv
-mkdir -p /root/.kube
+mkdir -p /root/{.kube,.config}
+mkdir -p /mnt/c/sv-kubernetes/containers/_data/gcloud
 ln -sfn /home/vagrant/.kube/config /root/.kube/config
+ln -sfn /mnt/c/sv-kubernetes/containers/_data/gcloud /root/.config/gcloud
 chmod 600 /home/vagrant/.kube/config
 chmod 600 /root/.kube/config
 cp /home/vagrant/.bashrc /root/.bashrc
