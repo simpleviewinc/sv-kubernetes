@@ -255,6 +255,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* dockerRegistry - The dockerRegistry prefix will be set to either `""` or `settings.dockerBase/` to allow you to prefix your image urls in all envs.
 	* secretsChecksum - A hash of the primary secrets file, recommended to add `secretsChecksum: "{{ .Values.sv.secretsChecksum }}"` in the `annotations` in a deployment that consumes secrets.
 	* secretsEnvChecksum - A hash of the env-specific secrets file, recommended to add `secretsEnvChecksum: "{{ .Values.sv.secretsEnvChecksum }}"` in the `annotations` in a deployment that consumes secrets.
+	* refreshToken - The users' auth refresh token if they have executed `sv authLogin`.
 
 Best Practices:
 

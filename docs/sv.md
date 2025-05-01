@@ -1,6 +1,7 @@
 Usage: sudo sv [command]
 
 Commands:
+	authLogin             Authenticates the current user with auth and stores a refresh token for user in applications
 	build                 Build a container and tag it
 	copyFrom              Copy a file from a running container
 	deleteEvicted         Delete all pods which are in a failed state from the cluster

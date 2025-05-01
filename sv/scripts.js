@@ -3,6 +3,8 @@ const commandLineArgs = require("command-line-args");
 const js_yaml = require("js-yaml");
 const fs = require("fs");
 const lodash = require("lodash");
+const read = require("read");
+const util = require("util");
 
 const {
 	deepMerge,
@@ -18,6 +20,8 @@ const {
 } = require("./utils");
 
 const constants = require("./constants");
+
+const readP = util.promisify(read);
 
 function build({ argv }) {
 	const flags = commandLineArgs([
@@ -199,8 +203,86 @@ function logFailed() {
 	}
 }
 
+async function authLogin() {
+	const graphUrl = "https://graphql.simpleviewinc.com";
+	const headers = {
+		"Content-Type": "application/json"
+	}
+
+	console.log("Visit https://auth.simpleviewinc.com/ and log in. Once complete click on 'Refresh Token' and paste the value here.");
+	const refreshToken = await readP({ prompt: "Paste Refresh Token: " });
+
+	const refreshFetch = await fetch(graphUrl, {
+		method: "POST",
+		headers,
+		body: JSON.stringify({
+			variables: {
+				token: refreshToken
+			},
+			query: `
+				query($token: String!) {
+					auth {
+						refresh_token(refresh_token: $token) {
+							success
+							message
+							token
+						}
+					}
+				}
+			`
+		})
+	});
+
+	const json = await refreshFetch.json();
+	const resultRefresh = json.data.auth.refresh_token;
+	if (!resultRefresh.success) {
+		throw new Error(resultRefresh.message);
+	}
+
+	const tokenFetch = await fetch(graphUrl, {
+		method: "POST",
+		headers: {
+			...headers,
+			Authorization: `Bearer ${resultRefresh.token}`
+		},
+		body: JSON.stringify({
+			query: `
+				query {
+					auth {
+						current(acct_id: "sv-all") {
+							success
+							message
+							doc {
+								email
+								firstname
+								lastname
+								sv
+							}
+						}
+					}
+				}
+			`
+		})
+	});
+
+	const json2 = await tokenFetch.json();
+	const tokenResult = json2.data.auth.current;
+	if (!tokenResult.success) {
+		throw new Error(tokenResult.message);
+	}
+
+	if (!tokenResult.doc.sv === true) {
+		throw new Error("User is not SV, unable to proceed.");
+	}
+
+	console.log("Logged in as: ", tokenResult.doc.email);
+	await fs.writeFileSync("/sv/internal/refresh_token", refreshToken);
+	await fs.writeFileSync("/sv/internal/user_info.json", JSON.stringify(tokenResult.doc));
+}
+
 module.exports.build = build;
 module.exports.minikubeSystemPrune = minikubeSystemPrune;
 module.exports.deleteEvicted = deleteEvicted;
 module.exports.topPods = topPods;
 module.exports.logFailed = logFailed;
+module.exports.authLogin = authLogin;

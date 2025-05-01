@@ -242,6 +242,7 @@ scripts.start = function(args) {
 		`--set sv.canHostPort=${isMinikubeEnv()}`,
 		`--set sv.isWsl=${isWslEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
+		`--set sv.refreshToken=$(cat /sv/internal/refresh_token 2>/dev/null)`,
 		`-f /sv/internal/sv.json`
 	);
 
