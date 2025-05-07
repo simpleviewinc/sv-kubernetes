@@ -9,4 +9,6 @@ apt-get install -y \
 		gnupg \
 		lsb-release \
 		apt-transport-https \
-		jq
+		jq \
+		bind9-dnsutils \
+		inetutils-telnet
