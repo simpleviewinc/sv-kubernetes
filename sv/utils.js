@@ -218,9 +218,43 @@ function getDockerEnv() {
 	} : process.env;
 }
 
+async function getAuthTokenFromRefreshToken(refreshToken) {
+	const fetchResult = await fetch(constants.GRAPH_URL, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			variables: {
+				token: refreshToken
+			},
+			query: `
+				query($token: String!) {
+					auth {
+						refresh_token(refresh_token: $token) {
+							success
+							message
+							token
+						}
+					}
+				}
+			`
+		})
+	});
+
+	const json = await fetchResult.json();
+	const result = json.data.auth.refresh_token;
+	if (!result.success) {
+		throw new Error(result.message);
+	}
+
+	return result.token;
+}
+
 module.exports.deepMerge = deepMerge;
 module.exports.exec = exec;
 module.exports.execSilent = execSilent;
+module.exports.getAuthTokenFromRefreshToken = getAuthTokenFromRefreshToken;
 module.exports.getCurrentContext = getCurrentContext;
 module.exports.getCurrentPods = getCurrentPods;
 module.exports.getCurrentPodsV2 = getCurrentPodsV2;

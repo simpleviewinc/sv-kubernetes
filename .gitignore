@@ -4,6 +4,7 @@
 gits/
 /test/
 internal/sv.json
+internal/auth_token
 internal/refresh_token
 internal/user_info.json
 internal/gcloud
