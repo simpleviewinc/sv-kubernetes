@@ -246,6 +246,7 @@ scripts.start = function(args) {
 		`--set sv.isWsl=${isWslEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
 		`--set sv.refreshToken=$(cat /sv/internal/refresh_token 2>/dev/null)`,
+		`--set sv.userInfo.email=$(cat /sv/internal/user_info.json 2>/dev/null | jq -r .email)`,
 		`-f /sv/internal/sv.json`
 	);
 
