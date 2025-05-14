@@ -250,9 +250,14 @@ scripts.start = function(args) {
 		`-f /sv/internal/sv.json`
 	);
 
-	var envFile = `${chartFolder}/values_${env}.yaml`;
+	const envFile = `${chartFolder}/values_${env}.yaml`;
 	if (fs.existsSync(envFile)) {
 		commandArgs.push(`-f ${envFile}`);
+	}
+
+	const overwriteFile = `${chartFolder}/values_overwrite.yaml`;
+	if (fs.existsSync(overwriteFile)) {
+		commandArgs.push(`-f ${overwriteFile}`);
 	}
 
 	const settings = loadSettingsYaml(applicationName);
@@ -500,7 +505,12 @@ scripts.enterPod = function(args) {
 	// pick the best available shell, exec $shell replaces the initial /bin/sh with whatever shell it chooses to run
 	const cmd = `/bin/sh -c 'shell=$(which bash >/dev/null 2>&1 && echo "bash" || echo "sh"); exec $shell'`
 	console.log(`Entering Pod: ${pod.name}`);
-	exec(`kubectl exec -it ${pod.name} -c ${pod.containerNames[0]} -- ${cmd}`);
+	try {
+		exec(`kubectl exec -it ${pod.name} -c ${pod.containerNames[0]} -- ${cmd}`);
+	} catch(e) {
+		// blackholing error, since stderr, stdout streamed to console
+		// otherwise this throws if the last run command was a non-0 command
+	}
 }
 
 scripts.execPod = function(args) {
