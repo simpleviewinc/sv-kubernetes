@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 //@ts-check
 
+if (process.getuid() !== 0) {
+	throw new Error("'sv' commands must be run as root");
+}
+
 const fs = require("fs");
 const { execSync, spawn, fork } = require("child_process");
 const read = require("read");
