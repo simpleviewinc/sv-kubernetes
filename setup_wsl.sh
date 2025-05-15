@@ -1,3 +1,5 @@
+[ $(cat -A /mnt/c/sv-kubernetes/internal/line_ending_test) != "$" ] && echo "Improper line endings" && exit 1;
+
 ln -sfn /mnt/c/sv-kubernetes /sv
 mkdir -p /root/{.kube,.config}
 mkdir -p /mnt/c/sv-kubernetes/internal/gcloud
