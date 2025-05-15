@@ -251,6 +251,8 @@ scripts.start = function(args) {
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
 		`--set sv.refreshToken=$(cat /sv/internal/refresh_token 2>/dev/null)`,
 		`--set sv.userInfo.email=$(cat /sv/internal/user_info.json 2>/dev/null | jq -r .email)`,
+		`--set sv.applicationGitSha=$(git -C ${appFolder} rev-parse HEAD)`,
+		`--set sv.applicationGitBranch=$(git -C ${appFolder} rev-parse --abbrev-ref HEAD)`,
 		`-f /sv/internal/sv.json`
 	);
 
