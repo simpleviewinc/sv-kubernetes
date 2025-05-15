@@ -14,7 +14,7 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 You need to configure the WSL on your machine.
 
 1. Copy the `.wslconfig` from `sv-kubernetes/internal/.wslconfig` to `C:\Users\YOUR_NAME\.wslconfig`.
-2. Browse to `C:\sv-kubernetes\scripts\wsl_regedit.bat` and right-click and select `Run as Administrator`.
+2. Browse to `C:\sv-kubernetes\scripts\wsl_regedit.bat` and right-click and select `Run as Administrator`. You should see 'The operation completed successfully' twice. Press any key and the window will close.
 3. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 4. Open a CMD prompt as Admin:
