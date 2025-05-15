@@ -19,8 +19,8 @@ You need to configure the WSL on your machine.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 4. Open a CMD prompt as Admin:
     * Run `wsl --install Ubuntu` it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
-7.Run  `exit` - Your wsl installation should be complete.
-8. Run `wsl --set-default Ubuntu`.
+5. Run `exit` - Your wsl installation should be complete.
+6. Run `wsl --set-default Ubuntu`.
 
 ## Install Docker Engine
 
