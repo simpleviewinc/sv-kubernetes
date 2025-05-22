@@ -14,13 +14,16 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 You need to configure the WSL on your machine.
 
 1. Copy the `.wslconfig` from `sv-kubernetes/internal/.wslconfig` to `C:\Users\YOUR_NAME\.wslconfig`.
+2. Copy the `Ubuntu.user-data` from `sv-kubernetes/internal/Ubuntu.user-data` to `C:\Users\YOUR_NAME\.cloud-init\Ubuntu.user-data`.
 2. Browse to `C:\sv-kubernetes\scripts\wsl_regedit.bat` and right-click and select `Run as Administrator`. You should see 'The operation completed successfully' twice. Press any key and the window will close.
 3. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 4. Open a CMD prompt as Admin:
-    * Run `wsl --install Ubuntu` it will prompt a username and password, use `vagrant` for username and password. You should now be at a linux command prompt.
-5. Run `exit` - Your wsl installation should be complete.
-6. Run `wsl --set-default Ubuntu`.
+    * Run `wsl --install --no-distribution`. You may be prompted to reboot, if so reboot and then continue after the reboot.
+    * Run `wsl --install Ubuntu`
+    * Run `wsl --set-default Ubuntu`.
+    * Run `wsl`. It should boot the instance and enter into an Ubuntu console.
+    * Run `exit`.
 
 ## Install Docker Engine
 
@@ -71,5 +74,5 @@ If you want to reset your WSL distribution, run the following commands.
 * `wsl --unregister InstallationName`
 * `wsl --install Ubuntu`
 * `wsl --set-default Ubuntu`
-* `wsl` - Set username and password to `vagrant` and you should be good to go. `exit`.
+* `wsl`, ensure no errors on entry, `exit`.
 * Proceed to the Setup WSL Instance section.
