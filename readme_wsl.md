@@ -31,6 +31,7 @@ You need to configure the WSL on your machine.
     * Ensure that the `Use the WSL 2 based engine` is checked.
     * Resources -> WSL Ingration -> Ensure `Enabled integration with my default WSL distro` is checked.
     * Kubernetes -> Ensure `Enable Kubernetes` is checked. If not checked, check it and click Apply & Restart.
+    * Under "Software Updates" uncheck "Automatically check for updates" and "Always download updates"
 
 At the bottom of the screen in docker desktop you should see `Engine Running` and `Kubernetes Running`.
 
