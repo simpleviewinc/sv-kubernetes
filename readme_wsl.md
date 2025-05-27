@@ -19,6 +19,10 @@ You need to configure the WSL on your machine.
 3. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 4. Open a CMD prompt as Admin:
+    * Run `wsl --version` you should be on at least `WSL version: 2.4.13.0`. If your version is older, you will need to update your wsl version. If you are on a newer version it likely will work ok, but it hasn't been officially tested.
+        * Download the proper version of wsl by clicking the following link: [Download WSL](https://github.com/microsoft/WSL/releases/download/2.4.13/wsl.2.4.13.0.x64.msi)
+        * Once downloaded, run the file.
+        * After complete, re-run command prompt and run `wsl --version` and ensure it's been updated.
     * Run `wsl --install --no-distribution`. You may be prompted to reboot, if so reboot and then continue after the reboot.
     * Run `wsl --install Ubuntu`
     * Run `wsl --set-default Ubuntu`.
