@@ -4,8 +4,36 @@ const fs = require("fs");
 const lodash = require("lodash");
 const chalk = require("chalk");
 const js_yaml = require("js-yaml");
+const read = require('read');
+const util = require("util");
 
 const constants = require("./constants");
+const readP = util.promisify(read);
+
+async function confirmContextCommand(context, confirmActions = true, readOptions = {}) {
+	if (confirmActions === true
+			&& process.env.BYPASS_SV_COMMAND_CONTROL !== "yes"
+			&& +process.env.BYPASS_SV_COMMAND_CONTROL !== 1
+			&& constants.LOCAL_CONTEXT_MINIKUBE !== context
+			&& constants.LOCAL_CONTEXT_DESKTOP !== context) {
+		let result;
+		try {
+			result = await readP(Object.assign({
+				prompt : "You are performing an action on a non-local cluster.\n[Enter] to continue or ctrl+c to cancel."
+			}, readOptions));
+		} catch(err) {
+			console.log(`\n${err.message}`);
+			process.exit(1);
+		}
+
+		if (result !== undefined && result.length != 0) {
+			console.log("unexpected data");
+			process.exit(1);
+		}
+		return result;
+	}
+	return true;
+}
 
 function exec(command, options = {}) {
 	return execSync(command, { stdio : "inherit", ...options });
@@ -15,8 +43,10 @@ function execSilent(command, options = {}) {
 	return execSync(command, { ...options }).toString().trim();
 }
 
-function logContext() {
-	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
+async function logContext(confirmActions = true) {
+	const currentContext = getCurrentContext();
+	console.log(chalk.green(`[Current Context]: ${currentContext}`));
+	await confirmContextCommand(currentContext, confirmActions);
 }
 
 function getCurrentContext() {
@@ -207,7 +237,7 @@ function _isMinikubeEnv() {
 const isMinikubeEnv = lodash.memoize(_isMinikubeEnv);
 
 function _isWslEnv() {
-	return fs.existsSync("/etc/wsl.conf");
+	return fs.existsSync("/etc/wsl.conf") || fs.existsSync("/docker-entrypoint.sh");
 }
 const isWslEnv = lodash.memoize(_isWslEnv);
 
@@ -251,6 +281,7 @@ async function getAuthTokenFromRefreshToken(refreshToken) {
 	return result.token;
 }
 
+module.exports.confirmContextCommand = confirmContextCommand;
 module.exports.deepMerge = deepMerge;
 module.exports.exec = exec;
 module.exports.execSilent = execSilent;

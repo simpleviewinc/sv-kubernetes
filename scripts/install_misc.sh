@@ -1,4 +1,5 @@
 . /sv/scripts/errorHandler.sh
+. /sv/scripts/requireRoot.sh
 
 apt-get update
 # removes man-db since it just slows down apt-get installs and doesn't provide value for us
@@ -11,4 +12,6 @@ apt-get install -y \
 		apt-transport-https \
 		jq \
 		bind9-dnsutils \
-		inetutils-telnet
+		inetutils-telnet \
+		xz-utils \
+		nano

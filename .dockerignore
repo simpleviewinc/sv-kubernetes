@@ -1,0 +1,15 @@
+.vagrant
+/applications/
+/containers/
+gits/
+/test/
+internal/sv.json
+sv-kubernetes.sublime-workspace
+.idea
+.DS_Store
+node_modules
+extended-disk.vdi
+packer.exe
+/output-sv-kubernetes
+internal/gcloud
+internal/*_token
