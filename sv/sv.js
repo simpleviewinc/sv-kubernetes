@@ -780,6 +780,6 @@ if (scripts[scriptName] === undefined) {
 	process.exit();
 }
 
-checkOutdated();
+// checkOutdated();
 
 scripts[scriptName]({ argv : argv });
