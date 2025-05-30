@@ -5,9 +5,29 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 * WSL v2 - See intructions below for installation.
 * Docker Engine - See instructions below for installation.
 * Ability to run CMD prompt as Admin and install software as Admin.
-* sv-kubernetes github repo checked out to `C:\sv-kubernetes`
-* A `github_key` stored at `C:\Users\your.username\.ssh\github_key`
-* Enabled Virtual Machine Platform and Windows Subsystem Linux.
+* Git installed and accessible in command prompt
+
+## Checkout Repo
+
+```
+cd C:\
+git clone git@github.com:simpleviewinc/sv-kubernetes.git
+cd sv-kubernetes
+git checkout wsl
+```
+
+## Setup Environment
+
+In CMD prompt as Admin:
+
+```
+powershell C:\sv-kubernetes\scripts\windows_init.ps1` and it should output `Success` at the end.
+```
+
+* Note: If the script prompted you to create a `github_key` you will need to upload it to Github so that it can be utilized.
+    * The Github docs are located [Here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=linux&tool=webui)
+    * Remember your public keyfile is named `github_key.pub` and not id_ed25519.pub so you’ll need to adjust the instructions.
+    * The name of the key in Github's UI doesn’t technically matter, but the best practice is to name it with the use-case, so sv-kubernetes might be practical.
 
 ## Install WSL
 
@@ -15,8 +35,6 @@ You need to configure the WSL on your machine.
 
 1. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
     * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
-2. In CMD prompt as Admin:
-    * `powershell C:\sv-kubernetes\scripts\windows_init.ps1` and it should output `Success` at the end.
 3. In CMD prompt as Admin:
     * Run `wsl --version` you should be on at least `WSL version: 2.4.13.0`. If your version is older, you will need to update your wsl version. If you are on a newer version it likely will work ok, but it hasn't been officially tested. If the command `wsl --version` fails with an error saying that `wsl --version` doesn't exist, then you should update.
         * Download the proper version of wsl by clicking the following link: [Download WSL](https://github.com/microsoft/WSL/releases/download/2.4.13/wsl.2.4.13.0.x64.msi)
