@@ -54,4 +54,9 @@ echo "Copying .cloud-init config"
 New-Item -ItemType Directory -Force -Path $Env:UserProfile\.cloud-init | Out-Null
 copy $PSScriptRoot\..\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data
 
+Write-Output "Copying user profile script"
+$psProfileDir = "$Env:UserProfile\Documents\WindowsPowerShell"
+New-Item -ItemType Directory -Force -Path $psProfileDir | Out-Null
+Copy-Item -Path $PSScriptRoot\windows_profile.ps1 -Destination $psProfileDir\profile.ps1 -Force
+
 echo "Success"
