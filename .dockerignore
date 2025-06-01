@@ -4,15 +4,12 @@
 gits/
 /test/
 internal/sv.json
-internal/auth_token
-internal/refresh_token
-internal/user_info.json
-internal/gcloud
 sv-kubernetes.sublime-workspace
 .idea
 .DS_Store
-.env
 node_modules
 extended-disk.vdi
 packer.exe
 /output-sv-kubernetes
+internal/gcloud
+internal/*_token

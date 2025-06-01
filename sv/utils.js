@@ -4,8 +4,41 @@ const fs = require("fs");
 const lodash = require("lodash");
 const chalk = require("chalk");
 const js_yaml = require("js-yaml");
+const read = require('read');
+const util = require("util");
 
 const constants = require("./constants");
+const readP = util.promisify(read);
+
+/**
+ * Prompt the user for confirmation if running an action on a non-local environment to prevent mistakes
+ */
+async function confirmContextCommand(context, confirmActions = true, readOptions = {}) {
+	if (
+		confirmActions !== true
+		||
+		[constants.LOCAL_CONTEXT_DESKTOP, constants.LOCAL_CONTEXT_MINIKUBE].includes(context) === true
+	) {
+		return true;
+	}
+
+	let result;
+	try {
+		result = await readP(Object.assign({
+			prompt : "You are performing an action on a non-local cluster.\n[Enter] to continue or ctrl+c to cancel."
+		}, readOptions));
+	} catch(err) {
+		console.log(`\n${err.message}`);
+		return false;
+	}
+
+	if (result !== undefined && result.length !== 0) {
+		console.log("unexpected data");
+		return false;
+	}
+
+	return true;
+}
 
 function exec(command, options = {}) {
 	return execSync(command, { stdio : "inherit", ...options });
@@ -15,8 +48,15 @@ function execSilent(command, options = {}) {
 	return execSync(command, { ...options }).toString().trim();
 }
 
-function logContext() {
-	console.log(chalk.green(`[Current Context]: ${getCurrentContext()}`));
+async function logContext(confirmActions = process.env.BYPASS_SV_COMMAND_CONTROL !== "true") {
+	const currentContext = getCurrentContext();
+	console.log(chalk.green(`[Current Context]: ${currentContext}`));
+
+	// ensure we should proceed with the action if the context isn't on their local kube
+	const shouldContinue = await confirmContextCommand(currentContext, confirmActions);
+	if (!shouldContinue) {
+		process.exit(1);
+	}
 }
 
 function getCurrentContext() {
@@ -207,7 +247,7 @@ function _isMinikubeEnv() {
 const isMinikubeEnv = lodash.memoize(_isMinikubeEnv);
 
 function _isWslEnv() {
-	return fs.existsSync("/etc/wsl.conf");
+	return fs.existsSync("/etc/wsl.conf") || process.env.SV_KUBERNETES_ENV === "wsl";
 }
 const isWslEnv = lodash.memoize(_isWslEnv);
 
@@ -251,6 +291,7 @@ async function getAuthTokenFromRefreshToken(refreshToken) {
 	return result.token;
 }
 
+module.exports.confirmContextCommand = confirmContextCommand;
 module.exports.deepMerge = deepMerge;
 module.exports.exec = exec;
 module.exports.execSilent = execSilent;

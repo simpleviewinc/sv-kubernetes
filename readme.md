@@ -20,103 +20,38 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 * Allow developers within Simpleview to more easily move from product to product by providing a familiar working environment across departments. The containers will still be fully managed by the individual teams, and the tools those teams used will be determined by those teams.
 * Be the platform where we can build a microservice system based on the concept of making all APIs externalizable similar to the initiatve put in place at Amazon via [this memo](https://apievangelist.com/2012/01/12/the-secret-to-amazons-success-internal-apis/).
 
-## Install Dependencies
-
-### Windows Users
-
-Ensure you have followed the [Environment Setup instructions] to install the necessary software, setup git, setup github and your SSH keys.
-
-
-### Apple Silicon Users
-
-Follow the ***GitHub Setup*** section of the [Environment Setup instructions]
-
-
-#### Dependencies
-
-- [VMWare Fusion Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion): [`13.6.2`](https://downloads2.broadcom.com/?file=VMware-Fusion-13.6.2-24409261_universal.dmg&oid=34930889&id=LrGAYhO4D1YUk1hQuC3ZMpbcIeFAD1fLDq8RMqJPB2HzbSl8IIXXBd4NiTeSfbbD&verify=1735664056-UQ%2BE3Wvr65yzHNT4%2BRnt90upKaU%2BRDfxxcHRyO450kY%3D)
-- [Vagrant](https://developer.hashicorp.com/vagrant/install#macOS): [`2.4.3`](https://releases.hashicorp.com/vagrant/2.4.3/vagrant_2.4.3_darwin_arm64.dmg)
-- [Vagrant VMWare Desktop plugin](https://developer.hashicorp.com/vagrant/docs/providers/vmware/installation): `3.0.4`
-- [Vagrant VMWare Utility](https://developer.hashicorp.com/vagrant/install/vmware): [`1.0.23`](https://releases.hashicorp.com/vagrant-vmware-utility/1.0.23/vagrant-vmware-utility_1.0.23_darwin_arm64.dmg)
-
-
-#### How-To extend virtual hard-drive
-
-Follow the steps below, if you ever need to extend the main disk of
-your VMWare machine
-
-1. Make sure the VM is stopped `vagrant halt`
-2. Retrieve and set VM path `export BOX_PATH=$(cat .vagrant/machines/primary/vmware_desktop/id)`
-3. Extend disk to the desired size `/Applications/VMware\ Fusion.app/Contents/Library/vmware-vdiskmanager -x 200Gb "${BOX_PATH%/*}/disk-cl2.vmdk"`
-4. Start the VM `vagrant up`
-5. Connect to the VM `vagrant ssh`
-6. Run script to extend partition `bash /sv/scripts/extend_disk.sh`
-
-
 ## Installation
 
-Clone the repo to your local computer. Ensure your git client is setup properly
-to not tamper with line endings with AutoCrlf `false` and SafeCrlf `warn`.
-
-Open a command prompt as Admin and `cd` to the folder which you checked out this
-repository.
-
-```bash
-vagrant up
-```
-
-SSH into the box at IP address: 192.168.50.100
-
-Username: **root**
-Password: **vagrant**
-
-> Note: prior installations used `vagrant` as the username, do not do that! You must use `root`
-
-> Note: alternatively, you can run `vagrant ssh` in a terminal to connect to your VM
-
-
-```bash
-# VM SSH session
-sudo bash /sv/setup.sh
-```
-
-Now minikube, kubernetes, docker and helm should be running and your box is setup to add applications and containers.
-
-## Update sv-kubernetes
-
-* If you need to persist data between updates, check with your team lead on the best mechanism for doing that.
-* (from host) git pull your sv-kubernetes folder to the latest master
-* (from host) vagrant destroy
-* (from host) vagrant up
-* (inside vm) sudo bash /sv/setup.sh
+* [Windows Installation Readme](install_windows.md)
+* [Mac Installation Readme](install_mac.md)
 
 ## Local Development
 
-> Apple Silicon users: The sv install command will not succeed inside the VM. For
-> this reason, manually create a ~/sv-kubernetes/applications/ directory, and
-> then directly clone the repos for any desired applications inside of it. Keep
-> in mind that this also applies to dependencies such as sv-geo-client (required
-> for sv-geo), which would need to be directly cloned into ~/sv-kubernetes/containers/.
-> More information about dependencies can be found here: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes.
+Enter the CLI depending on your environment:
+
+Windows WSL variant:
+* This variant utilizes an Ubuntu environment running on the windows WSL to provide access to the sv-kubernetes cli.
+* `wsl -u root` - To enter your Ubuntu wsl instance. Then run all sv commands as normal.
+
+Docker variant (beta)
+* This variant utilizes a docker container to provide access to the sv-kubernetes cli.
+* Windows
+	* From powershell:
+	* `sv` - Proxies all commands from windows powershell to the docker-based cli linux environment.
+	* `sv-kube-run` - Manually start the docker-based cli.
+	* `sv-kube-stop` - Stops the docker-based cli.
+	* `sv-kube-enter` - Starts and enters the docker container.
+* Mac
+	* TBD
 
 Often in order to work your project you will want to install and start the following applications.
 
 * `sv-kube-proxy` allows you to access resources on your box at `kube.simpleview.io`.
 	* If your application needs an additional nginx entry, please pull request it in to that repo.
-* `sv-graphql` proxies to your application's graphql server. It can be accessed at `graphql.kube.simpleview.io`.
-	* If your application needs an additional graphql, please pull request it in to that repo.
-* `sv-geo` A microservice that returns geo location. Queries can be ran in the graphql playground at `graphql.kube.simpleview.io`.
-	* This repo is not required but if you are planning on building a graphql microservice it is recommended to pull down so that you can pull up a functional graphql application to ensure your env is functional.
 
 ```
 sudo sv install sv-kube-proxy
 sudo sv start sv-kube-proxy local --build
-
-sudo sv install sv-graphql
-sudo sv start sv-graphql local --build
-
-sudo sv install sv-geo
-sudo sv start sv-geo local --build
 ```
 
 ## sv command
@@ -271,7 +206,6 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs.
-* Always run `vagrant halt` to shutdown the environment prior to shutting down the host machine.
 
 ## Container Structure
 
@@ -372,26 +306,6 @@ Setting up CI/CD is relative easy but there are a few pitfalls to make sure it's
 		* crm static ips - `10.1.0.10` and increment.
 	* The IP address will be the same for all environments since each environment is on it's own VPC network allowing re-use of IP addresses. This also helps to simplify config.
 
-# sv-kubernetes project development
-
-sv-kubernetes uses `packer` to build a `.box` which is uploaded to Vagrant Cloud.
-
-Compile a new version
-
-```
-cd /folder/of/sv-kubernetes
-node packer/pack.js
-```
-
-Once compiled if you want to try it, update your vagrantfile so that primary has version "0" for it's box. Then run add_box so that it adds the newly packed version of the box to your vagrants box list.
-
-```
-cd /folder/of/sv-kubernetes
-node packer/add_box.js
-```
-
-When having problems compiling, you can run `vagrant up base`, shell in to 192.168.50.101 and then manually execute `sudo bash /sv/scripts/provision.sh`.
-
 # Testing
 
 Run tests
@@ -407,7 +321,4 @@ Edit secrets for the test application
 sudo APPS_FOLDER=/sv/sv/testing/applications sv editSecrets settings-test --env local
 ```
 
-
-[Environment Setup instructions]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32079956/Environment+Setup
-[setup SMB on MacOS]: https://developer.hashicorp.com/vagrant/docs/synced-folders/smb#macos-host
 [General Troubleshooting]: https://simpleviewtools.atlassian.net/wiki/spaces/ENG/pages/32080165/SV-Kubernetes

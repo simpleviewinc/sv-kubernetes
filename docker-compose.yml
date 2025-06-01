@@ -1,0 +1,13 @@
+services:
+  cli:
+    build: "."
+    image: sv-kubernetes:local
+    init: true
+    environment:
+      SV_KUBERNETES_ENV: "${SV_KUBERNETES_ENV}"
+    volumes:
+      - "./:/sv"
+      - "~/.kube:/root/.kube"
+      - "~/.ssh:/root/.ssh"
+      - "./internal/gcloud:/root/.config/gcloud"
+      - "//var/run/docker.sock:/var/run/docker.sock"

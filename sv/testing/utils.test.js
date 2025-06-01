@@ -1,5 +1,8 @@
 const assert = require("assert");
+const sinon = require('sinon');
+
 const { testArray } = require("@simpleview/mochalib");
+const { Readable, PassThrough } = require('stream');
 
 const utils = require("../utils");
 
@@ -95,6 +98,95 @@ describe(__filename, function() {
 		testArray(tests, function(test) {
 			const result = utils.mapBuildArgs(test.args);
 			assert.deepStrictEqual(result, test.result);
+		});
+	});
+
+	describe("confirmContextCommand", function() {
+		beforeEach(() => {
+			sinon.stub(console, 'log');
+		});
+
+		afterEach(() => {
+			console.log.restore();
+		});
+
+		const tests = [
+			{
+				name : "Skip command confirmation in local context (minikube)",
+				args : {
+					context: "minikube",
+					result: true
+				}
+			},
+			{
+				name : "Skip command confirmation in local context (desktop)",
+				args : {
+					context: "docker-desktop",
+					result: true
+				}
+			},
+			{
+				name : "Bypass command confirmation (CI/CD)",
+				args : {
+					context: "test_context",
+					confirmActions: false,
+					result: true
+				}
+			},
+			{
+				name : "Disable context command confirmation",
+				args : {
+					confirmActions: false,
+					context: "test_context",
+					result: true
+				}
+			},
+			{
+				name : "Confirm action with [Enter]",
+				args : {
+					context: "test_context",
+					inputChars: "\n",
+					result: true
+				}
+			},
+			{
+				name : "Cancel action with [Ctrl-C]",
+				args : {
+					context: "test_context",
+					inputChars: "\x03",
+					result: false,
+					error_log: "\ncanceled"
+				}
+			},
+			{
+				name : "Cancel action with unexpected data",
+				args : {
+					context: "test_context",
+					inputChars: "unexpected_data\n",
+					result: false,
+					error_log: "unexpected data"
+				}
+			}
+		];
+
+		testArray(tests, async function(test) {
+			const inputStream = test.inputChars ? Readable.from(test.inputChars) : undefined;
+			const result = await utils.confirmContextCommand(
+				test.context,
+				test.confirmActions,
+				{
+					input: inputStream,
+					output: new PassThrough(),
+					terminal: true
+				}
+			);
+			assert.strictEqual(result, test.result);
+
+			if (test.error_log !== undefined) {
+				assert(console.log.isSinonProxy);
+				sinon.assert.called(console.log);
+				sinon.assert.calledWith(console.log, test.error_log);
+			}
 		});
 	});
 });

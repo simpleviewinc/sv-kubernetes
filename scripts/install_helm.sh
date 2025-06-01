@@ -18,3 +18,7 @@ fi
 # AUT-2125 | AUT-2126
 # Install 2to3 helm plugin for migration purposes
 helm plugin install https://github.com/helm/helm-2to3.git 2> /dev/null || true
+
+# ensure we're on the right repo
+helm repo rm stable || true
+helm repo add stable https://charts.helm.sh/stable

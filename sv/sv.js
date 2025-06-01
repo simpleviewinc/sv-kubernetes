@@ -26,7 +26,7 @@ const {
 	mapBuildArgs,
 	getDockerEnv,
 	isWslEnv,
-	isMinikubeEnv,
+	isMinikubeEnv
 } = require("./utils");
 
 const constants = require("./constants");
@@ -208,8 +208,8 @@ scripts.install = async function(args) {
 	}
 }
 
-scripts.start = function(args) {
-	logContext();
+scripts.start = async function(args) {
+	await logContext();
 
 	var myArgs = args.argv.slice();
 	var applicationName = myArgs.shift();
@@ -228,7 +228,9 @@ scripts.start = function(args) {
 
 	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
+
 	const rootKubeFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes` : `/sv`;
+
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
@@ -382,8 +384,8 @@ scripts.start = function(args) {
 	}
 }
 
-scripts.stop = function(args) {
-	logContext();
+scripts.stop = async function(args) {
+	await logContext();
 
 	var applicationName = args.argv[0];
 
@@ -477,7 +479,7 @@ scripts.switchContext = function (args) {
 };
 
 scripts.getContext = function (args) {
-	logContext();
+	logContext(false);
 }
 
 scripts.listProjects = function() {
