@@ -54,9 +54,6 @@ sudo sv install sv-kube-proxy
 sudo sv start sv-kube-proxy local --build
 ```
 
-Docker Variant (beta):
-* `sv` -
-
 ## sv command
 
 Run `sudo sv` for documentation within the VM.
