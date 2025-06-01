@@ -14,4 +14,6 @@ apt-get install -y \
 		bind9-dnsutils \
 		inetutils-telnet \
 		xz-utils \
-		nano
+		nano \
+		traceroute \
+		git

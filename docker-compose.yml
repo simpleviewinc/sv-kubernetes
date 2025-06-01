@@ -1,0 +1,11 @@
+services:
+  cli:
+    build: "."
+    image: sv-kubernetes:local
+    init: true
+    volumes:
+      - "./:/sv"
+      - "~/.kube:/root/.kube"
+      - "~/.ssh:/root/.ssh"
+      - "./internal/gcloud:/root/.config/gcloud"
+      - "//var/run/docker.sock:/var/run/docker.sock"

@@ -57,6 +57,6 @@ copy $PSScriptRoot\..\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubu
 Write-Output "Copying user profile script"
 $psProfileDir = "$Env:UserProfile\Documents\WindowsPowerShell"
 New-Item -ItemType Directory -Force -Path $psProfileDir | Out-Null
-Copy-Item -Path $PSScriptRoot\windows_profile.ps1 -Destination $psProfileDir\profile.ps1 -Force
+New-Item -ItemType SymbolicLink -Path $PROFILE -Target "$PSScriptRoot\windows_profile.ps1" -Force | Out-Null
 
 echo "Success"

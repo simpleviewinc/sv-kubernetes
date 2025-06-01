@@ -1,3 +1,4 @@
+. /sv/scripts/errorHandler.sh
 folder="/sv/internal/github"
 
 mkdir -p /root/.ssh
