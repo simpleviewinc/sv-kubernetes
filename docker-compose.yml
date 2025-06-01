@@ -3,6 +3,8 @@ services:
     build: "."
     image: sv-kubernetes:local
     init: true
+    environment:
+      SV_KUBERNETES_ENV: "${SV_KUBERNETES_ENV}"
     volumes:
       - "./:/sv"
       - "~/.kube:/root/.kube"

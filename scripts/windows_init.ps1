@@ -59,4 +59,6 @@ $psProfileDir = "$Env:UserProfile\Documents\WindowsPowerShell"
 New-Item -ItemType Directory -Force -Path $psProfileDir | Out-Null
 New-Item -ItemType SymbolicLink -Path $PROFILE -Target "$PSScriptRoot\windows_profile.ps1" -Force | Out-Null
 
+copy $PSScriptRoot\..\internal\.env_windows $PSScriptRoot\..\.env
+
 echo "Success"

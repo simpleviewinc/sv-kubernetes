@@ -103,13 +103,10 @@ describe(__filename, function() {
 
 	describe("confirmContextCommand", function() {
 		beforeEach(() => {
-			sinon.stub(process, 'exit');
 			sinon.stub(console, 'log');
-			process.env.BYPASS_SV_COMMAND_CONTROL = "no";
 		});
 
 		afterEach(() => {
-			process.exit.restore();
 			console.log.restore();
 		});
 
@@ -124,15 +121,15 @@ describe(__filename, function() {
 			{
 				name : "Skip command confirmation in local context (desktop)",
 				args : {
-					context: "docker-context",
+					context: "docker-desktop",
 					result: true
 				}
 			},
 			{
 				name : "Bypass command confirmation (CI/CD)",
 				args : {
-					bypassCommandControl: "yes",
 					context: "test_context",
+					confirmActions: false,
 					result: true
 				}
 			},
@@ -148,15 +145,16 @@ describe(__filename, function() {
 				name : "Confirm action with [Enter]",
 				args : {
 					context: "test_context",
-					result: ''
+					inputChars: "\n",
+					result: true
 				}
 			},
 			{
 				name : "Cancel action with [Ctrl-C]",
 				args : {
 					context: "test_context",
-					streamData: "\x03",
-					exit_code: 1,
+					inputChars: "\x03",
+					result: false,
 					error_log: "\ncanceled"
 				}
 			},
@@ -164,32 +162,25 @@ describe(__filename, function() {
 				name : "Cancel action with unexpected data",
 				args : {
 					context: "test_context",
-					streamData: "unexpected_data\n",
-					exit_code: 1,
-					error_log: "unexpected data",
-					result: "unexpected_data"
+					inputChars: "unexpected_data\n",
+					result: false,
+					error_log: "unexpected data"
 				}
 			}
 		];
 
 		testArray(tests, async function(test) {
-			if (test.bypassCommandControl !== undefined) {
-				process.env.BYPASS_SV_COMMAND_CONTROL = test.bypassCommandControl;
-			}
-
-			const readableStream = Readable.from(test.streamData || "\n");
+			const inputStream = test.inputChars ? Readable.from(test.inputChars) : undefined;
 			const result = await utils.confirmContextCommand(
 				test.context,
 				test.confirmActions,
-				{input: readableStream, output: new PassThrough(), terminal: true}
+				{
+					input: inputStream,
+					output: new PassThrough(),
+					terminal: true
+				}
 			);
 			assert.strictEqual(result, test.result);
-
-			if (test.exit_code !== undefined) {
-				assert(process.exit.isSinonProxy);
-				sinon.assert.called(process.exit);
-				assert.strictEqual(process.exit.args[0][0], test.exit_code);
-			}
 
 			if (test.error_log !== undefined) {
 				assert(console.log.isSinonProxy);

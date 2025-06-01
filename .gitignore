@@ -11,6 +11,7 @@ internal/gcloud
 sv-kubernetes.sublime-workspace
 .idea
 .DS_Store
+.env
 node_modules
 extended-disk.vdi
 packer.exe
