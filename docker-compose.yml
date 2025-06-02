@@ -1,6 +1,7 @@
 services:
   cli:
     build: "."
+    hostname: sv-kubernetes
     image: sv-kubernetes:local
     init: true
     environment:
