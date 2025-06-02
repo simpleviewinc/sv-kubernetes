@@ -246,10 +246,17 @@ function _isMinikubeEnv() {
 }
 const isMinikubeEnv = lodash.memoize(_isMinikubeEnv);
 
-function _isWslEnv() {
-	return fs.existsSync("/etc/wsl.conf") || process.env.SV_KUBERNETES_ENV === "wsl";
+function _isDockerDesktopEnv() {
+	// TODO: Change to `process.env.IS_DOCKER_DESKTOP === "1"` once
+	//       sv-kube in Docker container is the only supported setup
+	return (process.env.IS_DOCKER_DESKTOP || "1") === "1";
 }
-const isWslEnv = lodash.memoize(_isWslEnv);
+const isDockerDesktopEnv = lodash.memoize(_isDockerDesktopEnv);
+
+function _isArmEnv() {
+	return process.arch !== "x64";
+}
+const isArmEnv = lodash.memoize(_isArmEnv);
 
 function getDockerEnv() {
 	return isMinikubeEnv() ? {
@@ -302,7 +309,8 @@ module.exports.getCurrentPodsV2 = getCurrentPodsV2;
 module.exports.getDockerEnv = getDockerEnv;
 module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.isMinikubeEnv = isMinikubeEnv;
-module.exports.isWslEnv = isWslEnv;
+module.exports.isDockerDesktopEnv = isDockerDesktopEnv;
+module.exports.isArmEnv = isArmEnv;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;
 module.exports.log = log;

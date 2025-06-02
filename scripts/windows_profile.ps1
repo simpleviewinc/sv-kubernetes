@@ -1,9 +1,7 @@
 $svKubernetesPath = "C:\sv-kubernetes"
-$svKubernetesImage = "sv-kubernetes:local"
-$svKubernetesContainer = "sv-kubernetes-cli-1"
 
 function SvKubernetesContainerExists {
-	$containerExists = docker compose --project-directory $svKubernetesPath ps -a --format "{{.Names}}" | Where-Object { $_ -eq $svKubernetesContainer }
+	$containerExists = docker compose --project-directory $svKubernetesPath ps --services | Where-Object { $_ -eq 'cli' }
 	return $containerExists
 }
 

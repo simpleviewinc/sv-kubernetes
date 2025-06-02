@@ -10,6 +10,7 @@ apt-get install -y \
 		gnupg \
 		lsb-release \
 		apt-transport-https \
+		xz-utils \
 		jq \
 		bind9-dnsutils \
 		inetutils-telnet \
