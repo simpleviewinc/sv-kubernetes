@@ -186,6 +186,9 @@ scripts.install = async function(args) {
 		}
 	}
 
+	// disables filemode by default when checking out since this is done in linux and conflicts when viewed from windows
+	execPath(`git config core.filemode false`);
+
 	if (type === "app" && !noDependencies) {
 		// if we are install an app, see if the app has dependencies and sv install those as well
 		const settings = loadSettingsYaml(name);
