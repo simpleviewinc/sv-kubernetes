@@ -34,7 +34,7 @@ powershell C:\sv-kubernetes\scripts\windows_init.ps1` and it should output `Succ
 You need to configure the WSL on your machine.
 
 1. Check that necessary features are enabled. Hit the windows key and type in `Turn Windows Features on or off`. It should bring up a UI of checkboxes.
-    * Ensure that both `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
+    * Ensure that `Hyper-V`, `Virtual Machine Platform` and `Windows Subsystem for Linux` are checked. If they are not checked, check them, they will install and your machine will reboot.
 3. In CMD prompt as Admin:
     * Run `wsl --version` you should be on at least `WSL version: 2.4.13.0`. If your version is older, you will need to update your wsl version. If you are on a newer version it likely will work ok, but it hasn't been officially tested. If the command `wsl --version` fails with an error saying that `wsl --version` doesn't exist, then you should update.
         * Download the proper version of wsl by clicking the following link: [Download WSL](https://github.com/microsoft/WSL/releases/download/2.4.13/wsl.2.4.13.0.x64.msi)
