@@ -233,7 +233,7 @@ scripts.start = async function(args) {
 	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 
-	const rootKubeFolder = (process.env.SV_KUBERNETES_PATH || "").startsWith('/') ? process.env.SV_KUBERNETES_PATH : `/run/desktop/mnt/host/c/sv-kubernetes`;
+	const rootKubeFolder = constants.SV_KUBERNETES_MOUNT_PATH;
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;

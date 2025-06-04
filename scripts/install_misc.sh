@@ -14,7 +14,7 @@ apt-get install -y \
 		jq \
 		bind9-dnsutils \
 		inetutils-telnet \
-		xz-utils \
+		iputils-ping \
 		nano \
 		traceroute \
 		git

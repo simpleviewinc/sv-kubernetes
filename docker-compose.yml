@@ -6,7 +6,7 @@ services:
     image: sv-kubernetes:local
     init: true
     environment:
-      SV_KUBERNETES_PATH: ${SV_KUBERNETES_PATH}
+      SV_KUBERNETES_MOUNT_PATH: ${SV_KUBERNETES_MOUNT_PATH}
       IS_DOCKER_DESKTOP: ${IS_DOCKER_DESKTOP}
     volumes:
       - "./:/sv"

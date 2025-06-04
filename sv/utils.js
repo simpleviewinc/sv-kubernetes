@@ -246,17 +246,13 @@ function _isMinikubeEnv() {
 }
 const isMinikubeEnv = lodash.memoize(_isMinikubeEnv);
 
-function _isDockerDesktopEnv() {
-	// TODO: Change to `process.env.IS_DOCKER_DESKTOP === "1"` once
-	//       sv-kube in Docker container is the only supported setup
-	return (process.env.IS_DOCKER_DESKTOP || "1") === "1";
+function isDockerDesktopEnv() {
+	return constants.IS_DOCKER_DESKTOP;
 }
-const isDockerDesktopEnv = lodash.memoize(_isDockerDesktopEnv);
 
-function _isArmEnv() {
+function isArmEnv() {
 	return process.arch !== "x64";
 }
-const isArmEnv = lodash.memoize(_isArmEnv);
 
 function getDockerEnv() {
 	return isMinikubeEnv() ? {
