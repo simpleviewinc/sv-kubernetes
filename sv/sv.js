@@ -25,7 +25,8 @@ const {
 	logContext,
 	mapBuildArgs,
 	getDockerEnv,
-	isWslEnv,
+	isDockerDesktopEnv,
+	isArmEnv,
 	isMinikubeEnv
 } = require("./utils");
 
@@ -232,8 +233,7 @@ scripts.start = async function(args) {
 	const commandArgs = [];
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 
-	const rootKubeFolder = isWslEnv() ? `/run/desktop/mnt/host/c/sv-kubernetes` : `/sv`;
-
+	const rootKubeFolder = constants.SV_KUBERNETES_MOUNT_PATH;
 	const appFolder = `/sv/applications/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
@@ -252,7 +252,9 @@ scripts.start = async function(args) {
 		`--set sv.rootContainerPath=${rootContainersFolder}`,
 		`--set sv.rootPath=${rootKubeFolder}`,
 		`--set sv.canHostPort=${isMinikubeEnv()}`,
-		`--set sv.isWsl=${isWslEnv()}`,
+		`--set sv.isWsl=${isDockerDesktopEnv()}`,
+		`--set sv.isDockerDesktop=${isDockerDesktopEnv()}`,
+		`--set sv.isArm=${isArmEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,
 		`--set sv.refreshToken=$(cat /sv/internal/refresh_token 2>/dev/null)`,
 		`--set sv.userInfo.email=$(cat /sv/internal/user_info.json 2>/dev/null | jq -r .email)`,
@@ -471,10 +473,8 @@ scripts.switchContext = function (args) {
 		if (flags.cluster !== "local") {
 			exec(`USE_GKE_GCLOUD_AUTH_PLUGIN=True gcloud container clusters get-credentials ${flags.cluster} --zone us-east1-b --project sv-${flags.project}-231700`);
 			exec(`kubectl config use-context ${getCurrentContext()}`);
-		} else if (isWslEnv()) {
-			exec(`kubectl config use-context docker-desktop`);
 		} else {
-			exec(`kubectl config use-context minikube`);
+			exec(`kubectl config use-context docker-desktop`);
 		}
 	} catch(err) {
 		throw new Error(`Error Switching Contexts\nCluster: ${chalk.blue(flags.cluster)}\nProject: ${chalk.blue(flags.project)}`);

@@ -2,10 +2,12 @@ services:
   cli:
     build: "."
     hostname: sv-kubernetes
+    network_mode: host
     image: sv-kubernetes:local
     init: true
     environment:
-      SV_KUBERNETES_ENV: "${SV_KUBERNETES_ENV}"
+      SV_KUBERNETES_MOUNT_PATH: ${SV_KUBERNETES_MOUNT_PATH}
+      IS_DOCKER_DESKTOP: ${IS_DOCKER_DESKTOP}
     volumes:
       - "./:/sv"
       - "~/.kube:/root/.kube"

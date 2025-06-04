@@ -21,8 +21,11 @@ git checkout wsl
 In CMD prompt as Admin:
 
 ```
-powershell C:\sv-kubernetes\scripts\windows_init.ps1` and it should output `Success` at the end.
+powershell C:\sv-kubernetes\scripts\windows_init.ps1
 ```
+
+and it should output `Success` at the end.
+
 
 * Note: If the script prompted you to create a `github_key` you will need to upload it to Github so that it can be utilized.
     * The Github docs are located [Here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=linux&tool=webui)
