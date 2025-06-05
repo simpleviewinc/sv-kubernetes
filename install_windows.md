@@ -11,7 +11,7 @@ Running sv-kubernetes via the WSL requires the following features and systems:
 
 ```
 cd C:\
-git clone git@github.com:simpleviewinc/sv-kubernetes.git
+git clone https://github.com/simpleviewinc/sv-kubernetes.git
 cd sv-kubernetes
 git checkout wsl
 ```
