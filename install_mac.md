@@ -33,6 +33,8 @@ and it should output `Success` at the end.
     * Remember your public keyfile is named `github_key.pub` and not id_ed25519.pub so you’ll need to adjust the instructions.
     * The name of the key in Github's UI doesn’t technically matter, but the best practice is to name it with the use-case, so sv-kubernetes might be practical.
 
+After installation, you need to login to gcloud. Enter SV Kubernetes container by running `sv-kube-enter` and then run `gcloud auth login --update-adc --no-launch-browser`.
+
 
 ## Install Docker Engine
 
