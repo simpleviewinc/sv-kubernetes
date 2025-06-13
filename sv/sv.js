@@ -601,8 +601,12 @@ scripts.script = function(args) {
 }
 
 scripts.restartPod = function(args) {
-	const podName = args.argv[0];
-	const pods = getCurrentPods(podName);
+	const flags = commandLineArgs([
+		{ name : "name", type : String, defaultOption: true },
+		{ name : "container", alias : "c", type : String },
+	], { argv : args.argv, stopAtFirstUnknown : true });
+
+	const pods = getCurrentPods(flags.name, flags.container);
 
 	if (pods.length > 1) {
 		throw new Error("Pod name returned more than 1 pod.");
