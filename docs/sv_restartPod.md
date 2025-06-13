@@ -6,4 +6,5 @@ Example:
 ```
 Single container applicaton:
 sudo sv restartPod sv-auth-graphql
+sudo sv restartPod sv-auth-graphql -c specific-container
 ```
