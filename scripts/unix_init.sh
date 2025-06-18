@@ -12,13 +12,12 @@ if ! git --version 2>&1; then
 	exit 1
 fi
 
+SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 if [[ "${ARCH}" == "arm64" ]]; then
-	SV_KUBERNETES_PATH=/Users/Shared/sv-kubernetes
 	USER_PROFILE_DIR="/Users/${USERNAME}"
 	INTERNAL_ENV_FILE=".env_mac"
 else
-	SV_KUBERNETES_PATH=/mnt/c/sv-kubernetes
 	USER_PROFILE_DIR="/home/${USERNAME}"
 	INTERNAL_ENV_FILE=".env_wsl"
 fi
@@ -53,35 +52,37 @@ fi
 # ensure we have the ssh config with our github_key
 SSH_CONFIG_PATH="${SSH_DIR}/config"
 if [[ ! -f "${SSH_CONFIG_PATH}" ]]; then
-	cp ${BASH_SOURCE[0]%/*}/../internal/github/ssh_config ${SSH_CONFIG_PATH}
+	cp ${SV_KUBERNETES_PATH}/internal/github/ssh_config ${SSH_CONFIG_PATH}
 fi
 chown -R ${USERNAME} ${SSH_DIR}
 
 echo "Setting up network interfaces"
 if [[ "${ARCH}" == "arm64" ]]; then
-	/sbin/ifconfig lo0 alias 192.168.50.100
+	if ! /sbin/ifconfig lo0 | grep -i 'inet 192.168.50.100'; then
+		/sbin/ifconfig lo0 alias 192.168.50.100
 
-	cat <<-'EOF' > /Library/LaunchDaemons/sv-kubernetes.ifconfig.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>sv-kubernetes.ifconfig</string>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>ProgramArguments</key>
-    <array>
-      <string>/sbin/ifconfig</string>
-      <string>lo0</string>
-      <string>alias</string>
-      <string>192.168.50.100</string>
-    </array>
-</dict>
-</plist>
-EOF
+		cat <<-'EOF' > /Library/LaunchDaemons/sv-kubernetes.ifconfig.plist
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>sv-kubernetes.ifconfig</string>
+		<key>RunAtLoad</key>
+		<true/>
+		<key>ProgramArguments</key>
+		<array>
+		<string>/sbin/ifconfig</string>
+		<string>lo0</string>
+		<string>alias</string>
+		<string>192.168.50.100</string>
+		</array>
+	</dict>
+	</plist>
+	EOF
 
-	launchctl enable system/sv-kubernetes.ifconfig
+		launchctl enable system/sv-kubernetes.ifconfig
+	fi
 else
 	echo "WARNING:"
 	echo "You are trying to run sv-kubernetes in a Windows-based Unix system."
@@ -101,6 +102,8 @@ if [[ "${ARCH}" == "arm64" ]]; then
 fi
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
-cp ${BASH_SOURCE[0]%/*}/../internal/${INTERNAL_ENV_FILE} ${BASH_SOURCE[0]%/*}/../.env
+cp ${SV_KUBERNETES_PATH}/internal/${INTERNAL_ENV_FILE} ${SV_KUBERNETES_PATH}/.env
+sed -i -e '/SV_KUBERNETES_MOUNT_PATH=/d' ${SV_KUBERNETES_PATH}/.env
+echo "SV_KUBERNETES_MOUNT_PATH=${SV_KUBERNETES_PATH}" >> ${SV_KUBERNETES_PATH}/.env
 
 echo "Success"
