@@ -1,10 +1,6 @@
 #!/bin/bash
+SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
-if [[ "${ARCH}" == "arm64" ]]; then
-	SV_KUBERNETES_PATH=/Users/Shared/sv-kubernetes
-else
-	SV_KUBERNETES_PATH=/mnt/c/sv-kubernetes
-fi
 
 function sv_kubernetes_container_exists {
 	docker compose --project-directory ${SV_KUBERNETES_PATH} ps --services | grep -i 'cli'
