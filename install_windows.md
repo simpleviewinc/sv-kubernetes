@@ -80,7 +80,7 @@ From here install and start the repos you desire:
 ## Debugging
 
 * `Improper line endings`
-    * Your sv-kubernetes repository is improperly cloned and the line endings are being converted. You need to ensure that the getting setting `core.autocrlf=false` and then delete and re-clone the repository.
+    * Your sv-kubernetes repository is improperly cloned and the line endings are being converted. You need to ensure that there is a git setting `core.autocrlf=false` and then delete and re-clone the repository.
 * Is Docker Desktop running?
     * Start it, ensure that it says Engine Running and Kubernetes Running in the bottom left. If it doesn't, check the Docker Engine installations steps above.
 * Is the WSL using the proper IP address?
