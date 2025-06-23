@@ -268,6 +268,25 @@ async function authToken() {
 	console.log(token);
 }
 
+async function getSecretsGroups({ argv }) {
+	const flags = commandLineArgs([
+		{ name : "name", type : String, defaultOption: true }
+	], { argv });
+
+	const settings = loadSettingsYaml(flags.name);
+
+	if (settings.secrets_key === undefined) {
+		throw new Error(`App '${flags.name}' does not have a secrets group declared.`);
+	}
+
+	const { groups } = settings.secrets_key.match(/gcp:projects\/(?<project>.*?)\/locations\/(?<location>.*?)\/keyRings\/(?<keyring>.*?)\/cryptoKeys\/(?<name>.*)/);
+	if (!groups.project || !groups.location || !groups.keyring || !groups.name) {
+		throw new Error(`Failed to parse secrets_key: ${JSON.stringify(groups)}`);
+	}
+
+	exec(`gcloud kms keys get-iam-policy ${groups.name} --keyring=${groups.keyring} --location=${groups.location} --project=${groups.project}`);
+}
+
 module.exports.build = build;
 module.exports.minikubeSystemPrune = minikubeSystemPrune;
 module.exports.deleteEvicted = deleteEvicted;
@@ -275,3 +294,4 @@ module.exports.topPods = topPods;
 module.exports.logFailed = logFailed;
 module.exports.authLogin = authLogin;
 module.exports.authToken = authToken;
+module.exports.getSecretsGroups = getSecretsGroups;

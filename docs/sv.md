@@ -9,6 +9,7 @@ Commands:
 	editSecrets           Edit/Create secret files
 	enterPod              Enter a running container
 	getContext            Get the current Kubernetes Context
+	getSecretsGroups      Output all Google groups with permissions on a given applications secrets_key
 	restartPod            Restart a running pod
 	install               Install a application or container to your local machine
 	listProjects          List available projects for use with switchContext
