@@ -7,6 +7,8 @@ Running sv-kubernetes MacOS (ARM64) requires the following features and systems:
 * Git installed and accessible in Terminal
 * Docker Engine - See instructions below for installation.
 
+**_IMPORTANT: This setup on MacOS have been tested with Docker Desktop version `4.37.2`. If you are facing mounts issues with a newer version please downgrade your Docker Desktop installation to the verified version._**
+
 
 ## Checkout Repo
 
