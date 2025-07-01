@@ -14,9 +14,9 @@ Running sv-kubernetes MacOS (ARM64) requires the following features and systems:
 
 ```
 cd /Users/Shared
-git clone git@github.com:simpleviewinc/sv-kubernetes.git
+git clone https://github.com/simpleviewinc/sv-kubernetes.git
 cd sv-kubernetes
-git checkout develop
+git checkout wsl
 ```
 
 
