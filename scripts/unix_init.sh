@@ -45,7 +45,7 @@ GITHUB_KEY_PATH="${SSH_DIR}/github_key"
 if [[ ! -f "${GITHUB_KEY_PATH}" ]]; then
 	echo "github_key does not exist, creating a new ssh key..."
 	read -p "Enter your github user email address: " email
-	ssh-keygen -t ed25519 -C ${email} -f ${GITHUB_KEY_PATH} -P '""'
+	ssh-keygen -t ed25519 -C ${email} -f ${GITHUB_KEY_PATH} -N ""
 	echo "github_key created at ${GITHUB_KEY_PATH}, you will need to upload to github to ensure it's usable."
 fi
 
