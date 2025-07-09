@@ -565,6 +565,24 @@ scripts.copyFrom = function(args) {
 	console.log(`Copy complete to ${pathTo}`);
 }
 
+scripts.copyTo = function(args) {
+	var flags = commandLineArgs([
+		// filter to only listen on a specific set of pods
+		{ name : "container", alias : "c", type : String },
+		{ name : "args", type : String, multiple : true, defaultOption : true }
+	], { argv : args.argv });
+
+	const podName = flags.args[0];
+	const pathFrom = flags.args[1];
+	const pathTo = flags.args[2];
+	const pod = getCurrentPods(podName)[0];
+
+	const containerString = flags.container !== undefined ? `-c ${flags.container}` : "";
+
+	execSilent(`kubectl cp ${containerString} "${pathFrom}" ${pod.name}:"${pathTo}"`);
+	console.log(`Copy complete to ${pod.name}:${pathTo}`);
+}
+
 scripts.script = function(args) {
 	const [applicationName, scriptName, ...flags] = args.argv;
 
