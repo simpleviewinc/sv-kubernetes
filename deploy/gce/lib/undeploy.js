@@ -6,7 +6,7 @@ function undeploy() {
 		aliasName
 	} = getVars();
 
-	exec(`helm tiller run -- sv stop ${aliasName}`);
+	exec(`sv stop ${aliasName}`);
 }
 
 module.exports = undeploy;

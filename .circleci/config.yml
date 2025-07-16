@@ -1,0 +1,66 @@
+version: 2.1
+
+parameters:
+  teams-channel:
+    type: string
+    default: 'https://prod-34.westus.logic.azure.com:443/workflows/225f4b05b45c45d3b7800139610ee321/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2HaV-0SZARZVhvDOOQBtb2LWcFDI7Bu_QF1XbJrk8sk'
+
+commands:
+  notify-channel:
+    parameters:
+      only-on-fail:
+        type: boolean
+        default: false
+    steps:
+      - circleci-ms-teams/status:
+          webhook: << pipeline.parameters.teams-channel >>
+          fail_only: << parameters.only-on-fail >>
+
+workflows:
+  build:
+    jobs:
+      - build_push:
+          context: default
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+      - complete:
+          context: default
+          requires:
+            - build_push
+
+orbs:
+  circleci-ms-teams: simpleviewinc/circleci-ms-teams@0.0.9
+
+jobs:
+  build_push:
+    machine:
+      docker_layer_caching: true
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Setup Environment Variables
+          command: |
+            echo 'export IMAGE_REGISTRY="${PROJECT_REGISTRY_URL:-gcr.io/${PROJECT_ID}/}"' >> $BASH_ENV
+            if [[ $CIRCLE_BRANCH == "master" ]]; then
+              echo 'export IMAGE_TAG="latest"' >> $BASH_ENV
+            else
+              echo 'export IMAGE_TAG="dev"' >> $BASH_ENV
+            fi
+      - run:
+          name: Build Container
+          command: |
+            docker login -u _json_key -p "${GCLOUD_SERVICE_KEY}" https://gcr.io
+            docker compose build --push deploy-gce
+      - notify-channel:
+          only-on-fail: true
+
+  complete:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - notify-channel

@@ -14,3 +14,24 @@ services:
       - "~/.ssh:/root/.ssh"
       - "./internal/gcloud:/root/.config/gcloud"
       - "//var/run/docker.sock:/var/run/docker.sock"
+
+  deploy-gce:
+    image: ${IMAGE_REGISTRY:-}sv-deploy-gce:${IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: ./deploy/gce/Dockerfile
+      cache_from:
+        - ${IMAGE_REGISTRY:-}sv-deploy-gce:${IMAGE_TAG:-local}
+    init: true
+    environment:
+      PROJECT_ID: sv-shared-231700
+      REPO_NAME: sv-kubernetes-example
+      BRANCH_NAME: develop
+      ZONE: us-east1-b
+      GCLOUD_SERVICE_KEY: ${SERVICE_KEY:-}
+    volumes:
+      - "./:/sv"
+      - "~/.kube:/root/.kube"
+      - "~/.ssh:/root/.ssh"
+      - "./internal/gcloud:/root/.config/gcloud"
+      - "//var/run/docker.sock:/var/run/docker.sock"
