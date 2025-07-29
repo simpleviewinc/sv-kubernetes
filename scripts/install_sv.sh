@@ -20,7 +20,7 @@ if [ "$current_node_version" != "$node_version" ]; then
 fi
 
 mkdir -p /opt/sv
-cp /sv/sv/package.json /opt/sv/package.json
+cp /sv/package.json /opt/sv/package.json
 cd /opt/sv/
 npm prune
 npm install
