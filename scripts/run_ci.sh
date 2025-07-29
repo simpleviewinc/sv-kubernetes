@@ -1,7 +1,7 @@
 # Must specify a CIRCLE_BRANCH to run this script
 # This will deploy a built container based on the branch name, be careful when manually executing this
 
-. /sv/scripts/errorHandler.sh
+. ${BASH_SOURCE[0]%/*}/errorHandler.sh
 
 if [[ $CIRCLE_BRANCH == "master" ]]; then
 	IMAGE_TAG="latest"

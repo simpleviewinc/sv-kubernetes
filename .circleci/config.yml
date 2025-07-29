@@ -43,8 +43,7 @@ jobs:
       - run:
           name: Build Container
           command: |
-            cd /sv/
-            bash scripts/run_ci.sh
+            bash ./scripts/run_ci.sh
       - notify-channel:
           only-on-fail: true
 
