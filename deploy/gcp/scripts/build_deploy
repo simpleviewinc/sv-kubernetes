@@ -1,5 +1,0 @@
-#!/usr/bin/env node
-
-const buildDeploy = require("../lib/buildDeploy");
-
-buildDeploy();

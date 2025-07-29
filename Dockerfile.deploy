@@ -1,0 +1,10 @@
+FROM sv-kubernetes:local
+
+ENV GOOGLE_APPLICATION_CREDENTIALS="/tmp/service_key"
+ENV BYPASS_SV_COMMAND_CONTROL="true"
+
+COPY ./scripts/deploy /app/scripts
+
+WORKDIR /app
+
+ENTRYPOINT []

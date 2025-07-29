@@ -1,3 +1,4 @@
+//@ts-check
 console.warn("------------------");
 console.warn("DEPRECATED: usage of node /app/lib/default.js is deprecated. Please refer to sv-deploy-gce for implementation: https://github.com/simpleviewinc/sv-deploy-gce/blob/master/README.md.");
 console.warn("------------------");
@@ -22,6 +23,6 @@ if (isPull) {
 	} catch (error) {
 		process.exitCode = 1;
 	}
-	
+
 	undeploy();
 }

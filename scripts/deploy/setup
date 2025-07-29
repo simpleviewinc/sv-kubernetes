@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+const setup = require("/sv/sv/deploy/setup");
+
+setup();

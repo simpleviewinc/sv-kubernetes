@@ -14,3 +14,22 @@ services:
       - "~/.ssh:/root/.ssh"
       - "./internal/gcloud:/root/.config/gcloud"
       - "//var/run/docker.sock:/var/run/docker.sock"
+
+  deploy:
+    image: sv-kubernetes-deploy:local
+    build:
+      context: .
+      dockerfile: ./Dockerfile.deploy
+    init: true
+    environment:
+      PROJECT_ID: sv-devops-231700
+      REPO_NAME: sv-kubernetes-example
+      BRANCH_NAME: develop
+      ZONE: us-east1-b
+    volumes:
+      - "./sv:/sv/sv"
+      - "./scripts:/sv/scripts"
+      - "./internal:/sv/internal"
+      - "./scripts/deploy:/app/scripts"
+      - "./applications/sv-kubernetes-example:/repo"
+      - "//var/run/docker.sock:/var/run/docker.sock"
