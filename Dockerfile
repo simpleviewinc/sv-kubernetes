@@ -41,6 +41,7 @@ RUN bash /sv/scripts/install_sv.sh
 
 COPY docs /sv/docs
 COPY internal /sv/internal
+COPY scripts /sv/scripts
 COPY Dockerfile /sv/
 COPY Dockerfile.deploy /sv/
 COPY docker-compose.yml /sv/

@@ -19,5 +19,5 @@ fi
 docker login -u _json_key -p "${GCLOUD_SERVICE_KEY}" https://gcr.io
 docker compose build cli
 docker compose build deploy
-docker image tag sv-deploy-gce:local gcr.io/sv-shared-231700/sv-deploy-gce:${IMAGE_TAG}
+docker image tag sv-kubernetes-deploy:local gcr.io/sv-shared-231700/sv-deploy-gce:${IMAGE_TAG}
 docker push gcr.io/sv-shared-231700/sv-deploy-gce:${IMAGE_TAG}

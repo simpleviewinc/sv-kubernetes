@@ -16,7 +16,7 @@ services:
       - "//var/run/docker.sock:/var/run/docker.sock"
 
   deploy:
-    image: sv-deploy:local
+    image: sv-kubernetes-deploy:local
     build:
       context: .
       dockerfile: ./Dockerfile.deploy
