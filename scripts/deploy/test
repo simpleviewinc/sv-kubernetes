@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+const test = require("/sv/sv/deploy/test");
+
+test();

@@ -36,10 +36,14 @@ RUN bash /sv/scripts/install_kubesec.sh
 # Install SV CLI
 COPY sv/ /sv/sv/
 COPY scripts/install_sv.sh /sv/scripts/install_sv.sh
+COPY package.json /sv/package.json
 RUN bash /sv/scripts/install_sv.sh
 
 COPY docs /sv/docs
 COPY internal /sv/internal
+COPY Dockerfile /sv/
+COPY Dockerfile.deploy /sv/
+COPY docker-compose.yml /sv/
 
 ENTRYPOINT [ "/sv/internal/docker-entrypoint.sh" ]
 CMD [ "sleep", "infinity" ]

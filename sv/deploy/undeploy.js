@@ -1,4 +1,5 @@
-const exec = require("./exec");
+//@ts-check
+const { exec } = require("../utils");
 const getVars = require("./getVars");
 
 function undeploy() {
