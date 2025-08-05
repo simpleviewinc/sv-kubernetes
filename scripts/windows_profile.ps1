@@ -26,7 +26,7 @@ function DockerRunSvKubernetes {
 	docker compose --project-directory $svKubernetesPath build cli
 
 	Write-Output "Running sv-kubernetes container"
-	docker compose --project-directory $svKubernetesPath up -d
+	docker compose --project-directory $svKubernetesPath up -d cli
 }
 
 function DockerStopSvKubernetes {
