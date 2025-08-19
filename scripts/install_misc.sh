@@ -18,3 +18,6 @@ apt-get install -y \
 		nano \
 		traceroute \
 		git
+
+# Install CircleCI CLI
+curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/main/install.sh | bash

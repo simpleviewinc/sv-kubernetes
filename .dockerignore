@@ -12,4 +12,5 @@ extended-disk.vdi
 packer.exe
 /output-sv-kubernetes
 internal/gcloud
+internal/circleci
 internal/*_token
