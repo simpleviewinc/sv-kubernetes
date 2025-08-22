@@ -25,6 +25,20 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 * [Windows Installation Readme](install_windows.md)
 * [Mac Installation Readme](install_mac.md)
 
+For CMS to preserve their Mongo DB data between updates, SSH into your
+VM, backup the data to the mounted `/sv` directory, then restore data
+after the update and SV setup.
+
+```bash
+# Backup data (inside VM)
+/sv/scripts/backup_mongodb_data.sh
+```
+
+```bash
+# Restore data (inside VM)
+/sv/scripts/restore_mongodb_data.sh
+```
+
 ## Local Development
 
 Enter the CLI depending on your environment:
