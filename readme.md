@@ -1,3 +1,6 @@
+# DEPRECATED
+This branch has been merged with `master`. This branch should not be used anywhere. If you are still running `wsl` branch, fetch the latest master and switch to it locally, no other changes should be necessary.
+
 # Overview
 
 * [Change Log](changelog.md)
