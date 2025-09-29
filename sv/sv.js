@@ -666,7 +666,8 @@ scripts.editSecrets = function (args) {
 		throw new Error("You must have a 'secrets_key' variable in your settings.yaml.");
 	}
 
-	exec(`EDITOR=nano kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
+	const default_editor = process.env.DEFAULT_EDITOR || 'nano';
+	exec(`EDITOR=${default_editor} kubesec edit -if --key=${settings.secrets_key} ${secretsFile}`);
 }
 
 scripts.debug = function(args) {
