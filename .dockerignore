@@ -14,4 +14,3 @@ packer.exe
 internal/gcloud
 internal/circleci
 internal/*_token
-internal/shares
