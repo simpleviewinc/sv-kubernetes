@@ -392,9 +392,35 @@ scripts.start = async function(args) {
 scripts.stop = async function(args) {
 	await logContext();
 
-	var applicationName = args.argv[0];
+	const flags = commandLineArgs([
+		{ name: "name", defaultOption: true },
+		// if true, then it will exit code 0 even if the release name doesn't exit
+		{ name: "ignore-not-found", type: Boolean },
+		// if true, the command will not return until the app is fully undeployed
+		{ name: "wait", type: Boolean }
+	], { argv : args.argv, stopAtFirstUnknown : true });
 
-	exec(`helm uninstall ${applicationName}`);
+	if (flags.name === undefined) {
+		throw new Error("Must specify application name");
+	}
+
+	const commandArgs = [flags.name];
+
+	if (flags["ignore-not-found"]) {
+		commandArgs.push("--ignore-not-found");
+	}
+
+	if (flags.wait) {
+		commandArgs.push("--wait");
+	}
+
+	// append flags we don't recognize to pass to upgrade
+	if (flags._unknown) {
+		commandArgs.push(...flags._unknown);
+	}
+
+	const commandArgString = commandArgs.join(" ");
+	exec(`helm uninstall ${commandArgString}`);
 }
 
 scripts.logs = function(args) {
