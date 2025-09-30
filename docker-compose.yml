@@ -8,6 +8,7 @@ services:
     environment:
       SV_KUBERNETES_MOUNT_PATH: ${SV_KUBERNETES_MOUNT_PATH}
       IS_DOCKER_DESKTOP: ${IS_DOCKER_DESKTOP}
+      DEFAULT_EDITOR: ${DEFAULT_EDITOR}
     volumes:
       - "./:/sv"
       - "~/.kube:/root/.kube"

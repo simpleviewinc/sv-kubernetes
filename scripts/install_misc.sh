@@ -16,6 +16,7 @@ apt-get install -y \
 		inetutils-telnet \
 		iputils-ping \
 		nano \
+		vim \
 		traceroute \
 		git
 

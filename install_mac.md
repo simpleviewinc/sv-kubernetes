@@ -19,6 +19,15 @@ cd sv-kubernetes
 ```
 
 
+## Install Docker Engine
+
+[Click here](https://docs.docker.com/desktop/setup/install/mac-install/) to download the latest version of **_Docker Desktop for Mac with Apple silicon_**.
+
+After installation, follow the instructions to [Enable Kubernetes](https://docs.docker.com/desktop/features/kubernetes/#install-and-turn-on-kubernetes).
+
+At the bottom of the screen in docker desktop you should see `Engine Running` and `Kubernetes Running`.
+
+
 ## Setup Environment
 
 In Terminal:
@@ -40,14 +49,6 @@ sv-kube-enter
 # login to gcloud
 gcloud auth login --update-adc --no-launch-browser
 ```
-
-## Install Docker Engine
-
-[Click here](https://docs.docker.com/desktop/setup/install/mac-install/) to download the latest version of **_Docker Desktop for Mac with Apple silicon_**.
-
-After installation, follow the instructions to [Enable Kubernetes](https://docs.docker.com/desktop/features/kubernetes/#install-and-turn-on-kubernetes).
-
-At the bottom of the screen in docker desktop you should see `Engine Running` and `Kubernetes Running`.
 
 
 ## Usage
