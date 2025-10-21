@@ -31,6 +31,7 @@ function build({ argv }) {
 		{ name : "pushTag", type : String },
 		{ name : "env", type : String },
 		{ name : "imageName", type : String },
+		{ name : "secret", type : String, multiple: true },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv });
 
@@ -64,6 +65,10 @@ function build({ argv }) {
 
 	if (flags.pushTag !== undefined) {
 		commandArgs.push(`-t ${flags.pushTag}`);
+	}
+
+	if (flags.secret !== undefined) {
+		commandArgs.push(`--secret ${flags.secret}`);
 	}
 
 	if (flags.pushTag !== undefined) {
