@@ -19,9 +19,11 @@ function authWithWifOrKey() {
       const wifJson = Buffer.from(wifJsonB64, "base64").toString("utf8");
       fs.writeFileSync("/tmp/gcp-wif-cred.json", wifJson, { mode: 0o600 });
       fs.writeFileSync("/tmp/oidc_token", oidcToken, { mode: 0o600 });
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = "/tmp/gcp-wif-cred.json";
+
 
       exec(
-        `gcloud auth login --brief --cred-file=/tmp/gcp-wif-cred.json --oidc-token-file=/tmp/oidc_token`
+        `gcloud auth login --cred-file=${process.env.GOOGLE_APPLICATION_CREDENTIALS}`
       );
       exec(`gcloud auth configure-docker gcr.io -q`);
       authed = true;

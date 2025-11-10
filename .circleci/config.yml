@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  circleci-config-wif: simpleviewinc/circleci-config-wif@dev:wif-1
+  circleci-config-wif: simpleviewinc/circleci-config-wif@dev:wif-2
 
 common_config: &common_config
   context: default

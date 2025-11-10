@@ -22,11 +22,11 @@ AUTH_OK=0
 if [[ -n "${CIRCLE_OIDC_TOKEN:-}" && -n "${GCP_WIF_CRED_JSON_B64:-}" ]]; then
   echo "Attempting WIF authentication..."
   echo "$GCP_WIF_CRED_JSON_B64" | base64 -d > /tmp/gcp-wif-cred.json
-  echo -n "$CIRCLE_OIDC_TOKEN" > /tmp/oidc_token || true
+  echo -n "$CIRCLE_OIDC_TOKEN" > /tmp/oidc_token
+  chmod 600 /tmp/oidc_token /tmp/gcp-wif-cred.json
+  export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-wif-cred.json
 
-  if gcloud auth login --brief \
-        --cred-file=/tmp/gcp-wif-cred.json \
-        --oidc-token-file=/tmp/oidc_token; then
+  if gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS; then
     gcloud auth configure-docker gcr.io -q
     AUTH_OK=1
   else
