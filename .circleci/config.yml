@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  circleci-config: simpleviewinc/circleci-config@1
+  circleci-config-wif: simpleviewinc/circleci-config-wif@dev:wif-1
 
 common_config: &common_config
   context: default
@@ -16,12 +16,12 @@ common_config: &common_config
 workflows:
   build:
     jobs:
-      - circleci-config/gcr_build_push_compose:
+      - circleci-config-wif/gcr_build_push_compose:
           <<: *common_config
           job_docker_compose_build_services: cli,deploy
           job_docker_source_image: sv-kubernetes-deploy
           job_docker_target_image: sv-deploy-gce
-      - circleci-config/complete:
+      - circleci-config-wif/complete:
           <<: *common_config
           requires:
-            - circleci-config/gcr_build_push_compose
+            - circleci-config-wif/gcr_build_push_compose
