@@ -48,5 +48,5 @@ fi
 
 docker compose build cli
 docker compose build deploy
-docker image tag sv-kubernetes-deploy:local gcr.io/sv-devops-231700/sv-deploy-gce:${IMAGE_TAG}
-docker push gcr.io/sv-devops-231700/sv-deploy-gce:${IMAGE_TAG}
+docker image tag sv-kubernetes-deploy:local gcr.io/sv-shared-231700/sv-deploy-gce:${IMAGE_TAG}
+docker push gcr.io/sv-shared-231700/sv-deploy-gce:${IMAGE_TAG}
