@@ -30,6 +30,8 @@ function build({ argv }) {
 		{ name : "app", type : String },
 		{ name : "pushTag", type : String },
 		{ name : "env", type : String },
+		{ name : "imageName", type : String },
+		{ name : "secret", type : String, multiple: true },
 		{ name : "build-arg", type : String, multiple: true }
 	], { argv });
 
@@ -53,10 +55,20 @@ function build({ argv }) {
 	validatePath(path);
 
 	const commandArgs = [];
-	commandArgs.push(`-t ${containerName}:local`);
+
+	// Use imageName local tag if provided, otherwise use default local tag
+	if (flags.imageName !== undefined) {
+		commandArgs.push(`-t ${flags.imageName}:local`);
+	} else {
+		commandArgs.push(`-t ${containerName}:local`);
+	}
 
 	if (flags.pushTag !== undefined) {
 		commandArgs.push(`-t ${flags.pushTag}`);
+	}
+
+	if (flags.secret !== undefined) {
+		commandArgs.push(`--secret ${flags.secret}`);
 	}
 
 	if (flags.pushTag !== undefined) {
@@ -116,12 +128,14 @@ function build({ argv }) {
 
 	const commandArgString = commandArgs.join(" ");
 
-	log(`Starting build of ${containerName}`);
+	// Use the appropriate name for logging
+	const displayName = flags.imageName || containerName;
+	log(`Starting build of ${displayName}`);
 
 	exec(`cd ${path} && docker build ${commandArgString} .`, {
 		env: getDockerEnv()
 	});
-	log(`Completed build of ${containerName}`);
+	log(`Completed build of ${displayName}`);
 
 	if (flags.pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${flags.pushTag}`);
