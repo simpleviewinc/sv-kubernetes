@@ -9,6 +9,7 @@ internal/refresh_token
 internal/user_info.json
 internal/gcloud
 internal/circleci
+internal/shares
 sv-kubernetes.sublime-workspace
 .idea
 .DS_Store
