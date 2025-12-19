@@ -36,7 +36,7 @@ const readP = util.promisify(read);
 var scriptName = process.argv[2];
 var argv = process.argv.filter(function(val, i){ return i > 2; });
 
-const validEnvs = ["local", "dev", "test", "qa", "staging", "live"];
+const validEnvs = ["local", "dev", "test", "qa", "staging", "live", "qc", "prod", "stage", "int"];
 
 /** @type {Record<string, ({}: { argv: string[] }) => void>} */
 const scripts = { ...scriptsNew };
