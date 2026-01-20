@@ -101,6 +101,86 @@ describe(__filename, function() {
 		});
 	});
 
+	describe("mapBuildContexts", function() {
+		const tests = [
+			{
+				name : "no context",
+				args : {
+					result : []
+				}
+			},
+			{
+				name : "one context",
+				args : {
+					args : [
+						"foo=fooValue"
+					],
+					result : [
+						"--build-context foo=fooValue"
+					]
+				}
+			},
+			{
+				name : "two contexts",
+				args : {
+					args : [
+						"foo=fooValue",
+						"bar=barValue"
+					],
+					result : [
+						"--build-context foo=fooValue",
+						"--build-context bar=barValue"
+					]
+				}
+			}
+		]
+
+		testArray(tests, function(test) {
+			const result = utils.mapBuildContexts(test.args);
+			assert.deepStrictEqual(result, test.result);
+		});
+	});
+
+	describe("unknownSetAsEnv", function() {
+		const tests = [
+			{
+				name : "no unknown set",
+				args : {
+					result : []
+				}
+			},
+			{
+				name : "one unknown set",
+				args : {
+					args : [
+						"--set", "test.foo=fooValue"
+					],
+					result : [
+						"TEST_FOO=fooValue"
+					]
+				}
+			},
+			{
+				name : "two unknown sets",
+				args : {
+					args : [
+						"--set", "test.foo=fooValue",
+						"--set", "test.bar=barValue"
+					],
+					result : [
+						"TEST_FOO=fooValue",
+						"TEST_BAR=barValue"
+					]
+				}
+			}
+		]
+
+		testArray(tests, function(test) {
+			const result = utils.unknownSetAsEnv(test.args);
+			assert.deepStrictEqual(result, test.result);
+		});
+	});
+
 	describe("confirmContextCommand", function() {
 		beforeEach(() => {
 			sinon.stub(console, 'log');

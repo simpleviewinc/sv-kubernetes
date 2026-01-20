@@ -94,6 +94,12 @@ interface BuildArgContainer {
 	*/
 	container: string
 	/**
+	 * Whether to use the alias as the image name prefix when building the container.
+	 * If true, and the application is "my-app" with alias "custom-app", and the container is "web",
+	 * the built image will be tagged as "custom-app-web" instead of "my-app-web".
+	 */
+	useAlias?: boolean
+	/**
 	 * Array of arguments to pass to the container
 	 */
 	args: BuildArg[]

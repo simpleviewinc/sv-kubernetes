@@ -24,10 +24,12 @@ const {
 	loadSettingsYaml,
 	logContext,
 	mapBuildArgs,
+	mapBuildContexts,
 	getDockerEnv,
 	isDockerDesktopEnv,
 	isArmEnv,
-	isMinikubeEnv
+	isMinikubeEnv,
+	unknownSetAsEnv
 } = require("./utils");
 
 const constants = require("./constants");
@@ -227,7 +229,8 @@ scripts.start = async function(args) {
 		{ name : "push", type : Boolean },
 		{ name : "alias", type : String },
 		{ name : "tag", type : String },
-		{ name : "build-arg", type : String, multiple: true }
+		{ name : "build-arg", type : String, multiple: true },
+		{ name : "build-context", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 
 	const commandArgs = [];
@@ -300,6 +303,14 @@ scripts.start = async function(args) {
 			buildArgs.push(...mapBuildArgs(flags["build-arg"]));
 		}
 
+		if (flags._unknown) {
+			buildArgs.push(...mapBuildArgs(unknownSetAsEnv(flags._unknown)));
+		}
+
+		if (flags["build-context"] !== undefined) {
+			buildArgs.push(...mapBuildContexts(flags["build-context"]));
+		}
+
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
 
 		// Build application containers
@@ -321,6 +332,10 @@ scripts.start = async function(args) {
 
 			if (flags.push === true) {
 				myBuildArgs.push(`--pushTag=${dockerRegistry}${applicationName}-${val}:${tag}`);
+			}
+
+			if (flags.alias !== undefined) {
+				myBuildArgs.push(`--alias=${flags.alias}`);
 			}
 
 			const buildArgString = myBuildArgs.join(" ");

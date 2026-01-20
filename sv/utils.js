@@ -82,8 +82,24 @@ function validatePath(path) {
 	}
 }
 
+function unknownSetAsEnv(args=[]) {
+	const extractedElements = [];
+	for (const index in args) {
+		if (args[index] === "--set") {
+			const parts = args[Number(index) + 1].split("=");
+			extractedElements.push(`${parts[0].replace(/[^a-zA-Z_]+/, "_").toUpperCase()}=${parts[1]}`);
+		}
+	}
+
+	return extractedElements;
+}
+
 function mapBuildArgs(args=[]) {
 	return args.map(arg => `--build-arg ${arg}`);
+}
+
+function mapBuildContexts(contexts=[]) {
+	return contexts.map(context => `--build-context ${context}`);
 }
 
 /**
@@ -312,4 +328,6 @@ module.exports.loadYaml = loadYaml;
 module.exports.log = log;
 module.exports.logContext = logContext;
 module.exports.mapBuildArgs = mapBuildArgs;
+module.exports.mapBuildContexts = mapBuildContexts;
+module.exports.unknownSetAsEnv = unknownSetAsEnv;
 module.exports.validatePath = validatePath;
