@@ -228,6 +228,7 @@ scripts.start = async function(args) {
 		{ name : "build", type : Boolean },
 		{ name : "push", type : Boolean },
 		{ name : "alias", type : String },
+		{ name : "alias-image", type : String },
 		{ name : "tag", type : String },
 		{ name : "build-arg", type : String, multiple: true },
 		{ name : "build-context", type : String, multiple: true }
@@ -334,8 +335,8 @@ scripts.start = async function(args) {
 				myBuildArgs.push(`--pushTag=${dockerRegistry}${applicationName}-${val}:${tag}`);
 			}
 
-			if (flags.alias !== undefined) {
-				myBuildArgs.push(`--alias=${flags.alias}`);
+			if (flags["alias-image"] !== undefined) {
+				myBuildArgs.push(`--alias=${flags["alias-image"]}`);
 			}
 
 			const buildArgString = myBuildArgs.join(" ");

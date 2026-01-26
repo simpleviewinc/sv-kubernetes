@@ -11,7 +11,7 @@ Will result in a local docker image being tagged [container]:local
 * `--alias` - The alias use to override app container image name when `useAlias` is set to `true` within `buildArgs` in `settings.yaml`.
 * `--pushTag` - If passed it will append this tag and attempt a docker push on that tag.
 * `--build-arg` - If passed the build-arg will be passed to the Dockerfile. Pass multiple times for multiple values.
-* `--build-arg` - If passed the build-context will be passed to the Dockerfile. Pass multiple times for multiple values.
+* `--build-context` - If passed the build-context will be passed to the Dockerfile. Pass multiple times for multiple values.
 
 Example:
 ```
