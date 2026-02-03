@@ -31,6 +31,7 @@ function build({ argv }) {
 		{ name : "app", type : String },
 		{ name : "alias", type : String },
 		{ name : "pushTag", type : String },
+		{ name : "valuesFrom", type : String },
 		{ name : "env", type : String },
 		{ name : "build-arg", type : String, multiple: true },
 		{ name : "build-context", type : String, multiple: true }
@@ -44,11 +45,13 @@ function build({ argv }) {
 	let appPath;
 	let containerName;
 
-	const settings = loadSettingsYaml(flags.app);
+	const appName = flags.valuesFrom !== undefined ? flags.valuesFrom : flags.app;
+	const settings = loadSettingsYaml(appName);
 	const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === flags.name)[0] : undefined;
 	const useAliasForImageName = containerBuildArgs !== undefined && containerBuildArgs.useAlias !== undefined ? containerBuildArgs.useAlias : false;
 
 	if (flags.app === undefined) {
+		appPath = flags.valuesFrom !== undefined ? `${constants.APPS_FOLDER}/${flags.valuesFrom}` : undefined;
 		path = `${constants.CONTAINERS_FOLDER}/${flags.name}`;
 		containerName = flags.name;
 	} else {
@@ -73,7 +76,7 @@ function build({ argv }) {
 
 	const buildArgs = {};
 
-	if (flags.app !== undefined && containerBuildArgs !== undefined && containerBuildArgs.args !== undefined) {
+	if (appPath !== undefined && containerBuildArgs !== undefined && containerBuildArgs.args !== undefined) {
 		const mergeData = {};
 		const secretsPath = `${appPath}/chart/secrets.yaml`;
 		if (fs.existsSync(secretsPath)) {

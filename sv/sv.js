@@ -324,7 +324,9 @@ scripts.start = async function(args) {
 		dirs.forEach(function(val, i) {
 			if (val.startsWith("external/")) {
 				const containerName = val.replace(/external\//, "");
-				exec(`sv build --name=${containerName} --env=${env}`);
+				const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === containerName)[0] : undefined;
+				const valuesFrom = containerBuildArgs !== undefined && containerBuildArgs.args !== undefined ? `--valuesFrom=${applicationName}` : '';
+				exec(`sv build --name=${containerName} --env=${env} ${valuesFrom}`);
 				return;
 			}
 
