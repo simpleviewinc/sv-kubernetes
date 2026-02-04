@@ -144,6 +144,18 @@ describe(__filename, function() {
 				}
 			},
 			{
+				name : "build app container with build context and overwritten image name with alias setting",
+				args : {
+					argv : ["--app=settings-test", "--name=alias-test", "--alias=settings-test-alias", "--env=local", `--build-context=ctx_src=${__dirname}/contexts/test`],
+					tag : "settings-test-alias-alias-test:local",
+					name : `${__dirname}/applications/settings-test/containers/alias-test`,
+					vars : {
+						env : "local",
+						context_name : "test"
+					}
+				}
+			},
+			{
 				name : "build container without build args or settings",
 				args : {
 					argv : ["--name=container-test"],

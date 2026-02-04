@@ -6,7 +6,7 @@ function sv_kubernetes_container_exists {
 	docker compose --project-directory ${SV_KUBERNETES_PATH} ps --services | grep -i 'cli'
 }
 
-function docker_exec_sv_kubernetes {
+function docker_exec_sv_kubernetes_sv {
 	if ! sv_kubernetes_container_exists; then
 		docker_run_sv_kubernetes
 	fi
@@ -35,7 +35,18 @@ function docker_stop_sv_kubernetes {
 }
 
 echo "Setting-up SV Kubernetes aliases"
-alias sv='docker_exec_sv_kubernetes'
+alias sv='docker_exec_sv_kubernetes_sv'
 alias sv-kube-run='docker_run_sv_kubernetes'
 alias sv-kube-stop='docker_stop_sv_kubernetes'
 alias sv-kube-enter='docker_enter_sv_kubernetes'
+
+
+# Load app-defined aliases
+BASE_ROOT="${SV_KUBERNETES_PATH}/applications"
+TARGET_FILE_NAME="install_aliases.sh"
+
+# Source each file
+for file in $(ls ${BASE_ROOT}/*/scripts/${TARGET_FILE_NAME}); do
+	echo "Loading user profile script ${file} ..."
+	. "${file}"
+done

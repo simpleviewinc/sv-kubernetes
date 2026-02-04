@@ -24,10 +24,12 @@ const {
 	loadSettingsYaml,
 	logContext,
 	mapBuildArgs,
+	mapBuildContexts,
 	getDockerEnv,
 	isDockerDesktopEnv,
 	isArmEnv,
-	isMinikubeEnv
+	isMinikubeEnv,
+	unknownSetAsEnv
 } = require("./utils");
 
 const constants = require("./constants");
@@ -226,8 +228,10 @@ scripts.start = async function(args) {
 		{ name : "build", type : Boolean },
 		{ name : "push", type : Boolean },
 		{ name : "alias", type : String },
+		{ name : "alias-image", type : String },
 		{ name : "tag", type : String },
-		{ name : "build-arg", type : String, multiple: true }
+		{ name : "build-arg", type : String, multiple: true },
+		{ name : "build-context", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
 
 	const commandArgs = [];
@@ -300,6 +304,14 @@ scripts.start = async function(args) {
 			buildArgs.push(...mapBuildArgs(flags["build-arg"]));
 		}
 
+		if (flags._unknown) {
+			buildArgs.push(...mapBuildArgs(unknownSetAsEnv(flags._unknown)));
+		}
+
+		if (flags["build-context"] !== undefined) {
+			buildArgs.push(...mapBuildContexts(flags["build-context"]));
+		}
+
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
 
 		// Build application containers
@@ -312,7 +324,9 @@ scripts.start = async function(args) {
 		dirs.forEach(function(val, i) {
 			if (val.startsWith("external/")) {
 				const containerName = val.replace(/external\//, "");
-				exec(`sv build --name=${containerName} --env=${env}`);
+				const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === containerName)[0] : undefined;
+				const valuesFrom = containerBuildArgs !== undefined && containerBuildArgs.args !== undefined ? `--valuesFrom=${applicationName}` : '';
+				exec(`sv build --name=${containerName} --env=${env} ${valuesFrom}`);
 				return;
 			}
 
@@ -321,6 +335,10 @@ scripts.start = async function(args) {
 
 			if (flags.push === true) {
 				myBuildArgs.push(`--pushTag=${dockerRegistry}${applicationName}-${val}:${tag}`);
+			}
+
+			if (flags["alias-image"] !== undefined) {
+				myBuildArgs.push(`--alias=${flags["alias-image"]}`);
 			}
 
 			const buildArgString = myBuildArgs.join(" ");

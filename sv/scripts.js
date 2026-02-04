@@ -14,6 +14,7 @@ const {
 	loadYaml,
 	loadSettingsYaml,
 	log,
+	mapBuildContexts,
 	validatePath,
 	getDockerEnv,
 	getCurrentPodsV2,
@@ -28,9 +29,12 @@ function build({ argv }) {
 	const flags = commandLineArgs([
 		{ name : "name", type : String },
 		{ name : "app", type : String },
+		{ name : "alias", type : String },
 		{ name : "pushTag", type : String },
+		{ name : "valuesFrom", type : String },
 		{ name : "env", type : String },
-		{ name : "build-arg", type : String, multiple: true }
+		{ name : "build-arg", type : String, multiple: true },
+		{ name : "build-context", type : String, multiple: true }
 	], { argv });
 
 	if (flags.name === undefined) {
@@ -41,13 +45,19 @@ function build({ argv }) {
 	let appPath;
 	let containerName;
 
+	const appName = flags.valuesFrom !== undefined ? flags.valuesFrom : flags.app;
+	const settings = loadSettingsYaml(appName);
+	const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === flags.name)[0] : undefined;
+	const useAliasForImageName = containerBuildArgs !== undefined && containerBuildArgs.useAlias !== undefined ? containerBuildArgs.useAlias : false;
+
 	if (flags.app === undefined) {
+		appPath = flags.valuesFrom !== undefined ? `${constants.APPS_FOLDER}/${flags.valuesFrom}` : undefined;
 		path = `${constants.CONTAINERS_FOLDER}/${flags.name}`;
 		containerName = flags.name;
 	} else {
 		appPath = `${constants.APPS_FOLDER}/${flags.app}`;
 		path = `${appPath}/containers/${flags.name}`;
-		containerName = `${flags.app}-${flags.name}`;
+		containerName = `${useAliasForImageName && flags.alias !== undefined ? flags.alias : flags.app}-${flags.name}`;
 	}
 
 	validatePath(path);
@@ -55,22 +65,18 @@ function build({ argv }) {
 	const commandArgs = [];
 	commandArgs.push(`-t ${containerName}:local`);
 
-	if (flags.pushTag !== undefined) {
-		commandArgs.push(`-t ${flags.pushTag}`);
-	}
+	const pushTag = useAliasForImageName && flags.pushTag !== undefined && flags.alias !== undefined ? flags.pushTag.replace(flags.app, flags.alias) : flags.pushTag;
+	if (pushTag !== undefined) {
+		commandArgs.push(`-t ${pushTag}`);
 
-	if (flags.pushTag !== undefined) {
 		// if we have a pushTag attempt a pull so we can prime the docker cache, if the remote image doesn't exist, we ignore the error
-		exec(`cd ${path} && docker pull ${flags.pushTag} || true`);
-		commandArgs.push(`--cache-from ${flags.pushTag}`);
+		exec(`cd ${path} && docker pull ${pushTag} || true`);
+		commandArgs.push(`--cache-from ${pushTag}`);
 	}
 
 	const buildArgs = {};
 
-	const settings = loadSettingsYaml(flags.app);
-	const containerBuildArgs = settings.buildArgs ? settings.buildArgs.filter(val => val.container === flags.name)[0] : undefined;
-
-	if (flags.app !== undefined && containerBuildArgs !== undefined) {
+	if (appPath !== undefined && containerBuildArgs !== undefined && containerBuildArgs.args !== undefined) {
 		const mergeData = {};
 		const secretsPath = `${appPath}/chart/secrets.yaml`;
 		if (fs.existsSync(secretsPath)) {
@@ -114,8 +120,11 @@ function build({ argv }) {
 		commandArgs.push(`--build-arg ${key}='${value}'`);
 	}
 
-	const commandArgString = commandArgs.join(" ");
+	if (flags["build-context"] !== undefined) {
+		commandArgs.push(...mapBuildContexts(flags["build-context"]));
+	}
 
+	const commandArgString = commandArgs.join(" ");
 	log(`Starting build of ${containerName}`);
 
 	exec(`cd ${path} && docker build ${commandArgString} .`, {
@@ -124,7 +133,7 @@ function build({ argv }) {
 	log(`Completed build of ${containerName}`);
 
 	if (flags.pushTag !== undefined) {
-		exec(`cd ${path} && docker push ${flags.pushTag}`);
+		exec(`cd ${path} && docker push ${pushTag}`);
 	}
 }
 

@@ -8,13 +8,20 @@ Will result in a local docker image being tagged [container]:local
 
 * `--app` - If building an application's container, specify the name of the app.
 * `--name` - The name of the container.
+* `--alias` - The alias use to override app container image name when `useAlias` is set to `true` within `buildArgs` in `settings.yaml`.
 * `--pushTag` - If passed it will append this tag and attempt a docker push on that tag.
+* `--valuesFrom` - If passed with an sv-kube application name, it will load secrets and values from that app so external containers can use them during build.
 * `--build-arg` - If passed the build-arg will be passed to the Dockerfile. Pass multiple times for multiple values.
+* `--build-context` - If passed the build-context will be passed to the Dockerfile. Pass multiple times for multiple values.
 
 Example:
 ```
 # build the container in /applications/sv-kubernetes-example-app/containers/server/
 sudo sv build --app=sv-kubernetes-example-app --name=server
+# build the container in /applications/sv-kubernetes-example-app/containers/server/ with an alias
+sudo sv build --app=sv-kubernetes-example-app --name=server --alias=example-app-alias
+# build the container in /applications/sv-kubernetes-example-app/containers/server/ with extra context
+sudo sv build --app=sv-kubernetes-example-app --name=server --build-context=extra_context=/path-to-context
 # build a stand-alone container repo at /containers/server/
 sudo sv build --name=server
 ```

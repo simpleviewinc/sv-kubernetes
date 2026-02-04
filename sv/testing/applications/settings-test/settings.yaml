@@ -14,3 +14,5 @@ buildArgs:
         path: "secrets.SECRET_ENV_VAR"
       - name: VAR3
         path: "secrets_env.SECRET_ENV_SPECIFIC"
+  - container: alias-test
+    useAlias: true
