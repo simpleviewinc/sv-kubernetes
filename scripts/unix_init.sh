@@ -15,9 +15,11 @@ fi
 SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 if [[ "${ARCH}" == "arm64" ]]; then
+	BASH_USER_SCRIPT=.bash_profile
 	USER_PROFILE_DIR="/Users/${USERNAME}"
 	INTERNAL_ENV_FILE=".env_mac"
 else
+	BASH_USER_SCRIPT=.bashrc
 	USER_PROFILE_DIR="/home/${USERNAME}"
 	INTERNAL_ENV_FILE=".env_wsl"
 fi
@@ -94,11 +96,9 @@ else
 fi
 
 echo "Copying user profile script"
-if [[ "${ARCH}" == "arm64" ]]; then
-	touch ${USER_PROFILE_DIR}/.bash_profile
-	if ! grep -qi '. ~/.bash_aliases' ${USER_PROFILE_DIR}/.bash_profile; then
-		echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ${USER_PROFILE_DIR}/.bash_profile
-	fi
+touch ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
+if ! grep -qi '. ~/.bash_aliases' ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}; then
+	echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
 fi
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
