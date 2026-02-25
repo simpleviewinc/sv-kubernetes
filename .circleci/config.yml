@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  circleci-config: simpleviewinc/circleci-config@1
+  circleci-config: simpleviewinc/circleci-config@2
 
 common_config: &common_config
   context: default
