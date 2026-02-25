@@ -21,9 +21,13 @@ const envs = LEGACY_ENV === true ? {
 	test : "test"
 } : {
 	master : "prod",
+	prod : "prod",
 	staging : "stage",
+	stage : "stage",
 	develop : "int",
+	int : "int",
 	qa : "qc",
+	qc : "qc",
 	test : "test"
 };
 

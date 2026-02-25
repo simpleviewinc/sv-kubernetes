@@ -132,7 +132,7 @@ function build({ argv }) {
 	});
 	log(`Completed build of ${containerName}`);
 
-	if (flags.pushTag !== undefined) {
+	if (pushTag !== undefined) {
 		exec(`cd ${path} && docker push ${pushTag}`);
 	}
 }
