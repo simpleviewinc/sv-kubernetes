@@ -96,6 +96,11 @@ function build({ argv }) {
 		const envValues = loadYaml(`${appPath}/chart/values_${flags.env}.yaml`);
 		mergeData.values = deepMerge(rootValues, envValues);
 
+		const buildContainer = containerBuildArgs.build !== undefined ? lodash.get(mergeData, String(containerBuildArgs.build)) : true;
+		if (!buildContainer) {
+			return; // don't build container
+		}
+
 		for(let arg of containerBuildArgs.args) {
 			const value = lodash.get(mergeData, arg.path);
 
