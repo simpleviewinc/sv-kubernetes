@@ -140,6 +140,10 @@ interface BuildArgContainer {
 	 * Array of arguments to pass to the container
 	 */
 	args: BuildArg[]
+	/**
+	 * Whether or not to build the container. This can be a calculated value from secrets or env vars like a BuildArg.path
+	 */
+	build?: boolean
 }
 
 interface BuildArg {

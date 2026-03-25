@@ -98,6 +98,7 @@ function build({ argv }) {
 
 		const buildContainer = containerBuildArgs.build !== undefined ? lodash.get(mergeData, String(containerBuildArgs.build)) : true;
 		if (!buildContainer) {
+			console.warn(`WARN: Build of ${containerName} skipped by build argument`);
 			return; // don't build container
 		}
 
