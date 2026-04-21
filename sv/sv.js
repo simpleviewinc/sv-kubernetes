@@ -572,6 +572,11 @@ scripts.enterPod = function(args) {
 scripts.execPod = function(args) {
 	const [podName, ...cmdParams] = args.argv;
 	var pod = getCurrentPods(podName)[0];
+
+	if (pod === undefined) {
+		throw new Error(`No pod found matching '${podName}'. It may be terminating, restarting, or the filter does not match any running pod.`);
+	}
+
 	var cmd = cmdParams.join(" ");
 	console.log(`Executing on pod: ${pod.name}`);
 	exec(`kubectl exec -it ${pod.name} -- ${cmd}`);
@@ -604,6 +609,10 @@ scripts.copyFrom = function(args) {
 	const pathTo = flags.args[2];
 	const pod = getCurrentPods(podName)[0];
 
+	if (pod === undefined) {
+		throw new Error(`No pod found matching '${podName}'. It may be terminating, restarting, or the filter does not match any running pod.`);
+	}
+
 	const containerString = flags.container !== undefined ? `-c ${flags.container}` : "";
 
 	execSilent(`kubectl cp ${containerString} ${pod.name}:"${pathFrom}" "${pathTo}"`);
@@ -621,6 +630,10 @@ scripts.copyTo = function(args) {
 	const pathFrom = flags.args[1];
 	const pathTo = flags.args[2];
 	const pod = getCurrentPods(podName)[0];
+
+	if (pod === undefined) {
+		throw new Error(`No pod found matching '${podName}'. It may be terminating, restarting, or the filter does not match any running pod.`);
+	}
 
 	const containerString = flags.container !== undefined ? `-c ${flags.container}` : "";
 
