@@ -479,9 +479,13 @@ scripts.test = function(args) {
 	], { argv : args.argv });
 
 	var names = [];
-	var pods = getCurrentPods(flags.name).filter(val => val.testCommand !== undefined);
+	var pods = getCurrentPods(flags.name);
+	if (pods.length === 0) {
+		throw new Error(`No pod found matching '${flags.name}'. It may be terminating, restarting, or the filter does not match any running pod.`);
+	}
 
-	pods.forEach(function(val, i) {
+	var filteredPods = pods.filter(val => val.testCommand !== undefined);
+	filteredPods.forEach(function(val, i) {
 		if (names.includes(val.rootName) === true) {
 			// we have already tested this container
 			return;
