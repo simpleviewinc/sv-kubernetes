@@ -50,7 +50,7 @@ You need to configure the WSL on your machine.
 
 ## Install Docker Engine
 
-[Click here](https://docs.docker.com/desktop/setup/install/windows-install/) to download the latest version of Docker Engine. Use the installer method. Run the installer as administrator. When prompted choose `WSL 2 instead of Hyper-V`.
+[Click here](https://granicus.sharepoint.com/sites/Simpleview-CMSDevelopers/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FSimpleview%2DCMSDevelopers%2FShared%20Documents%2FDocker%20installer%204%2E42&viewid=e3f69b3c%2D4868%2D4c6c%2Da47a%2D6b8ffdefa2e8) to download version 4.42 of Docker Engine. Use the installer method. Run the installer as administrator. When prompted choose `WSL 2 instead of Hyper-V`.
 
 * After installation, `windows key`, search for docker, and start docker desktop.
 * In the settings gear in the top-right:
@@ -60,6 +60,9 @@ You need to configure the WSL on your machine.
     * Under "Software Updates" uncheck "Automatically check for updates" and "Always download updates"
 
 At the bottom of the screen in docker desktop you should see `Engine Running` and `Kubernetes Running`.
+
+> [!WARNING]
+> Do not update your Docker version unless explicitely told as it may have compatibility issues.
 
 ## Setup WSL instance
 
