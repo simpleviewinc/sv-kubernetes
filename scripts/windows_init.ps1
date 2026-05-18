@@ -53,7 +53,6 @@ netsh interface ipv4 add address "Loopback Pseudo-Interface 1" 192.168.50.100 25
 echo "Copying .cloud-init config"
 New-Item -ItemType Directory -Force -Path $Env:UserProfile\.cloud-init | Out-Null
 copy $PSScriptRoot\..\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data
-copy $PSScriptRoot\..\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu-24.04.user-data
 
 Write-Output "Copying user profile script"
 $psProfileDir = "$Env:UserProfile\Documents\WindowsPowerShell"
