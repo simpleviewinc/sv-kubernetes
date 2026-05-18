@@ -41,8 +41,8 @@ You need to configure the WSL on your machine.
         * Once downloaded, run the file.
         * After complete, re-run command prompt and run `wsl --version` and ensure it's been updated.
     * Run `wsl --install --no-distribution`. You may be prompted to reboot, if so reboot and then continue after the reboot.
-    * Run `wsl --install Ubuntu-24.04`
-    * Run `wsl --set-default Ubuntu-24.04`.
+    * Run `wsl --install Ubuntu-24.04 --name Ubuntu`
+    * Run `wsl --set-default Ubuntu`.
     * Run `wsl`. It should boot the instance and enter into an Ubuntu console.
     * Run `exit`.
 
@@ -96,7 +96,7 @@ If you want to reset your WSL distribution, run the following commands.
 
 * `wsl --list` - determine the current installation that you want to reset. Do not reset your docker-desktop instance.
 * `wsl --unregister InstallationName`
-* `wsl --install Ubuntu-24.04`
-* `wsl --set-default Ubuntu-24.04`
+* `wsl --install Ubuntu-24.04 --name Ubuntu`
+* `wsl --set-default Ubuntu`
 * `wsl`, ensure no errors on entry, `exit`.
 * Proceed to the Setup WSL Instance section.
