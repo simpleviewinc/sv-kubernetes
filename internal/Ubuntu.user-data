@@ -10,5 +10,15 @@ write_files:
     content: |
       [boot]
       systemd=false
+      command=bash -c '\
+        mkdir -p /mnt/wsl/sv-kubernetes && \
+        mount --bind /home/vagrant/sv-kubernetes /mnt/wsl/sv-kubernetes \
+        cat >> /root/.profile <<'EOF' \
+        \
+        export APPS_FOLDER="/sv-wsl/applications" \
+        export CONTAINERS_FOLDER="/sv-wsl/containers" \
+        \
+        EOF \
+      '
       [user]
-      default=vagrant
+      default=root

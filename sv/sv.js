@@ -749,6 +749,11 @@ scripts.debug = function(args) {
 		console.log("");
 	}
 
+	block("Constants", () => {
+		Object.entries(constants).forEach(([key, value]) => {
+			console.log(`${key}: ${value}`);
+		});
+	});
 	block("Memory Utilized", () => exec(`sudo free -m`));
 	block("Kubernetes Version", () => exec(`kubectl version --short`));
 	block("Docker Version", () => exec(`docker -v`));

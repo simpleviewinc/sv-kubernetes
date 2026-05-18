@@ -12,6 +12,8 @@ cp /home/vagrant/.bashrc /root/.bashrc
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/requireRoot.sh
 
+. /sv/scripts/migrate_wsl.sh
+
 . /sv/scripts/install_misc.sh
 . /sv/scripts/install_sv.sh
 . /sv/scripts/install_github.sh
