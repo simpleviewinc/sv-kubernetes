@@ -31,31 +31,32 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 ## How to run the migration
 
 1. Pull the latest `sv-kubernetes` changes on the master branch.
-2. Open **Command Prompt**.
-3. Enter WSL as root:
+2. Open a **Powershell** terminal (it doesn't need to have elevated privileges).
+3. Run `copy C:\sv-kubernetes\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data`
+4. Enter WSL as root:
 
    ```bash
    wsl -u root
    ```
 
-4. Run the migration script:
+5. Run the migration script:
 
    ```bash
    bash /sv/scripts/migrate_wsl.sh
    ```
 
-5. The script updates your settings so `sv` knows to use the new locations.
+6. The script updates your settings so `sv` knows to use the new locations.
 
-6. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section. The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
+7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section. The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
 
    When you see the text `Would you like to copy automatically? (y/n)`
 
    - Press **`y`** to copy your repos automatically.
    - Press **`n`** to skip copying. Your settings will still be updated, but you will need to put repos in the new place yourself—e.g. run `sv install` again for each project, or copy the folders manually.
 
-7. Run `exit` to exit the WSL shell.
-8. Run `wsl --shutdown` to shutdown WSL.
-9. Run `wsl` (the `-u root` flag is no longer necessary.)
+8. Run `exit` to exit the WSL shell.
+9. Run `wsl --shutdown` to shutdown WSL.
+10. Run `wsl` (the `-u root` flag is no longer necessary.)
 
 ## After migration: where to find your repos
 
