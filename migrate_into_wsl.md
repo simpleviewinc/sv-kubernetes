@@ -26,26 +26,27 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
    - `sv stop [application]` to stop each application
 4. Type `exit` to leave.
 5. Close any editors or terminals that have files open under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`.
-6. Allow plenty of time if you have many repos—the copy step can run for **hours**.
+6. If you plan to let the migration script automatically copy your repos, allow plenty of time; the copy step can run for **hours**.
 
 ## How to run the migration
 
-1. Open **Command Prompt**.
-2. Enter WSL as root:
+1. Pull the latest `sv-kubernetes` changes on the master branch.
+2. Open **Command Prompt**.
+3. Enter WSL as root:
 
    ```bash
    wsl -u root
    ```
 
-3. Run the migration script:
+4. Run the migration script:
 
    ```bash
    bash /sv/scripts/migrate_wsl.sh
    ```
 
-4. The script updates your settings so `sv` knows to use the new locations.
+5. The script updates your settings so `sv` knows to use the new locations.
 
-5. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section.
+6. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section.
 
 ## Copying your repos
 
