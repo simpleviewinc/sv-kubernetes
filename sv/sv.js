@@ -113,11 +113,11 @@ scripts.install = async function(args) {
 	}
 
 	const resultType = {
-		app : "applications",
-		container : "containers"
+		app : constants.APPS_FOLDER,
+		container : constants.CONTAINERS_FOLDER
 	}
 
-	const path = `/sv/${resultType[type]}/${name}`;
+	const path = `${resultType[type]}/${name}`;
 
 	if (!fs.existsSync(path)) {
 		// initialize the repo from sv origin master branch
