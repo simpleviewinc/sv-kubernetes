@@ -20,9 +20,13 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 
 ## Before you start the migration
 
-1. Confirm WSL works: open Command Prompt and run `wsl -u root`. You should get a Linux prompt. Type `exit` to leave.
-2. Close any editors or terminals that have files open under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`.
-3. Allow plenty of time if you have many repos—the copy step can run for **hours**.
+1. Confirm WSL works: open Command Prompt and run `wsl -u root`. You should get a Linux prompt.
+2. Stop all of your applications.
+   - `helm list` to show running applications
+   - `sv stop [application]` to stop each application
+4. Type `exit` to leave.
+5. Close any editors or terminals that have files open under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`.
+6. Allow plenty of time if you have many repos—the copy step can run for **hours**.
 
 ## How to run the migration
 
