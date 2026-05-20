@@ -42,7 +42,7 @@ You need to configure the WSL on your machine.
         * After complete, re-run command prompt and run `wsl --version` and ensure it's been updated.
     * Run `wsl --install --no-distribution`. You may be prompted to reboot, if so reboot and then continue after the reboot.
     * Run `wsl --install Ubuntu-24.04 --name Ubuntu`
-    * After the install finishes, you will automatically be moved into the WSL shell. Run `exit` to exit out of it.
+    * Run `exit` to exit out of the installed WSL instance.
     * Run `wsl --set-default Ubuntu`.
     * Run `wsl --shutdown`.
     * Run `wsl`. It should boot the instance and enter into an Ubuntu console. Running `whoami` should show you as `root`.
