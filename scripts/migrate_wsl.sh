@@ -43,12 +43,12 @@ if ((${#app_dirs[@]} + ${#container_dirs[@]} > 0)); then
 
 		echo "Migrating applications..."
 		app_start=$SECONDS
-		rsync --partial --info=progress2 /sv/applications/ /sv-wsl/applications/
+		rsync -aHAXx --partial --info=progress2 /sv/applications/ /sv-wsl/applications/
 		echo "Applications migration completed in $((SECONDS - app_start))s"
 
 		echo "Migrating containers..."
 		container_start=$SECONDS
-		rsync --partial --info=progress2 /sv/containers/ /sv-wsl/containers/
+		rsync -aHAXx --partial --info=progress2 /sv/containers/ /sv-wsl/containers/
 		echo "Containers migration completed in $((SECONDS - container_start))s"
 
 		echo "Total migration time: $((SECONDS - migration_start))s"

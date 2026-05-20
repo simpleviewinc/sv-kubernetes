@@ -50,7 +50,7 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 
 ## Copying your repos
 
-The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos—or large ones with lots of files—can take **hours**. The script shows progress while it runs.
+The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**. The script shows progress while it runs.
 
 When you see:
 
