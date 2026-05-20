@@ -12,7 +12,7 @@ write_files:
       systemd=false
       command=bash -c '\
         mkdir -p /mnt/wsl/sv-kubernetes && \
-        mount --bind /home/vagrant/sv-kubernetes /mnt/wsl/sv-kubernetes \
+        mount --bind /root/sv-kubernetes /mnt/wsl/sv-kubernetes \
       '
       [user]
       default=root
