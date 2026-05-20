@@ -46,20 +46,16 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 
 5. The script updates your settings so `sv` knows to use the new locations.
 
-6. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section.
+6. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section. The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
 
-## Copying your repos
+   When you see the text `Would you like to copy automatically? (y/n)`
 
-The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**. The script shows progress while it runs.
+   - Press **`y`** to copy your repos automatically.
+   - Press **`n`** to skip copying. Your settings will still be updated, but you will need to put repos in the new place yourself—e.g. run `sv install` again for each project, or copy the folders manually.
 
-When you see:
-
-```text
-Would you like to copy automatically? (y/n)
-```
-
-- Press **`y`** to copy your repos automatically.
-- Press **`n`** to skip copying. Your settings will still be updated, but you will need to put repos in the new place yourself—e.g. run `sv install` again for each project, or copy the folders manually.
+7. Run `exit` to exit the WSL shell.
+8. Run `wsl --shutdown` to shutdown WSL.
+9. Run `wsl` (the `-u root` flag is no longer necessary.)
 
 ## After migration: where to find your repos
 

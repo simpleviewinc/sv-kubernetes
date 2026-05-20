@@ -54,3 +54,5 @@ if ((${#app_dirs[@]} + ${#container_dirs[@]} > 0)); then
 		echo "Total migration time: $((SECONDS - migration_start))s"
 	fi
 fi
+
+cloud-init single --name cc_write_files --frequency once --file /mnt/c/sv-kubernetes/internal/Ubuntu.user-data
