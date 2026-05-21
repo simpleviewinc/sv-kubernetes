@@ -2,18 +2,18 @@
 
 ## What is this about?
 
-On Windows, your **application** and **container** repos (the code you install with `sv install`) may live here:
+On Windows, your application and container repos (the code you install with `sv install`) may live here:
 
 - `C:\sv-kubernetes\applications`
 - `C:\sv-kubernetes\containers`
 
-The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your repos stay on the `C:` drive, Windows and WSL pass files back and forth constantly. That is slower and can cause problems when building or starting apps.
+The `sv` tool runs inside WSL (a Linux environment on your PC). When your repos stay on the `C:` drive, Windows and WSL pass files back and forth constantly. That is slower and can cause problems when building or starting apps.
 
-**Migrating** means copying those repos into WSL’s own storage so everything lives in one place. After that, `sv` looks for your projects there instead of under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers`.
+Migrating means copying those repos into WSL’s own storage so everything lives in one place. After that, `sv` looks for your projects there instead of under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers`.
 
 ## Do I have to do this?
 
-**No.** You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` folders if everything works for you today. There is no deadline to migrate at this time.
+No. You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` folders if everything works for you today. There is no deadline to migrate at this time.
 
 - **New installs** are set up on the WSL side automatically during [Windows installation](install_windows.md).
 - **Existing installs** can proceed with migrating whenever you want to.
@@ -31,7 +31,7 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 ## How to run the migration
 
 1. Pull the latest `sv-kubernetes` changes on the master branch.
-2. Open a **Powershell** terminal (it doesn't need to have elevated privileges).
+2. Open a Powershell terminal (it doesn't need to have elevated privileges).
 3. Run `copy C:\sv-kubernetes\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data`
 4. Enter WSL as root:
 
@@ -47,7 +47,7 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 
 6. The script updates your settings so `sv` knows to use the new locations.
 
-7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
+7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to copy your repos from the Windows filesystem. Copying will honor each repo's `.gitignore`, so ignored trees (for example `node_modules`) are skipped. Expect **hours** for large, complex repos; a few small ones may finish in minutes.
 
    When you see the text `Would you like to copy automatically? (y/n)`
 
@@ -97,7 +97,7 @@ After migration, open repos from their WSL locations—not from `C:\sv-kubernete
 
 ### VS Code or Cursor
 
-You need the **WSL** extension installed in the editor (in VS Code this is “WSL”; Cursor includes equivalent remote/WSL support).
+You need the WSL extension installed in the editor (in VS Code this is “WSL”; Cursor includes equivalent remote/WSL support).
 
 **Connect to WSL**
 
@@ -144,13 +144,13 @@ Examples for a repo named `my-app`:
 - File Explorer: `\\wsl.localhost\Ubuntu\root\sv-kubernetes\applications\my-app`
 - WSL: `/root/sv-kubernetes/applications/my-app`
 
-The sv-kubernetes **install** folder stays at `C:\sv-kubernetes`. Only your **application and container** project folders move.
+The sv-kubernetes install folder stays at `C:\sv-kubernetes`. Only your application and container project folders move.
 
 ## Rollback
 
 Rolling back means undoing the migration so `sv` again uses your repos under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` instead of those locations on the WSL filesystem. That is useful if something breaks, you need the old layout temporarily, or you want to fix your environment and migrate again later.
 
-1. Open a **Powershell** terminal (it doesn't need to have elevated privileges).
+1. Open a Powershell terminal (it doesn't need to have elevated privileges).
 2. Enter WSL as root:
 
    ```bash
@@ -163,7 +163,7 @@ Rolling back means undoing the migration so `sv` again uses your repos under `C:
    bash /sv/scripts/rollback_wsl.sh
    ```
 
-4. The script will ask whether to **copy** your repos from WSL. **Allowing the rollback script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
+4. The script will ask whether to copy your repos from WSL. Copying will honor each repo's `.gitignore`, so ignored trees (for example `node_modules`) are skipped. Expect **hours** for large, complex repos; a few small ones may finish in minutes.
 
    When you see the text `Would you like to copy automatically? (y/n)`
 

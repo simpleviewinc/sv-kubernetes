@@ -1,3 +1,5 @@
+. /sv/scripts/copy_repos.sh
+
 ln -sfn /root/sv-kubernetes /sv-wsl
 mkdir -p /mnt/wsl/sv-kubernetes
 mkdir -p /root/sv-kubernetes
@@ -43,12 +45,12 @@ if ((${#app_dirs[@]} + ${#container_dirs[@]} > 0)); then
 
 		echo "Migrating applications..."
 		app_start=$SECONDS
-		rsync -aHAXx --partial --info=progress2 /sv/applications/ /sv-wsl/applications/
+		copy_repos /sv/applications /sv-wsl/applications
 		echo "Applications migration completed in $((SECONDS - app_start))s"
 
 		echo "Migrating containers..."
 		container_start=$SECONDS
-		rsync -aHAXx --partial --info=progress2 /sv/containers/ /sv-wsl/containers/
+		copy_repos /sv/containers /sv-wsl/containers
 		echo "Containers migration completed in $((SECONDS - container_start))s"
 
 		echo "Total migration time: $((SECONDS - migration_start))s"
@@ -56,3 +58,4 @@ if ((${#app_dirs[@]} + ${#container_dirs[@]} > 0)); then
 fi
 
 cloud-init single --name cc_write_files --frequency once --file /mnt/c/sv-kubernetes/internal/Ubuntu.user-data
+

@@ -1,3 +1,5 @@
+. /sv/scripts/copy_repos.sh
+
 cloud-init single --name cc_write_files --frequency once --file /mnt/c/sv-kubernetes/internal/Ubuntu.user-data.old
 
 shopt -s nullglob
@@ -15,12 +17,12 @@ if ((${#app_dirs[@]} + ${#container_dirs[@]} > 0)); then
 
 		echo "Rolling back applications..."
 		app_start=$SECONDS
-		rsync -aHAXx --partial --info=progress2 "/sv-wsl/applications/" /sv/applications/
+		copy_repos /sv-wsl/applications /sv/applications
 		echo "Applications rollback completed in $((SECONDS - app_start))s"
 
 		echo "Rolling back containers..."
 		container_start=$SECONDS
-		rsync -aHAXx --partial --info=progress2 "/sv-wsl/containers/" /sv/containers/
+		copy_repos /sv-wsl/containers /sv/containers
 		echo "Containers rollback completed in $((SECONDS - container_start))s"
 
 		echo "Total rollback copy time: $((SECONDS - rollback_start))s"
