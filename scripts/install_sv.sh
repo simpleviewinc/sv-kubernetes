@@ -29,5 +29,5 @@ ln -sfn /opt/sv/node_modules /node_modules
 chmod +x /sv/sv/sv.js
 ln -sfn /sv/sv/sv.js /usr/bin/sv
 
-mkdir -p /sv-wsl/applications
-mkdir -p /sv-wsl/containers
+mkdir -p /sv/applications /sv-wsl/applications
+mkdir -p /sv/containers /sv-wsl/containers
