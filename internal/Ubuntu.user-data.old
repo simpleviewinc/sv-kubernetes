@@ -1,0 +1,14 @@
+#cloud-config
+users:
+  - name: vagrant
+    groups: [adm,cdrom,sudo,dip,plugdev,users]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+
+write_files:
+  - path: /etc/wsl.conf
+    content: |
+      [boot]
+      systemd=false
+      [user]
+      default=vagrant

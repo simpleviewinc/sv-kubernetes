@@ -24,9 +24,9 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 2. Stop all of your applications.
    - `helm list` to show running applications
    - `sv stop [application]` to stop each application
-4. Type `exit` to leave.
-5. Close any editors or terminals that have files open under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`.
-6. If you plan to let the migration script automatically copy your repos, allow plenty of time; the copy step can run for **hours**.
+3. Type `exit` to leave.
+4. Close any editors or terminals that have files open under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`.
+5. If you plan to let the migration script automatically copy your repos, allow plenty of time; the copy step can run for **hours**.
 
 ## How to run the migration
 
@@ -47,7 +47,7 @@ The `sv` tool runs inside **WSL** (a Linux environment on your PC). When your re
 
 6. The script updates your settings so `sv` knows to use the new locations.
 
-7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. See the next section. The script can copy everything from the old folders into WSL for you. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
+7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to **copy** them into WSL. **Allowing the migration script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
 
    When you see the text `Would you like to copy automatically? (y/n)`
 
@@ -145,3 +145,31 @@ Examples for a repo named `my-app`:
 - WSL: `/root/sv-kubernetes/applications/my-app`
 
 The sv-kubernetes **install** folder stays at `C:\sv-kubernetes`. Only your **application and container** project folders move.
+
+## Rollback
+
+Rolling back means undoing the migration so `sv` again uses your repos under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` instead of those locations on the WSL filesystem. That is useful if something breaks, you need the old layout temporarily, or you want to fix your environment and migrate again later.
+
+1. Open a **Powershell** terminal (it doesn't need to have elevated privileges).
+2. Enter WSL as root:
+
+   ```bash
+   wsl -u root
+   ```
+
+3. Run the rollback script:
+
+   ```bash
+   bash /sv/scripts/rollback_wsl.sh
+   ```
+
+4. The script will ask whether to **copy** your repos from WSL. **Allowing the rollback script to do this automatically can take a _really_ long time**. A few small repos might finish in minutes. Many repos - or large ones with lots of files (particularly node_modules) - can take **hours**.
+
+   When you see the text `Would you like to copy automatically? (y/n)`
+
+   - Press **`y`** to copy your repos automatically.
+   - Press **`n`** to skip copying. Your settings will still be updated, but you will need to put repos in the old place yourself—e.g. run `sv install` again for each project, or copy the folders manually.
+
+5. Run `exit` to exit the WSL shell.
+6. Run `wsl --shutdown` to shutdown WSL.
+7. Run `wsl -u root` (the `-u root` flag is now necessary again.)
