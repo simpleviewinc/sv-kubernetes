@@ -10,9 +10,5 @@ write_files:
     content: |
       [boot]
       systemd=false
-      command=bash -c '\
-        mkdir -p /mnt/wsl/sv-kubernetes && \
-        mount --bind /root/sv-kubernetes /mnt/wsl/sv-kubernetes \
-      '
       [user]
-      default=root
+      default=vagrant

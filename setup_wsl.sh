@@ -3,14 +3,14 @@
 ln -sfn /mnt/c/sv-kubernetes /sv
 mkdir -p /root/{.kube,.config}
 mkdir -p /mnt/c/sv-kubernetes/internal/gcloud
-ln -sfn /home/vagrant/.kube/config /root/.kube/config
 ln -sfn /mnt/c/sv-kubernetes/internal/gcloud /root/.config/gcloud
-chmod 600 /home/vagrant/.kube/config
 chmod 600 /root/.kube/config
 cp /home/vagrant/.bashrc /root/.bashrc
 
 . /sv/scripts/errorHandler.sh
 . /sv/scripts/requireRoot.sh
+
+. /sv/scripts/migrate_wsl.sh
 
 . /sv/scripts/install_misc.sh
 . /sv/scripts/install_sv.sh

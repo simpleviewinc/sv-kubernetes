@@ -113,11 +113,11 @@ scripts.install = async function(args) {
 	}
 
 	const resultType = {
-		app : "applications",
-		container : "containers"
+		app : constants.APPS_FOLDER,
+		container : constants.CONTAINERS_FOLDER
 	}
 
-	const path = `/sv/${resultType[type]}/${name}`;
+	const path = `${resultType[type]}/${name}`;
 
 	if (!fs.existsSync(path)) {
 		// initialize the repo from sv origin master branch
@@ -749,6 +749,11 @@ scripts.debug = function(args) {
 		console.log("");
 	}
 
+	block("Constants", () => {
+		Object.entries(constants).forEach(([key, value]) => {
+			console.log(`${key}: ${value}`);
+		});
+	});
 	block("Memory Utilized", () => exec(`sudo free -m`));
 	block("Kubernetes Version", () => exec(`kubectl version --short`));
 	block("Docker Version", () => exec(`docker -v`));
