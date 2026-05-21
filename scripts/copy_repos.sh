@@ -1,8 +1,5 @@
-#!/usr/bin/env bash
-
 # Copy each git repo under SRC_DIR into DEST_DIR/<repo-name>/ using git ignore
-# rules plus the full .git tree. Define copyRepos here, then call it from elsewhere
-# in this script (or after sourcing this file), e.g. copyRepos /sv/applications /sv-wsl/applications-test
+# rules plus the full .git tree.
 
 copy_repos() {
 	local src_root="${1:?usage: copyRepos SRC_DIR DEST_DIR}"
