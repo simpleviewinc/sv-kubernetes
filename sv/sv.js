@@ -238,7 +238,7 @@ scripts.start = async function(args) {
 	const deploymentName = flags.alias !== undefined ? flags.alias : applicationName;
 
 	const rootKubeFolder = constants.SV_KUBERNETES_MOUNT_PATH;
-	const appFolder = `/sv/applications/${applicationName}`;
+	const appFolder = `${constants.APPS_FOLDER}/${applicationName}`;
 	const chartFolder = `${appFolder}/chart`;
 	const containerFolder = `${appFolder}/containers`;
 	const externalApplicationFolder = `${rootKubeFolder}/applications/${applicationName}`;
@@ -650,7 +650,7 @@ scripts.script = function(args) {
 
 	validateApp(applicationName);
 
-	const appPath = `/sv/applications/${applicationName}`;
+	const appPath = `${constants.APPS_FOLDER}/${applicationName}`;
 
 	const envVars = {
 		SV_APP_PATH : appPath,

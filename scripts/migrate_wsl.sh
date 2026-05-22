@@ -1,5 +1,6 @@
 if [ ! -f "/sv/.wsl_migrated" ]; then
 	. /sv/scripts/copy_repos.sh
+	. /sv/scripts/write_wsl_conf.sh
 
 	ln -sfn /root/sv-kubernetes /sv-wsl
 	mkdir -p /mnt/wsl/sv-kubernetes
@@ -58,7 +59,7 @@ if [ ! -f "/sv/.wsl_migrated" ]; then
 		fi
 	fi
 
-	cloud-init single --name cc_write_files --frequency once --file /mnt/c/sv-kubernetes/internal/Ubuntu.user-data
+	write_wsl_conf /sv/internal/Ubuntu.user-data
 
 	touch /sv/.wsl_migrated
 fi

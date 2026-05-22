@@ -1,7 +1,8 @@
 if [ -f "/sv/.wsl_migrated" ]; then
     . /sv/scripts/copy_repos.sh
+    . /sv/scripts/write_wsl_conf.sh
 
-    cloud-init single --name cc_write_files --frequency once --file /mnt/c/sv-kubernetes/internal/Ubuntu.user-data.old
+    write_wsl_conf /sv/internal/Ubuntu.user-data.old
 
     shopt -s nullglob
     app_dirs=(/sv-wsl/applications/*/)
