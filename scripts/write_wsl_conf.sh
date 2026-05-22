@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -euo pipefail
+# Write the WSL configuration file from a user-data based YAML file
 
 write_wsl_conf() {
   local yaml_path="${1:?usage: write_wsl_conf <path-to-yaml>}"
