@@ -1,4 +1,11 @@
-if [ ! -f "/sv/.wsl_migrated" ]; then
+FORCE=0
+for _arg in "$@"; do
+	case "$_arg" in
+		--force|-f) FORCE=1 ;;
+	esac
+done
+
+if [ ! -f "/sv/.wsl_migrated" ] || [ "$FORCE" -eq 1 ]; then
 	. /sv/scripts/copy_repos.sh
 	. /sv/scripts/write_wsl_conf.sh
 
@@ -62,4 +69,8 @@ if [ ! -f "/sv/.wsl_migrated" ]; then
 	write_wsl_conf /sv/internal/Ubuntu.user-data
 
 	touch /sv/.wsl_migrated
+else
+	echo "It looks like you've already completed the WSL migration."
+	echo "You can use --force to run the migration anyway, e.g."
+	echo "> bash /sv/scripts/migrate_wsl.sh --force"
 fi

@@ -1,4 +1,11 @@
-if [ -f "/sv/.wsl_migrated" ]; then
+FORCE=0
+for _arg in "$@"; do
+	case "$_arg" in
+		--force|-f) FORCE=1 ;;
+	esac
+done
+
+if [ -f "/sv/.wsl_migrated" ] || [ "$FORCE" -eq 1 ]; then
     . /sv/scripts/copy_repos.sh
     . /sv/scripts/write_wsl_conf.sh
 
@@ -39,4 +46,8 @@ if [ -f "/sv/.wsl_migrated" ]; then
     rm -f /sv-wsl
 
     rm -f /sv/.wsl_migrated
+else
+	echo "It looks like you haven't completed the WSL migration."
+	echo "You can use --force to rollback anyway, e.g."
+	echo "> bash /sv/scripts/rollback_wsl.sh --force"
 fi
