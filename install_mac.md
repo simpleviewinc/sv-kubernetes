@@ -83,5 +83,7 @@ To install and start any other repo, the general form is:
     * Your sv-kubernetes repository is improperly cloned and the line endings are being converted. You need to ensure that the getting setting `core.autocrlf=false` and then delete and re-clone the repository.
 * Is Docker Desktop running?
     * Start it, ensure that it says Engine Running and Kubernetes Running in the bottom left. If it doesn't, check the Docker Engine installations steps above.
+* Services at `192.168.50.100:PORT` are unreachable.
+    * `unix_init.sh` adds a loopback alias for `192.168.50.100` on `lo0`. Confirm it exists by running `ifconfig lo0` in Terminal — you should see an `inet 192.168.50.100` entry. If it is missing, re-run `unix_init.sh` (with `sudo`) and reboot.
 * `hostPort` entries are failing because a low port cannot be used.
     * When use hostPort you can also declare the service as of `type: LoadBalancer` and do not declare an IP address. It will still be accessible at the main `192.168.50.100:PORT`.
