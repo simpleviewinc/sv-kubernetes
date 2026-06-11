@@ -111,7 +111,9 @@ fi
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
 cp ${SV_KUBERNETES_PATH}/internal/${INTERNAL_ENV_FILE} ${SV_KUBERNETES_PATH}/.env
-sed -i -e '/SV_KUBERNETES_MOUNT_PATH=/d' ${SV_KUBERNETES_PATH}/.env
+# Strip any existing mount path line, then append the resolved one. Using grep + a temp
+# file instead of `sed -i` avoids the BSD/GNU `-i` difference (BSD sed leaves a .env-e backup).
+grep -v 'SV_KUBERNETES_MOUNT_PATH=' ${SV_KUBERNETES_PATH}/.env > ${SV_KUBERNETES_PATH}/.env.tmp && mv ${SV_KUBERNETES_PATH}/.env.tmp ${SV_KUBERNETES_PATH}/.env
 echo "SV_KUBERNETES_MOUNT_PATH=${SV_KUBERNETES_PATH}" >> ${SV_KUBERNETES_PATH}/.env
 
 echo "Success"
