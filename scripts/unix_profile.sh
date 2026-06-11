@@ -1,5 +1,5 @@
 #!/bin/bash
-SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
+SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]:-$0}))/..)
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 
 function sv_kubernetes_container_exists {
@@ -27,7 +27,7 @@ function docker_run_sv_kubernetes {
 	docker compose --project-directory ${SV_KUBERNETES_PATH} build cli
 
 	echo "Running sv-kubernetes container"
-	docker compose --project-directory ${SV_KUBERNETES_PATH} up -d
+	docker compose --project-directory ${SV_KUBERNETES_PATH} up -d cli
 }
 
 function docker_stop_sv_kubernetes {
@@ -46,7 +46,7 @@ BASE_ROOT="${SV_KUBERNETES_PATH}/applications"
 TARGET_FILE_NAME="install_aliases.sh"
 
 # Source each file
-for file in $(ls ${BASE_ROOT}/*/scripts/${TARGET_FILE_NAME}); do
+for file in $(find "${BASE_ROOT}" -maxdepth 3 -name "${TARGET_FILE_NAME}" 2>/dev/null); do
 	echo "Loading user profile script ${file} ..."
 	. "${file}"
 done

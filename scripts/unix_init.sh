@@ -100,6 +100,14 @@ touch ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
 if ! grep -qi '. ~/.bash_aliases' ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}; then
 	echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
 fi
+if [[ "${ARCH}" == "arm64" ]]; then
+	ZSHRC_PATH="${USER_PROFILE_DIR}/.zshrc"
+	touch "${ZSHRC_PATH}"
+	if ! grep -qi '. ~/.bash_aliases' "${ZSHRC_PATH}"; then
+		echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> "${ZSHRC_PATH}"
+	fi
+	chown "${USERNAME}" "${ZSHRC_PATH}"
+fi
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
 cp ${SV_KUBERNETES_PATH}/internal/${INTERNAL_ENV_FILE} ${SV_KUBERNETES_PATH}/.env
