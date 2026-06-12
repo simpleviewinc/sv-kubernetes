@@ -30,7 +30,7 @@ No. You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes
 
 ## How to run the migration
 
-1. Pull the latest `sv-kubernetes` changes on the master branch.
+1. Pull the latest `sv-kubernetes` changes on the **develop** branch and switch to it.
 2. Open a Powershell terminal (it doesn't need to have elevated privileges).
 3. Run `copy C:\sv-kubernetes\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data`
 4. Enter WSL as root:
