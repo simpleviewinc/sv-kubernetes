@@ -31,6 +31,7 @@ No. You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes
 ## How to run the migration
 
 1. Pull the latest `sv-kubernetes` changes on the **develop** branch and switch to it.
+2. Run `bash /sv/scripts/install_sv.sh`
 2. Open a Powershell terminal (it doesn't need to have elevated privileges).
 3. Run `copy C:\sv-kubernetes\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data`
 4. Enter WSL as root:
@@ -56,6 +57,7 @@ No. You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes
 
 8. Run `exit` to exit the WSL shell.
 9. Run `wsl --shutdown` to shutdown WSL.
+  - At this point, if it's running, your Docker Desktop application may show you an error because it can no longer see your WSL distribution. This is fine.
 10. Run `wsl` (the `-u root` flag is no longer necessary.)
 
 ## After migration: where to find your repos
