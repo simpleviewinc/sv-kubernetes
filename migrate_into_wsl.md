@@ -31,34 +31,24 @@ No. You can keep using the `C:\sv-kubernetes\applications` and `C:\sv-kubernetes
 ## How to run the migration
 
 1. Pull the latest `sv-kubernetes` changes on the **develop** branch and switch to it.
-2. Run `bash /sv/scripts/install_sv.sh`
-2. Open a Powershell terminal (it doesn't need to have elevated privileges).
-3. Run `copy C:\sv-kubernetes\internal\Ubuntu.user-data $Env:UserProfile\.cloud-init\Ubuntu.user-data`
-4. Enter WSL as root:
+1. Open a Powershell terminal (it doesn't need to have elevated privileges).
+1. Run `powershell C:\sv-kubernetes\scripts\windows_prepare_migration.ps1`
+1. Run `wsl -u root` to enter WSL as root
+1. Run `bash /sv/scripts/install_sv.sh`
+1. Run the migration script `bash /sv/scripts/migrate_wsl.sh`
+1. The script updates your settings so `sv` knows to use the new locations.
 
-   ```bash
-   wsl -u root
-   ```
-
-5. Run the migration script:
-
-   ```bash
-   bash /sv/scripts/migrate_wsl.sh
-   ```
-
-6. The script updates your settings so `sv` knows to use the new locations.
-
-7. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to copy your repos from the Windows filesystem. Copying will honor each repo's `.gitignore`, so ignored trees (for example `node_modules`) are skipped. Expect **hours** for large, complex repos; a few small ones may finish in minutes.
+1. If you already have repos under `C:\sv-kubernetes\applications` or `C:\sv-kubernetes\containers`, the script will ask whether to copy your repos from the Windows filesystem. Copying will honor each repo's `.gitignore`, so ignored trees (for example `node_modules`) are skipped. Expect **hours** for large, complex repos; a few small ones may finish in minutes.
 
    When you see the text `Would you like to copy automatically? (y/n)`
 
    - Press **`y`** to copy your repos automatically.
    - Press **`n`** to skip copying. Your settings will still be updated, but you will need to put repos in the new place yourself—e.g. run `sv install` again for each project, or copy the folders manually.
 
-8. Run `exit` to exit the WSL shell.
-9. Run `wsl --shutdown` to shutdown WSL.
+1. Run `exit` to exit the WSL shell.
+1. Run `wsl --shutdown` to shutdown WSL.
   - At this point, if it's running, your Docker Desktop application may show you an error because it can no longer see your WSL distribution. This is fine.
-10. Run `wsl` (the `-u root` flag is no longer necessary.)
+1. Run `wsl` (the `-u root` flag is no longer necessary.)
 
 ## After migration: where to find your repos
 

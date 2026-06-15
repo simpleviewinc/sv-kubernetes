@@ -54,12 +54,12 @@ if [ ! -f "/sv/.wsl_migrated" ] || [ "$FORCE" -eq 1 ]; then
 
 			echo "Migrating applications..."
 			app_start=$SECONDS
-			copy_repos /sv/applications /sv-wsl/applications
+			copy_repos /sv/applications /root/sv-kubernetes/applications
 			echo "Applications migration completed in $((SECONDS - app_start))s"
 
 			echo "Migrating containers..."
 			container_start=$SECONDS
-			copy_repos /sv/containers /sv-wsl/containers
+			copy_repos /sv/containers /root/sv-kubernetes/containers
 			echo "Containers migration completed in $((SECONDS - container_start))s"
 
 			echo "Total migration time: $((SECONDS - migration_start))s"
