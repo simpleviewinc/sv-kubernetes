@@ -138,6 +138,58 @@ Examples for a repo named `my-app`:
 
 The sv-kubernetes install folder stays at `C:\sv-kubernetes`. Only your application and container project folders move.
 
+## Troubleshooting
+
+### `CrashLoopBackOff` after migration
+
+> **TL;DR (cms-kube)** — run from WSL:
+> 1. `sv stop cms-kube`
+> 2. `chmod +x /sv-wsl/applications/cms-kube/containers/cli/docker-entrypoint.sh`
+> 3. `sv start cms-kube`
+
+After migration, pods may enter `CrashLoopBackOff` because scripts copied from Windows no longer have the executable bit. Run the steps below from a WSL shell (`wsl` or `wsl -u root`).
+
+Use `kubectl get pods` to identify affected pods:
+
+```text
+NAME                             READY    STATUS              RESTARTS          AGE
+cms-kube-cli-68c85d4f8c-mxtnb    0/1      CrashLoopBackOff    11 (3m46s ago)    15h
+```
+
+Run the following command to find the message from the container's last state, using the pod name from the output above:
+
+```bash
+kubectl get pod [pod-name] -o jsonpath='{.status.containerStatuses[*].lastState.terminated.message}'
+# EXAMPLE:
+kubectl get pod cms-kube-cli-68c85d4f8c-mxtnb -o jsonpath='{.status.containerStatuses[*].lastState.terminated.message}'
+```
+
+If that command prints nothing, try `kubectl describe pod [pod-name]` and look at the container's last state or Events.
+
+That output will likely show an error that execution of a particular file was denied. In our case:
+
+```text
+failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: "/docker-entrypoint.sh": permission denied
+```
+
+The path in the error (for example `/docker-entrypoint.sh`) is the key information here. In your WSL environment, find the matching file under your application repo. It's often under `containers/`:
+
+```bash
+find /sv-wsl/applications/[app-name] -name '[path-name]'
+# EXAMPLE:
+find /sv-wsl/applications/cms-kube -name 'docker-entrypoint.sh'
+```
+
+Which should give you the full path to the file that needs the executable bit. Use that path to make the file executable:
+
+```bash
+chmod +x [file-path]
+# EXAMPLE
+chmod +x /sv-wsl/applications/cms-kube/containers/cli/docker-entrypoint.sh
+```
+
+Start the application again (for example `sv start cms-kube`).
+
 ## Rollback
 
 Rolling back means undoing the migration so `sv` again uses your repos under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` instead of those locations on the WSL filesystem. That is useful if something breaks, you need the old layout temporarily, or you want to fix your environment and migrate again later.
