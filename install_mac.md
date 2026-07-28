@@ -85,5 +85,8 @@ To install and start any other repo, the general form is:
     * Start it, ensure that it says Engine Running and Kubernetes Running in the bottom left. If it doesn't, check the Docker Engine installations steps above.
 * Services at `192.168.50.100:PORT` are unreachable.
     * `unix_init.sh` adds a loopback alias for `192.168.50.100` on `lo0`. Confirm it exists by running `ifconfig lo0` in Terminal — you should see an `inet 192.168.50.100` entry. If it is missing, re-run `unix_init.sh` (with `sudo`) and reboot.
+* cms-kube client returns HTTP **502**, nginx vhost exists, but `/tmp/<client>.socket` is missing.
+    * The Node worker failed to resolve `cms-redis.kube.simpleview.io` / `cms-mongo-local.kube.simpleview.io` / `cms-solr-local.kube.simpleview.io` inside the bundle pod. Public DNS points those names at `192.168.50.100`; some home-router resolvers strip that private A record (DNS rebinding protection), so CoreDNS forwarding from the pod gets an empty answer.
+    * Full diagnosis and an ephemeral bundle `/etc/hosts` fix: workspace doc `docs/local-cms-kube-worker-dns.md` (cms-migration umbrella).
 * `hostPort` entries are failing because a low port cannot be used.
     * When use hostPort you can also declare the service as of `type: LoadBalancer` and do not declare an IP address. It will still be accessible at the main `192.168.50.100:PORT`.
