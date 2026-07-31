@@ -29,11 +29,7 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 Enter the CLI depending on your environment:
 
-Windows WSL variant:
-* This variant utilizes an Ubuntu environment running on the windows WSL to provide access to the sv-kubernetes cli.
-* `wsl -u root` - To enter your Ubuntu wsl instance. Then run all sv commands as normal.
-
-Docker variant (beta)
+Docker variant (preferred)
 * This variant utilizes a docker container to provide access to the sv-kubernetes cli.
 * Windows
 	* From powershell:
@@ -42,7 +38,13 @@ Docker variant (beta)
 	* `sv-kube-stop` - Stops the docker-based cli.
 	* `sv-kube-enter` - Starts and enters the docker container.
 * Mac
-	* TBD
+	* Follow instructions in [install_mac.md](install_mac.md).
+
+Windows WSL variant:
+* This variant utilizes an Ubuntu environment running on the windows WSL to provide access to the sv-kubernetes cli.
+* You may run into issues using this variant with the Granicus VPN. The Docker variant is now preferred for all devs.
+* `wsl -u root` - To enter your Ubuntu wsl instance. Then run all sv commands as normal.
+
 
 Often in order to work your project you will want to install and start the following applications.
 
