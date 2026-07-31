@@ -81,6 +81,26 @@ exit
 
 App aliases such as `cms` are registered by trusted local code in `windows_profile_wsl_docker.ps1` when `.wsl_migrated` exists or `cms-kube` is present under `C:\sv-kubernetes\applications`. You do not need to change PowerShell execution policy, sign scripts, or run `Unblock-File` on WSL paths.
 
+### PowerShell terminal in Cursor
+
+To make Windows PowerShell available from a Cursor WSL window, add this object in `settings.json`:
+
+```json
+"terminal.integrated.profiles.linux": {
+    "Windows PowerShell": {
+        "path": "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "args": [
+            "-NoLogo",
+            "-NoExit",
+            "-Command",
+            "Set-Location 'C:\\sv-kubernetes'"
+        ]
+    }
+}
+```
+
+Select **Windows PowerShell** only when opening a terminal that needs `sv` / `cms` commands. **Do not make it the default Linux terminal profile**; Cursor's agent requires a Linux shell and will break if PowerShell is the default.
+
 ## Paths
 
 Do not treat these as canonical after migration:
