@@ -1,0 +1,11 @@
+# Opt-in Compose override for the WSL-backed Docker workflow.
+# Used only when sv-kube-* commands run through windows_profile_wsl_docker.ps1.
+# Legacy users that invoke the base docker-compose.yml alone are unaffected.
+services:
+  cli:
+    volumes:
+      - type: bind
+        source: ${SV_KUBERNETES_MOUNT_PATH}
+        target: /sv-wsl
+        bind:
+          create_host_path: false

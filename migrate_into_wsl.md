@@ -1,5 +1,7 @@
 # Migrate into WSL
 
+> Using the Docker CLI from PowerShell with WSL-backed app mounts? Prefer the one-time linker in [WSL Docker Workflow](wsl_docker_workflow.md) (`scripts/link_wsl_in_docker.ps1`), which invokes this migration when `.wsl_migrated` is missing.
+
 ## What is this about?
 
 On Windows, your application and container repos (the code you install with `sv install`) may live here:

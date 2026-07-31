@@ -24,6 +24,7 @@ This repository is meant to be a base to install Kubernetes, Helm and begin runn
 
 * [Windows Installation Readme](install_windows.md)
 * [Mac Installation Readme](install_mac.md)
+* [WSL Docker Workflow (opt-in)](wsl_docker_workflow.md) — Docker CLI from PowerShell with apps/containers on the WSL filesystem
 
 ## Local Development
 
@@ -41,6 +42,7 @@ Docker variant (beta)
 	* `sv-kube-run` - Manually start the docker-based cli.
 	* `sv-kube-stop` - Stops the docker-based cli.
 	* `sv-kube-enter` - Starts and enters the docker container.
+	* Optional: [WSL Docker Workflow](wsl_docker_workflow.md) for fast WSL-backed application mounts (`link_wsl_in_docker.ps1` / `unlink_wsl_in_docker.ps1`).
 * Mac
 	* TBD
 
