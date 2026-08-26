@@ -190,6 +190,24 @@ chmod +x /sv-wsl/applications/cms-kube/containers/cli/docker-entrypoint.sh
 
 Start the application again (for example `sv start cms-kube`).
 
+### `CMS Loads but external pages do not - HTTP 444` 
+After migration, CMS may load but pageBuilder preview and external urls will display "site not configured".  The browser's Network console will show a http 444 error.
+
+1.  Stop CMS client and exit to the wsl
+2.  Enter cms-headless-nginx pod
+>   sv enterPod cms-headless-nginx
+3.  Check cms host client map:
+>   root@cms-headless-nginx-server-657ccdbc6f-z5lzp:/# cat /usr/local/openresty/nginx/conf/maps_generated/cms_host_client.map
+You should have the following:
+>  primary-starter.local.simpleviewcms.app starter;
+>  secondary-starter.local.simpleviewcms.app starter;
+>  headless-starter.dev.simpleviewcms.app starter-test;
+4.  If any of these are missing, exit the cms-headless-nginx pod and run the followi
+> cms generateClientJson starter
+5.  Re-enter cms-headless-nginx pod and check the cms_host_client.map and verify expected entries exist.  Assuming they do, stop/restart the cms-headless-nginx pod, restart your cms client in cms-kube, and retry pageBuilder preview and the external url
+
+
+
 ## Rollback
 
 Rolling back means undoing the migration so `sv` again uses your repos under `C:\sv-kubernetes\applications` and `C:\sv-kubernetes\containers` instead of those locations on the WSL filesystem. That is useful if something breaks, you need the old layout temporarily, or you want to fix your environment and migrate again later.
