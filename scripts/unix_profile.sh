@@ -27,7 +27,7 @@ function docker_run_sv_kubernetes {
 	docker compose --project-directory ${SV_KUBERNETES_PATH} build cli
 
 	echo "Running sv-kubernetes container"
-	docker compose --project-directory ${SV_KUBERNETES_PATH} up -d
+	docker compose --project-directory ${SV_KUBERNETES_PATH} up -d cli
 }
 
 function docker_stop_sv_kubernetes {
