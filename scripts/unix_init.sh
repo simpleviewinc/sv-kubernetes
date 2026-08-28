@@ -16,6 +16,7 @@ SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 if [[ "${ARCH}" == "arm64" ]]; then
 	BASH_USER_SCRIPT=.bash_profile
+	ZSH_USER_SCRIPT=.zshrc
 	USER_PROFILE_DIR="/Users/${USERNAME}"
 	INTERNAL_ENV_FILE=".env_mac"
 else
@@ -100,6 +101,15 @@ touch ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
 if ! grep -qi '. ~/.bash_aliases' ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}; then
 	echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ${USER_PROFILE_DIR}/${BASH_USER_SCRIPT}
 fi
+
+# zsh is the default shell on modern macs; wire it up alongside bash
+if [[ -n "${ZSH_USER_SCRIPT}" ]]; then
+	touch ${USER_PROFILE_DIR}/${ZSH_USER_SCRIPT}
+	if ! grep -qi '. ~/.bash_aliases' ${USER_PROFILE_DIR}/${ZSH_USER_SCRIPT}; then
+		echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ${USER_PROFILE_DIR}/${ZSH_USER_SCRIPT}
+	fi
+fi
+
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
 cp ${SV_KUBERNETES_PATH}/internal/${INTERNAL_ENV_FILE} ${SV_KUBERNETES_PATH}/.env
