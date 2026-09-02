@@ -2,7 +2,7 @@
 
 Running sv-kubernetes MacOS (ARM64) requires the following features and systems:
 
-* Unix Terminal setup to use Bash shell
+* Unix Terminal running either zsh (the current MacOS default) or Bash shell; both are supported
 * Ability to run sudo in Terminal and install software as Admin.
 * Git installed and accessible in Terminal
 * Docker Engine - See instructions below for installation.
@@ -37,6 +37,8 @@ sudo bash /Users/Shared/sv-kubernetes/scripts/unix_init.sh ${USER} && . ~/.bash_
 ```
 
 and it should output `Success` at the end.
+
+* Note: The installer now wires up both bash and zsh automatically. If you use zsh (the default on modern macs), you can simply open a new terminal after setup, or run `. ~/.zshrc`, to load the `sv` aliases.
 
 * Note: If the script prompted you to create a `github_key` you will need to upload it to Github so that it can be utilized.
     * The Github docs are located [Here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=linux&tool=webui)

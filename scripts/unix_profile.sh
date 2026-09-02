@@ -1,5 +1,5 @@
 #!/bin/bash
-SV_KUBERNETES_PATH=$(realpath $(dirname $(realpath ${BASH_SOURCE[0]}))/..)
+SV_KUBERNETES_PATH=$(realpath "$(dirname "$(realpath ~/.bash_aliases)")/..")
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 
 function sv_kubernetes_container_exists {
