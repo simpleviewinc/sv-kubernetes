@@ -266,6 +266,22 @@ function isDockerDesktopEnv() {
 	return constants.IS_DOCKER_DESKTOP;
 }
 
+/**
+ * Mac .env uses /Users/...; WSL uses /run/desktop/.... Checked from env so it
+ * works inside the cli container (no /etc/wsl.conf there).
+ */
+function isMacDockerDesktopEnv() {
+	return isDockerDesktopEnv() && constants.SV_KUBERNETES_MOUNT_PATH.startsWith("/Users/");
+}
+
+function isWslEnv() {
+	return isDockerDesktopEnv() && !isMacDockerDesktopEnv();
+}
+
+function canHostPort() {
+	return isMinikubeEnv() || isMacDockerDesktopEnv();
+}
+
 function isArmEnv() {
 	return process.arch !== "x64";
 }
@@ -323,6 +339,9 @@ module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.isMinikubeEnv = isMinikubeEnv;
 module.exports.isDockerDesktopEnv = isDockerDesktopEnv;
 module.exports.isArmEnv = isArmEnv;
+module.exports.isMacDockerDesktopEnv = isMacDockerDesktopEnv;
+module.exports.isWslEnv = isWslEnv;
+module.exports.canHostPort = canHostPort;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;
 module.exports.log = log;
