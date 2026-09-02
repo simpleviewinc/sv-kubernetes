@@ -267,11 +267,11 @@ function isDockerDesktopEnv() {
 }
 
 /**
- * Mac .env uses /Users/...; WSL uses /run/desktop/.... Checked from env so it
- * works inside the cli container (no /etc/wsl.conf there).
+ * Matches unix_init.sh: arm64 Docker Desktop is Mac, otherwise WSL.
+ * Avoids SV_KUBERNETES_MOUNT_PATH, which operators can point anywhere.
  */
 function isMacDockerDesktopEnv() {
-	return isDockerDesktopEnv() && constants.SV_KUBERNETES_MOUNT_PATH.startsWith("/Users/");
+	return isDockerDesktopEnv() && isArmEnv();
 }
 
 function isWslEnv() {
