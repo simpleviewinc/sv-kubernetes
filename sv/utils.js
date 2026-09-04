@@ -266,6 +266,22 @@ function isDockerDesktopEnv() {
 	return constants.IS_DOCKER_DESKTOP;
 }
 
+/**
+ * Matches unix_init.sh: arm64 Docker Desktop is Mac, otherwise WSL.
+ * Avoids SV_KUBERNETES_MOUNT_PATH, which operators can point anywhere.
+ */
+function isMacDockerDesktopEnv() {
+	return isDockerDesktopEnv() && isArmEnv();
+}
+
+function isWslEnv() {
+	return isDockerDesktopEnv() && !isMacDockerDesktopEnv();
+}
+
+function canHostPort() {
+	return isMinikubeEnv() || isMacDockerDesktopEnv();
+}
+
 function isArmEnv() {
 	return process.arch !== "x64";
 }
@@ -323,6 +339,9 @@ module.exports.getMinikubeDockerEnv = getMinikubeDockerEnv;
 module.exports.isMinikubeEnv = isMinikubeEnv;
 module.exports.isDockerDesktopEnv = isDockerDesktopEnv;
 module.exports.isArmEnv = isArmEnv;
+module.exports.isMacDockerDesktopEnv = isMacDockerDesktopEnv;
+module.exports.isWslEnv = isWslEnv;
+module.exports.canHostPort = canHostPort;
 module.exports.loadSettingsYaml = loadSettingsYaml;
 module.exports.loadYaml = loadYaml;
 module.exports.log = log;

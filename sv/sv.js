@@ -29,6 +29,8 @@ const {
 	isDockerDesktopEnv,
 	isArmEnv,
 	isMinikubeEnv,
+	isWslEnv,
+	canHostPort,
 	unknownSetAsEnv
 } = require("./utils");
 
@@ -255,8 +257,8 @@ scripts.start = async function(args) {
 		`--set sv.containerPath=${externalContainerFolder}`,
 		`--set sv.rootContainerPath=${rootContainersFolder}`,
 		`--set sv.rootPath=${rootKubeFolder}`,
-		`--set sv.canHostPort=${isMinikubeEnv()}`,
-		`--set sv.isWsl=${isDockerDesktopEnv()}`,
+		`--set sv.canHostPort=${canHostPort()}`,
+		`--set sv.isWsl=${isWslEnv()}`,
 		`--set sv.isDockerDesktop=${isDockerDesktopEnv()}`,
 		`--set sv.isArm=${isArmEnv()}`,
 		`--set sv.isMinikube=${isMinikubeEnv()}`,

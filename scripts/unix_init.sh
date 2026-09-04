@@ -113,7 +113,9 @@ fi
 ln -sfn ${SV_KUBERNETES_PATH}/scripts/unix_profile.sh ${USER_PROFILE_DIR}/.bash_aliases
 
 cp ${SV_KUBERNETES_PATH}/internal/${INTERNAL_ENV_FILE} ${SV_KUBERNETES_PATH}/.env
-sed -i -e '/SV_KUBERNETES_MOUNT_PATH=/d' ${SV_KUBERNETES_PATH}/.env
+# Portable in-place edit (BSD/macOS sed and GNU/Linux sed differ on `-i`).
+grep -v '^SV_KUBERNETES_MOUNT_PATH=' ${SV_KUBERNETES_PATH}/.env > ${SV_KUBERNETES_PATH}/.env.tmp
+mv ${SV_KUBERNETES_PATH}/.env.tmp ${SV_KUBERNETES_PATH}/.env
 echo "SV_KUBERNETES_MOUNT_PATH=${SV_KUBERNETES_PATH}" >> ${SV_KUBERNETES_PATH}/.env
 
 echo "Success"

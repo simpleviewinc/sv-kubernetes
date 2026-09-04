@@ -1,5 +1,9 @@
 #!/bin/bash
-SV_KUBERNETES_PATH=$(realpath "$(dirname "$(realpath ~/.bash_aliases)")/..")
+# Honor an explicit override; otherwise follow the ~/.bash_aliases symlink
+# (zsh-safe: BASH_SOURCE is unset when this file is sourced from zsh).
+if [[ -z "${SV_KUBERNETES_PATH}" ]]; then
+	SV_KUBERNETES_PATH=$(realpath "$(dirname "$(realpath ~/.bash_aliases)")/..")
+fi
 ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 
 function sv_kubernetes_container_exists {
