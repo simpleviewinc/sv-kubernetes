@@ -18,6 +18,7 @@
 	"scripts": {
 		"install:host": "npm install -f --package-lock false",
 		"run:deploy": "bash ./scripts/run_deploy.sh",
-		"test": "/node_modules/.bin/mocha testing --require testing/rootHooks.js"
+		"test": "/node_modules/.bin/mocha sv/testing --require sv/testing/rootHooks.js",
+		"test:ci": "/node_modules/.bin/mocha sv/testing --require sv/testing/rootHooks.js --reporter sv/testing/ciReporter.js --reporter-option output=/tmp/test-results/junit.xml"
 	}
 }

@@ -21,6 +21,37 @@ workflows:
           job_docker_compose_build_services: cli,deploy
           job_docker_source_image: sv-kubernetes-deploy
           job_docker_target_image: sv-deploy-gce
+          job_test_results_path: /tmp/test-results
+          job_test_steps:
+            - run:
+                name: Unit tests
+                command: |
+                  mkdir -p /tmp/test-results
+                  sudo mkdir -p /sv
+                  if ! mountpoint -q /sv; then
+                    sudo mount --bind "${PWD}" /sv
+                  fi
+
+                  args=(
+                    --rm
+                    --name sv-unit-tests
+                    -e CIRCLECI=true
+                    -v /var/run/docker.sock:/var/run/docker.sock
+                    -v /sv:/sv
+                    -v /tmp/test-results:/tmp/test-results
+                  )
+                  if [[ -d "${HOME}/.config/gcloud" ]]; then
+                    args+=(-v "${HOME}/.config/gcloud:/root/.config/gcloud")
+                  fi
+
+                  if [[ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" && -f "${GOOGLE_APPLICATION_CREDENTIALS}" ]]; then
+                    args+=(-e GOOGLE_APPLICATION_CREDENTIALS -v "${GOOGLE_APPLICATION_CREDENTIALS}:${GOOGLE_APPLICATION_CREDENTIALS}:ro")
+                    inner='cd /sv/sv && npm run test:ci'
+                  else
+                    inner='unset GOOGLE_APPLICATION_CREDENTIALS; cd /sv/sv && npm run test:ci'
+                  fi
+
+                  docker run "${args[@]}" sv-kubernetes-deploy:local bash -lc "${inner}"
       - circleci-config/complete:
           <<: *common_config
           requires:

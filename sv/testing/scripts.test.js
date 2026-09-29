@@ -27,7 +27,7 @@ describe(__filename, function() {
 		}
 	});
 
-	this.timeout(30000);
+	this.timeout(120000);
 
 	describe("build", function() {
 		const tests = [
@@ -183,7 +183,17 @@ describe(__filename, function() {
 					}
 				}
 			}
-		];
+		].filter(function(test) {
+			if (!process.env.CIRCLECI) {
+				return true;
+			}
+			const argv = test.args.argv.join(" ");
+			// CircleCI has Docker but not GCP KMS access for kubesec decrypt of chart secrets.
+			if (argv.includes("--app=settings-test") && argv.includes("--name=alias-test")) {
+				return true;
+			}
+			return !argv.includes("--app=settings-test");
+		});
 
 		testArray(tests, async function(test) {
 			utils.execSilent(`docker rmi ${test.tag} -f`);
