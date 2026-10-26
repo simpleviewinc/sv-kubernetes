@@ -10,10 +10,11 @@ function buildDeploy() {
 		env,
 		aliasFlag,
 		tagFlag,
+		previewFlag,
 		helmTimeout
 	} = getVars();
 
-	exec(`sv start ${REPO_NAME} ${env} --build ${aliasFlag} ${tagFlag} --push --wait --atomic --timeout ${helmTimeout}`);
+	exec(`sv start ${REPO_NAME} ${env} --build ${aliasFlag} ${tagFlag} ${previewFlag} --push --wait --atomic --timeout ${helmTimeout}`);
 }
 
 module.exports = buildDeploy;
