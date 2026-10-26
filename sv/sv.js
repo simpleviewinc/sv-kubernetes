@@ -232,6 +232,7 @@ scripts.start = async function(args) {
 		{ name : "alias", type : String },
 		{ name : "alias-image", type : String },
 		{ name : "tag", type : String },
+		{ name : "preview-slug", type : String },
 		{ name : "build-arg", type : String, multiple: true },
 		{ name : "build-context", type : String, multiple: true }
 	], { argv : myArgs, stopAtFirstUnknown : true });
@@ -292,6 +293,19 @@ scripts.start = async function(args) {
 
 	const tag = flags.tag !== undefined ? flags.tag : env;
 	commandArgs.push(`--set sv.tag=${tag}`);
+
+	// Presence of the slug is the preview signal. Charts read these values instead of parsing sv.tag.
+	const previewSlug = flags["preview-slug"];
+	if (previewSlug !== undefined) {
+		if (/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(previewSlug) === false) {
+			throw new Error(`Invalid preview slug '${previewSlug}'`);
+		}
+
+		commandArgs.push("--set sv.isPreview=true");
+		commandArgs.push(`--set-string sv.previewSlug=${previewSlug}`);
+	} else {
+		commandArgs.push("--set sv.isPreview=false");
+	}
 
 	const dockerRegistry = env !== "local" ? `${dockerBase}/` : ``;
 	commandArgs.push(`--set sv.dockerRegistry=${dockerRegistry}`);

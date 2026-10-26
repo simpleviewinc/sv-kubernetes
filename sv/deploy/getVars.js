@@ -48,11 +48,12 @@ if (isPreview && envs[branchName] === undefined) {
 	throw new Error(`Preview branch '${BRANCH_NAME}' does not map to a cluster when LEGACY_ENV=${LEGACY_ENV}`);
 }
 
-// Charts detect a preview by the "p<sv.env>-" tag prefix, so it must follow the resolved env name.
+// The tag stays unique per preview. Charts read sv.isPreview and sv.previewSlug, which sv start sets from --preview-slug.
 const previewName = isPreview ? `p${envs[branchName]}-${previewSlug}` : undefined;
 const aliasName = isPull ? `${REPO_NAME}-pull-${prNumber}` : isPreview ? `${REPO_NAME}-${previewName}` : REPO_NAME;
 const aliasFlag = isPull || isPreview ? `--alias ${aliasName}` : '';
 const tagFlag = isPull ? `--tag pull-${prNumber}` : isPreview ? `--tag ${previewName}` : '';
+const previewFlag = isPreview ? `--preview-slug ${previewSlug}` : '';
 
 // Helm release names are limited to 53 characters.
 if (isPreview && aliasName.length > 53) {
@@ -75,6 +76,7 @@ function getVars() {
 		aliasName,
 		aliasFlag,
 		tagFlag,
+		previewFlag,
 		helmTimeout
 	}
 }

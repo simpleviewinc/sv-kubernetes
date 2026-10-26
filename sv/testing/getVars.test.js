@@ -51,6 +51,7 @@ describe("deploy/getVars", function() {
 				assert.strictEqual(vars.aliasName, "apex");
 				assert.strictEqual(vars.aliasFlag, "");
 				assert.strictEqual(vars.tagFlag, "");
+				assert.strictEqual(vars.previewFlag, "");
 				assert.strictEqual(vars.isPull, false);
 			});
 		}
@@ -62,6 +63,7 @@ describe("deploy/getVars", function() {
 			assert.strictEqual(vars.env, "test");
 			assert.strictEqual(vars.aliasFlag, "--alias apex-pull-42");
 			assert.strictEqual(vars.tagFlag, "--tag pull-42");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 
 		it("unrelated branch", function() {
@@ -70,6 +72,7 @@ describe("deploy/getVars", function() {
 			assert.strictEqual(vars.env, undefined);
 			assert.strictEqual(vars.aliasFlag, "");
 			assert.strictEqual(vars.tagFlag, "");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 
 		it("pull request number without a CircleCI number", function() {
@@ -79,6 +82,7 @@ describe("deploy/getVars", function() {
 			assert.strictEqual(vars.env, "test");
 			assert.strictEqual(vars.aliasFlag, "--alias apex-pull-7");
 			assert.strictEqual(vars.tagFlag, "--tag pull-7");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 
 		it("keeps a numeric helm timeout in seconds", function() {
@@ -113,6 +117,7 @@ describe("deploy/getVars", function() {
 				assert.strictEqual(vars.aliasName, "apex");
 				assert.strictEqual(vars.aliasFlag, "");
 				assert.strictEqual(vars.tagFlag, "");
+				assert.strictEqual(vars.previewFlag, "");
 				assert.strictEqual(vars.isPull, false);
 			});
 		}
@@ -133,6 +138,7 @@ describe("deploy/getVars", function() {
 				assert.strictEqual(vars.isPull, false);
 				assert.strictEqual(vars.aliasFlag, `--alias apex-${want.name}`);
 				assert.strictEqual(vars.tagFlag, `--tag ${want.name}`);
+				assert.strictEqual(vars.previewFlag, "--preview-slug client-scaling");
 			});
 		}
 
@@ -140,12 +146,14 @@ describe("deploy/getVars", function() {
 			const vars = deploy("preview/live/client-scaling");
 			assert.strictEqual(vars.isPreview, false);
 			assert.strictEqual(vars.aliasFlag, "");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 
 		it("rejects a slug that is not a helm name", function() {
 			const vars = deploy("preview/dev/Bad_Slug");
 			assert.strictEqual(vars.isPreview, false);
 			assert.strictEqual(vars.aliasFlag, "");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 
 		it("rejects a release name over 53 characters", function() {
@@ -167,6 +175,7 @@ describe("deploy/getVars", function() {
 				assert.strictEqual(vars.isPreview, true, branch);
 				assert.strictEqual(vars.aliasFlag, `--alias apex-${want.name}`, branch);
 				assert.strictEqual(vars.tagFlag, `--tag ${want.name}`, branch);
+				assert.strictEqual(vars.previewFlag, "--preview-slug client-scaling", branch);
 			}
 		});
 
@@ -174,6 +183,7 @@ describe("deploy/getVars", function() {
 			const vars = deploy("preview/dev/client-scaling", { HELM_TIMEOUT : "300" });
 			assert.strictEqual(vars.helmTimeout, "300s");
 			assert.strictEqual(vars.tagFlag, "--tag pdev-client-scaling");
+			assert.strictEqual(vars.previewFlag, "--preview-slug client-scaling");
 		});
 
 		it("accepts non-legacy env names", function() {
@@ -187,6 +197,7 @@ describe("deploy/getVars", function() {
 				assert.strictEqual(vars.env, want.env, branch);
 				assert.strictEqual(vars.aliasFlag, `--alias apex-${want.name}`, branch);
 				assert.strictEqual(vars.tagFlag, `--tag ${want.name}`, branch);
+				assert.strictEqual(vars.previewFlag, "--preview-slug client-scaling", branch);
 			}
 		});
 
@@ -201,6 +212,7 @@ describe("deploy/getVars", function() {
 			const vars = deploy("preview/prod/client-scaling", { LEGACY_ENV : "false" });
 			assert.strictEqual(vars.isPreview, false);
 			assert.strictEqual(vars.aliasFlag, "");
+			assert.strictEqual(vars.previewFlag, "");
 		});
 	});
 });
