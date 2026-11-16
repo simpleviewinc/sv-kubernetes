@@ -324,8 +324,10 @@ scripts.start = async function(args) {
 			buildArgs.push(...mapBuildArgs(unknownSetAsEnv(flags._unknown)));
 		}
 
-		if (flags["build-context"] !== undefined) {
-			buildArgs.push(...mapBuildContexts(flags["build-context"]));
+		// settings.yaml buildContexts apply to every build; --build-context adds to them.
+		const buildContexts = [...(settings.buildContexts || []), ...(flags["build-context"] || [])];
+		if (buildContexts.length > 0) {
+			buildArgs.push(...mapBuildContexts(buildContexts));
 		}
 
 		const isDirectory = source => fs.lstatSync(containerFolder + '/' + source).isDirectory()
