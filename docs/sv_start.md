@@ -11,6 +11,7 @@ Start an application from an application located in your /applications/ folder.
 * Pass `--push` in order to push the built containers up to your designated docker registry, specified by `dockerBase` in `settings.yaml`.
 * Pass `--build-arg` in order to pass build-args to the Dockerfile during the build process. Pass multiple times for multiple values.
 * Pass `--build-context` in order to pass build-contexts to the Dockerfile during the build process. Pass multiple times for multiple values.
+* If the chart sets `workloadIdentity.gcpServiceAccount`, `sv start` applies a Kubernetes ServiceAccount named from the account id before `helm upgrade`, and passes it to the chart as `sv.workloadIdentityServiceAccount`. The account is not deleted by `sv stop`. See the "Workload Identity service accounts" section of the readme.
 
 `sv start` is a wrapper for `helm upgrade`, any additional arguments will be passed to `helm upgrade`. Visit [helm upgrade](https://docs.helm.sh/helm/#helm-upgrade) for details.
 
