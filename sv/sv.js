@@ -35,6 +35,11 @@ const {
 } = require("./utils");
 
 const constants = require("./constants");
+const {
+	applyWorkloadIdentityServiceAccount,
+	namespaceFromHelmArgs,
+	workloadIdentityForChart
+} = require("./workloadIdentity");
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -411,6 +416,12 @@ scripts.start = async function(args) {
 	// append flags we don't recognize to pass to upgrade
 	if (flags._unknown) {
 		commandArgs.push(...flags._unknown);
+	}
+
+	const workloadIdentity = workloadIdentityForChart(chartFolder, env);
+	if (workloadIdentity !== undefined) {
+		applyWorkloadIdentityServiceAccount(workloadIdentity, namespaceFromHelmArgs(flags._unknown));
+		commandArgs.push(`--set sv.workloadIdentityServiceAccount=${workloadIdentity.name}`);
 	}
 
 	const commandArgString = commandArgs.join(" ");
