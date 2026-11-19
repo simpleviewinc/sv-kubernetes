@@ -35,6 +35,11 @@ const {
 } = require("./utils");
 
 const constants = require("./constants");
+const {
+	applyWorkloadIdentityServiceAccount,
+	namespaceFromHelmArgs,
+	workloadIdentityForChart
+} = require("./workloadIdentity");
 
 const readP = util.promisify(read);
 var scriptName = process.argv[2];
@@ -387,6 +392,9 @@ scripts.start = async function(args) {
 		});
 	}
 
+	// Resolve workload identity before decrypting secrets so a bad email fails before anything is written to disk.
+	const workloadIdentity = workloadIdentityForChart(chartFolder, env);
+
 	// Load Secrets
 	secretFilesArray.forEach(file => {
 		let checksum;
@@ -413,9 +421,18 @@ scripts.start = async function(args) {
 		commandArgs.push(...flags._unknown);
 	}
 
+	if (workloadIdentity !== undefined) {
+		commandArgs.push(`--set sv.workloadIdentityServiceAccount=${workloadIdentity.name}`);
+	}
+
 	const commandArgString = commandArgs.join(" ");
 
 	try {
+		// inside the try so decrypted secrets are cleaned up if the apply fails
+		if (workloadIdentity !== undefined) {
+			applyWorkloadIdentityServiceAccount(workloadIdentity, namespaceFromHelmArgs(flags._unknown));
+		}
+
 		console.log(`Starting application '${applicationName}' as '${deploymentName}' in env '${env}'`);
 		exec(`helm upgrade ${commandArgString}`);
 	} finally {

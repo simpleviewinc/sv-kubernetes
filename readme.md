@@ -205,6 +205,7 @@ The `.Values.sv` exposes values which can be utilized in application templates.
 	* secretsChecksum - A hash of the primary secrets file, recommended to add `secretsChecksum: "{{ .Values.sv.secretsChecksum }}"` in the `annotations` in a deployment that consumes secrets.
 	* secretsEnvChecksum - A hash of the env-specific secrets file, recommended to add `secretsEnvChecksum: "{{ .Values.sv.secretsEnvChecksum }}"` in the `annotations` in a deployment that consumes secrets.
 	* refreshToken - The users' auth refresh token if they have executed `sv authLogin`.
+	* workloadIdentityServiceAccount - The Kubernetes ServiceAccount name for Workload Identity. Set only when the chart sets `workloadIdentity.gcpServiceAccount`, see "Workload Identity service accounts" below.
 
 Best Practices:
 
@@ -220,6 +221,36 @@ Best Practices:
 * In your deployment files, utilize the checksum described above, to allow `sv start` to restart only the containers with changes.
 * On local it is recommended to mount a directory for content which changes frequently, such as html/css/js which does not require a process reboot. You'll want to ensure that you are doing a COPY for this content to ensure it works in non-local environments.
 * Use [secrets](docs/sv_editSecrets.md) to secure and encrypt information such as DB passwords, tokens, and any proprietary data that your application needs.
+
+## Workload Identity service accounts
+
+A workload can run as a Google service account without a JSON key. This uses GKE Workload Identity. Opt in per environment in that environment's values file:
+
+```yaml
+# values_test.yaml
+workloadIdentity:
+  gcpServiceAccount: app-worker@example-project.iam.gserviceaccount.com
+```
+
+Before `helm upgrade`, `sv start` server-side applies a Kubernetes ServiceAccount for the chart:
+
+* The name is the account id, the part before `@` (`app-worker` above). It does not include the release name, so every release of the app shares one account.
+* The account is annotated with `iam.gke.io/gcp-service-account` set to the email.
+* It is created in the kubectl context's namespace unless the Helm arguments pass `--namespace` or `-n`. Pods must run in that same namespace.
+* `sv start` passes the name to the chart as `sv.workloadIdentityServiceAccount`. Use it in pod specs:
+
+```yaml
+spec:
+  serviceAccountName: {{ .Values.sv.workloadIdentityServiceAccount }}
+```
+
+Notes:
+
+* `workloadIdentity` is read from `values.yaml`, then `values_<env>.yaml`, then `values_overwrite.yaml`, so an environment value replaces the base value. An empty value turns it off.
+* A value that is not a Google service account email stops `sv start` before Helm runs. The error does not print the value.
+* The ServiceAccount has no Helm owner. `sv stop` and `helm uninstall` do not delete it.
+* Charts that do not set `workloadIdentity` are unchanged.
+* `sv` does not grant IAM. Before pods start, the Google service account must allow the Kubernetes identity with `roles/iam.workloadIdentityUser` for `serviceAccount:<project-id>.svc.id.goog[<namespace>/<account-id>]`. Keep that binding in infrastructure code, not in the chart, so it is written once per app and not on every preview.
 
 ## Container Structure
 
